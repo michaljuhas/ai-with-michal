@@ -1,0 +1,42 @@
+import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
+import { getStripe, PRICE_IDS, PriceTier } from "@/lib/stripe";
+
+export async function POST(req: NextRequest) {
+  const { userId } = await auth();
+
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await req.json();
+  const tier = body.tier as PriceTier;
+
+  if (!tier || !PRICE_IDS[tier]) {
+    return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
+  }
+
+  const stripe = getStripe();
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://aiwithmichal.com";
+
+  const session = await stripe.checkout.sessions.create({
+    mode: "payment",
+    currency: "eur",
+    line_items: [
+      {
+        price: PRICE_IDS[tier],
+        quantity: 1,
+      },
+    ],
+    client_reference_id: userId,
+    metadata: {
+      clerk_user_id: userId,
+      tier,
+    },
+    success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${appUrl}/tickets`,
+    allow_promotion_codes: true,
+  });
+
+  return NextResponse.json({ url: session.url });
+}

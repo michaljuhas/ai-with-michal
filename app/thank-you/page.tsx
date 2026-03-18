@@ -1,0 +1,208 @@
+"use client";
+
+import { useEffect, useState, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { motion } from "framer-motion";
+import { CheckCircle, Calendar, Download, ExternalLink } from "lucide-react";
+import { WORKSHOP } from "@/lib/workshop";
+
+function generateICSContent() {
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//AI with Michal//Workshop//EN",
+    "BEGIN:VEVENT",
+    `DTSTART:${WORKSHOP.startDate}`,
+    `DTEND:${WORKSHOP.endDate}`,
+    `SUMMARY:${WORKSHOP.title}`,
+    `DESCRIPTION:${WORKSHOP.description}`,
+    `LOCATION:${WORKSHOP.location}`,
+    "END:VEVENT",
+    "END:VCALENDAR",
+  ];
+  return lines.join("\r\n");
+}
+
+function buildGoogleCalendarUrl() {
+  const params = new URLSearchParams({
+    action: "TEMPLATE",
+    text: WORKSHOP.title,
+    dates: `${WORKSHOP.startDate}/${WORKSHOP.endDate}`,
+    details: WORKSHOP.description,
+    location: WORKSHOP.location,
+  });
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
+function buildOutlookCalendarUrl() {
+  const params = new URLSearchParams({
+    path: "/calendar/action/compose",
+    rru: "addevent",
+    subject: WORKSHOP.title,
+    startdt: WORKSHOP.startDate,
+    enddt: WORKSHOP.endDate,
+    body: WORKSHOP.description,
+    location: WORKSHOP.location,
+  });
+  return `https://outlook.live.com/calendar/0/deeplink/compose?${params.toString()}`;
+}
+
+function downloadICS() {
+  const content = generateICSContent();
+  const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "ai-with-michal-workshop.ics";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function ThankYouContent() {
+  const searchParams = useSearchParams();
+  const sessionId = searchParams.get("session_id");
+  const [verified, setVerified] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    setVerified(!!sessionId);
+  }, [sessionId]);
+
+  return (
+    <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6 py-16">
+      {/* Background accent */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[500px] bg-emerald-100/50 rounded-full blur-3xl" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-2xl">
+        {/* Success header */}
+        <motion.div
+          className="text-center mb-10"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex justify-center mb-5">
+            <div className="w-16 h-16 rounded-full bg-emerald-100 flex items-center justify-center">
+              <CheckCircle className="text-emerald-600" size={32} />
+            </div>
+          </div>
+          <span className="text-emerald-600 text-xs font-semibold tracking-widest uppercase">
+            Payment Confirmed
+          </span>
+          <h1 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900">
+            You&apos;re in! See you at the workshop.
+          </h1>
+          <p className="mt-4 text-slate-500 text-lg">
+            A confirmation email with your access details has been sent to your
+            inbox.
+          </p>
+        </motion.div>
+
+        {/* Workshop details */}
+        <motion.div
+          className="bg-white border border-slate-200 rounded-2xl p-8 mb-6 shadow-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+        >
+          <h2 className="text-slate-900 font-semibold text-lg mb-5">
+            Workshop Details
+          </h2>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <Calendar className="text-blue-600 shrink-0 mt-0.5" size={18} />
+              <div>
+                <p className="text-slate-900 font-medium">{WORKSHOP.displayDate}</p>
+                <p className="text-slate-500 text-sm">{WORKSHOP.displayTime}</p>
+              </div>
+            </div>
+            <div className="h-px bg-slate-100" />
+            <p className="text-slate-500 text-sm">
+              <span className="text-slate-700 font-medium">Location: </span>
+              {WORKSHOP.location}
+            </p>
+          </div>
+        </motion.div>
+
+        {/* Add to Calendar */}
+        <motion.div
+          className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.25 }}
+        >
+          <h2 className="text-slate-900 font-semibold text-lg mb-2">
+            Add to Your Calendar
+          </h2>
+          <p className="text-slate-500 text-sm mb-6">
+            Don&apos;t miss it — save the date to your calendar now.
+          </p>
+
+          <div className="grid sm:grid-cols-3 gap-3">
+            <a
+              href={buildGoogleCalendarUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
+            >
+              <ExternalLink size={14} className="text-blue-500" />
+              Google Calendar
+            </a>
+
+            <a
+              href={buildOutlookCalendarUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
+            >
+              <ExternalLink size={14} className="text-blue-500" />
+              Outlook
+            </a>
+
+            <button
+              onClick={downloadICS}
+              className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
+            >
+              <Download size={14} className="text-blue-500" />
+              Download .ics
+            </button>
+          </div>
+        </motion.div>
+
+        {verified === false && (
+          <motion.p
+            className="mt-6 text-center text-slate-400 text-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+          >
+            If you have any questions, contact us at{" "}
+            <a
+              href="mailto:hello@aiwithmichal.com"
+              className="text-blue-600 hover:underline"
+            >
+              hello@aiwithmichal.com
+            </a>
+          </motion.p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function ThankYouPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-slate-50 flex items-center justify-center">
+          <div className="text-slate-400">Loading...</div>
+        </div>
+      }
+    >
+      <ThankYouContent />
+    </Suspense>
+  );
+}

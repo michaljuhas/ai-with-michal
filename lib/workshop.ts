@@ -1,0 +1,22 @@
+export const WORKSHOP = {
+  title: "Build AI-Powered Talent Pools Outside LinkedIn",
+  description:
+    "Live 90-minute implementation workshop with Michal Juhas. Learn to discover and analyze candidates using alternative data sources and AI.",
+  location: "Online (Video call link will be emailed to you)",
+  date: new Date("2026-04-02T15:00:00Z"),
+  startDate: "20260402T150000Z",
+  endDate: "20260402T163000Z",
+  displayDate: "April 2, 2026",
+  displayTime: "3:00 PM – 4:30 PM UTC",
+  displayDateShort: "Apr 2",
+} as const;
+
+export function getDaysUntilWorkshop(): number {
+  const now = new Date();
+  const diff = WORKSHOP.date.getTime() - now.getTime();
+  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+}
+
+export function isRegistrationOpen(): boolean {
+  return new Date() < WORKSHOP.date;
+}
