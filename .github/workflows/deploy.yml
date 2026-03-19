@@ -9,6 +9,7 @@ env:
   REGION: us-central1
   SERVICE_NAME: ai-with-michal
   IMAGE: us-central1-docker.pkg.dev/ai-with-michal/ai-with-michal/app
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
