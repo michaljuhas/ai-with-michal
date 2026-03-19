@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle, Star, ArrowRight, Loader2 } from "lucide-react";
 import { TICKET_OPTIONS, PriceTier } from "@/lib/stripe";
@@ -9,7 +8,6 @@ import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
 
 export default function TicketsPage() {
-  const router = useRouter();
   const [loading, setLoading] = useState<PriceTier | null>(null);
   const { user } = useUser();
 
@@ -44,7 +42,7 @@ export default function TicketsPage() {
       const data = await res.json();
 
       if (data.url) {
-        router.push(data.url);
+        window.location.href = data.url;
       } else {
         console.error("No checkout URL returned", data);
         posthog.capture("checkout_error", { tier, reason: "no_url" });

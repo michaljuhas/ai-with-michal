@@ -22,7 +22,11 @@ export async function POST(req: NextRequest) {
   }
 
   const stripe = getStripe();
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://aiwithmichal.com";
+  const origin = req.headers.get("origin") ??
+    (req.headers.get("host") ? `https://${req.headers.get("host")}` : null) ??
+    process.env.NEXT_PUBLIC_APP_URL ??
+    "https://aiwithmichal.com";
+  const appUrl = origin;
 
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
