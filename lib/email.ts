@@ -136,7 +136,7 @@ function buildConfirmationHtml(params: {
                   <td style="padding: 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                     <p style="margin: 0; font-size: 13px; color: #94a3b8;">
                       Questions? Reply to this email or reach out at
-                      <a href="mailto:hello@aiwithmichal.com" style="color: #1d4ed8;">hello@aiwithmichal.com</a>.
+                      <a href="mailto:michal@michaljuhas.com" style="color: #1d4ed8;">michal@michaljuhas.com</a>.
                     </p>
                     <p style="margin: 8px 0 0 0; font-size: 13px; color: #cbd5e1;">— Michal Juhas</p>
                   </td>
@@ -176,7 +176,7 @@ As a Workshop + Toolkit ticket holder, you'll also receive the recording, workfl
 `
     : ""
 }
-Questions? Reply to this email or write to hello@aiwithmichal.com.
+Questions? Reply to this email or write to michal@michaljuhas.com.
 
 — Michal Juhas
 `;

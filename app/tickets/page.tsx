@@ -56,7 +56,7 @@ export default function TicketsPage() {
       const data = await res.json();
 
       if (res.status === 409) {
-        setError("Sorry, this workshop just sold out. Email hello@aiwithmichal.com to join the waitlist.");
+        setError("Sorry, this workshop just sold out. Email michal@michaljuhas.com to join the waitlist.");
         setLoading(null);
         return;
       }

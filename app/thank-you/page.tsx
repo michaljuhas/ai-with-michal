@@ -251,10 +251,10 @@ function ThankYouContent() {
           >
             If you have any questions, contact us at{" "}
             <a
-              href="mailto:hello@aiwithmichal.com"
+              href="mailto:michal@michaljuhas.com"
               className="text-blue-600 hover:underline"
             >
-              hello@aiwithmichal.com
+              michal@michaljuhas.com
             </a>
           </motion.p>
         )}
