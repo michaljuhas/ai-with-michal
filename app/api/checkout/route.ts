@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { getStripe, PRICE_IDS, PriceTier } from "@/lib/stripe";
 
 export async function POST(req: NextRequest) {
@@ -8,6 +8,9 @@ export async function POST(req: NextRequest) {
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+
+  const user = await currentUser();
+  const customerEmail = user?.emailAddresses[0]?.emailAddress;
 
   const body = await req.json();
   const tier = body.tier as PriceTier;
@@ -28,6 +31,7 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       },
     ],
+    customer_email: customerEmail,
     client_reference_id: userId,
     metadata: {
       clerk_user_id: userId,
