@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
 
   const user = await currentUser();
   const customerEmail = user?.emailAddresses[0]?.emailAddress;
+  const customerName = [user?.firstName, user?.lastName].filter(Boolean).join(" ");
 
   const body = await req.json();
   const tier = body.tier as PriceTier;
@@ -37,6 +38,7 @@ export async function POST(req: NextRequest) {
     metadata: {
       clerk_user_id: userId,
       tier,
+      customer_name: customerName,
     },
     success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/tickets`,

@@ -70,7 +70,9 @@ jobs:
             --set-env-vars "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" \
             --set-env-vars "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             --set-env-vars "STRIPE_PRICE_BASIC=${{ vars.STRIPE_PRICE_BASIC }}" \
-            --set-env-vars "STRIPE_PRICE_PRO=${{ vars.STRIPE_PRICE_PRO }}"
+            --set-env-vars "STRIPE_PRICE_PRO=${{ vars.STRIPE_PRICE_PRO }}" \
+            --set-env-vars "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" \
+            --set-env-vars "WORKSHOP_MEETING_URL=${{ vars.WORKSHOP_MEETING_URL }}"
 
       - name: Show service URL
         run: |

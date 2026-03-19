@@ -3,6 +3,7 @@ import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
+import { sendWorkshopConfirmation } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -62,6 +63,21 @@ export async function POST(req: NextRequest) {
       amount_eur: Math.round((session.amount_total ?? 0) / 100),
       customer_email: session.customer_email,
     });
+
+    const toEmail =
+      session.customer_details?.email ?? session.customer_email ?? "";
+    const toName =
+      session.customer_details?.name ??
+      session.metadata?.customer_name ??
+      "";
+
+    if (toEmail) {
+      try {
+        await sendWorkshopConfirmation({ toEmail, toName, tier });
+      } catch (emailErr) {
+        console.error("Failed to send confirmation email:", emailErr);
+      }
+    }
   }
 
   return NextResponse.json({ received: true });
