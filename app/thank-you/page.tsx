@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle, Calendar, Download, ExternalLink } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
+import posthog from "posthog-js";
 
 function generateICSContent() {
   const lines = [
@@ -48,6 +49,7 @@ function buildOutlookCalendarUrl() {
 }
 
 function downloadICS() {
+  posthog.capture("calendar_added", { provider: "ics" });
   const content = generateICSContent();
   const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
   const url = URL.createObjectURL(blob);
@@ -146,6 +148,7 @@ function ThankYouContent() {
               href={buildGoogleCalendarUrl()}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => posthog.capture("calendar_added", { provider: "google" })}
               className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
             >
               <ExternalLink size={14} className="text-blue-500" />
@@ -156,6 +159,7 @@ function ThankYouContent() {
               href={buildOutlookCalendarUrl()}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => posthog.capture("calendar_added", { provider: "outlook" })}
               className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
             >
               <ExternalLink size={14} className="text-blue-500" />

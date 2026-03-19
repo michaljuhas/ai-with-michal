@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -54,6 +55,19 @@ export async function POST(req: NextRequest) {
       console.error("Supabase upsert error:", error);
       return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
+
+    const posthog = getPostHogClient();
+    posthog.capture({
+      distinctId: clerkUserId,
+      event: "payment_completed",
+      properties: {
+        tier,
+        stripe_session_id: session.id,
+        amount_eur: Math.round((session.amount_total ?? 0) / 100),
+        customer_email: session.customer_email,
+      },
+    });
+    await posthog.shutdown();
   }
 
   return NextResponse.json({ received: true });

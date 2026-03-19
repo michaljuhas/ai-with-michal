@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { getStripe, PRICE_IDS, PriceTier } from "@/lib/stripe";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
@@ -41,6 +42,18 @@ export async function POST(req: NextRequest) {
     cancel_url: `${appUrl}/tickets`,
     allow_promotion_codes: true,
   });
+
+  const posthog = getPostHogClient();
+  posthog.capture({
+    distinctId: userId,
+    event: "checkout_session_created",
+    properties: {
+      tier,
+      stripe_session_id: session.id,
+      email: customerEmail,
+    },
+  });
+  await posthog.shutdown();
 
   return NextResponse.json({ url: session.url });
 }

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { isRegistrationOpen } from "@/lib/workshop";
+import posthog from "posthog-js";
 
 interface RegisterButtonProps {
   label?: string;
@@ -31,7 +32,11 @@ export default function RegisterButton({
   }
 
   return (
-    <Link href="/register" className={className}>
+    <Link
+      href="/register"
+      className={className}
+      onClick={() => posthog.capture("register_button_clicked", { label })}
+    >
       {label}
       <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
     </Link>

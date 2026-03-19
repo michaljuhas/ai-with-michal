@@ -1,17 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle, Star, ArrowRight, Loader2 } from "lucide-react";
 import { TICKET_OPTIONS, PriceTier } from "@/lib/stripe";
+import { useUser } from "@clerk/nextjs";
+import posthog from "posthog-js";
 
 export default function TicketsPage() {
   const router = useRouter();
   const [loading, setLoading] = useState<PriceTier | null>(null);
+  const { user } = useUser();
+
+  useEffect(() => {
+    posthog.capture("ticket_tier_viewed");
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      posthog.identify(user.id, {
+        email: user.primaryEmailAddress?.emailAddress,
+        name: user.fullName,
+      });
+    }
+  }, [user]);
 
   async function handleCheckout(tier: PriceTier) {
     setLoading(tier);
+    const option = TICKET_OPTIONS.find((o) => o.id === tier);
+    posthog.capture("checkout_initiated", {
+      tier,
+      price: option?.price,
+      name: option?.name,
+    });
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",
@@ -25,10 +47,13 @@ export default function TicketsPage() {
         router.push(data.url);
       } else {
         console.error("No checkout URL returned", data);
+        posthog.capture("checkout_error", { tier, reason: "no_url" });
         setLoading(null);
       }
     } catch (err) {
       console.error("Checkout error:", err);
+      posthog.captureException(err);
+      posthog.capture("checkout_error", { tier, reason: "network_error" });
       setLoading(null);
     }
   }
