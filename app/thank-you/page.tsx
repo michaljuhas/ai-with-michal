@@ -54,7 +54,7 @@ function ShareButtons() {
   );
 }
 
-function generateICSContent() {
+function generateICSContent(meetingUrl: string) {
   const lines = [
     "BEGIN:VCALENDAR",
     "VERSION:2.0",
@@ -64,25 +64,25 @@ function generateICSContent() {
     `DTEND:${WORKSHOP.endDate}`,
     `SUMMARY:${WORKSHOP.title}`,
     `DESCRIPTION:${WORKSHOP.description}`,
-    `LOCATION:${WORKSHOP.location}`,
+    `LOCATION:${meetingUrl}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ];
   return lines.join("\r\n");
 }
 
-function buildGoogleCalendarUrl() {
+function buildGoogleCalendarUrl(meetingUrl: string) {
   const params = new URLSearchParams({
     action: "TEMPLATE",
     text: WORKSHOP.title,
     dates: `${WORKSHOP.startDate}/${WORKSHOP.endDate}`,
     details: WORKSHOP.description,
-    location: WORKSHOP.location,
+    location: meetingUrl,
   });
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-function buildOutlookCalendarUrl() {
+function buildOutlookCalendarUrl(meetingUrl: string) {
   const params = new URLSearchParams({
     path: "/calendar/action/compose",
     rru: "addevent",
@@ -90,14 +90,14 @@ function buildOutlookCalendarUrl() {
     startdt: WORKSHOP.startDate,
     enddt: WORKSHOP.endDate,
     body: WORKSHOP.description,
-    location: WORKSHOP.location,
+    location: meetingUrl,
   });
   return `https://outlook.live.com/calendar/0/deeplink/compose?${params.toString()}`;
 }
 
-function downloadICS() {
+function downloadICS(meetingUrl: string) {
   posthog.capture("calendar_added", { provider: "ics" });
-  const content = generateICSContent();
+  const content = generateICSContent(meetingUrl);
   const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -113,9 +113,14 @@ function ThankYouContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
   const [verified, setVerified] = useState<boolean | null>(null);
+  const [meetingUrl, setMeetingUrl] = useState<string | null>(null);
 
   useEffect(() => {
     setVerified(!!sessionId);
+    fetch("/api/meeting-url")
+      .then((r) => r.json())
+      .then((d) => setMeetingUrl(d.url ?? null))
+      .catch(() => {});
   }, [sessionId]);
 
   return (
@@ -169,10 +174,21 @@ function ThankYouContent() {
               </div>
             </div>
             <div className="h-px bg-slate-100" />
-            <p className="text-slate-500 text-sm">
+            <div className="text-sm">
               <span className="text-slate-700 font-medium">Location: </span>
-              {WORKSHOP.location}
-            </p>
+              {meetingUrl ? (
+                <a
+                  href={meetingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-600 hover:underline break-all"
+                >
+                  {meetingUrl}
+                </a>
+              ) : (
+                <span className="text-slate-500">{WORKSHOP.location}</span>
+              )}
+            </div>
           </div>
         </motion.div>
 
@@ -192,7 +208,7 @@ function ThankYouContent() {
 
           <div className="grid sm:grid-cols-3 gap-3">
             <a
-              href={buildGoogleCalendarUrl()}
+              href={buildGoogleCalendarUrl(meetingUrl ?? WORKSHOP.location)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => posthog.capture("calendar_added", { provider: "google" })}
@@ -203,7 +219,7 @@ function ThankYouContent() {
             </a>
 
             <a
-              href={buildOutlookCalendarUrl()}
+              href={buildOutlookCalendarUrl(meetingUrl ?? WORKSHOP.location)}
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => posthog.capture("calendar_added", { provider: "outlook" })}
@@ -214,7 +230,7 @@ function ThankYouContent() {
             </a>
 
             <button
-              onClick={downloadICS}
+              onClick={() => downloadICS(meetingUrl ?? WORKSHOP.location)}
               className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
             >
               <Download size={14} className="text-blue-500" />
