@@ -1,9 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, Star, Calendar } from "lucide-react";
+import { CheckCircle, Star, Calendar, Users } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 import RegisterButton from "@/components/RegisterButton";
+import { useEffect, useState } from "react";
 
 const plans = [
   {
@@ -28,6 +29,15 @@ const plans = [
 ];
 
 export default function PricingSection() {
+  const [soldCount, setSoldCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetch("/api/count")
+      .then((r) => r.json())
+      .then((d) => setSoldCount(d.count ?? null))
+      .catch(() => {});
+  }, []);
+
   return (
     <section className="py-24 px-6 bg-white">
       <div className="max-w-4xl mx-auto">
@@ -48,6 +58,21 @@ export default function PricingSection() {
             One-time payment. No subscription. No hidden fees.
           </p>
         </motion.div>
+
+        {/* Social proof */}
+        {soldCount !== null && soldCount > 0 && (
+          <motion.div
+            className="flex items-center justify-center gap-2 text-slate-500 text-sm mb-6"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <Users size={15} className="text-blue-500" />
+            <span>
+              <strong className="text-slate-700">{soldCount}</strong> people already registered
+            </span>
+          </motion.div>
+        )}
 
         {/* Date & time banner */}
         <motion.div

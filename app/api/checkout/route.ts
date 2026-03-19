@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { getStripe, PRICE_IDS, PriceTier } from "@/lib/stripe";
+import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
+
+const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();
@@ -19,6 +22,17 @@ export async function POST(req: NextRequest) {
 
   if (!tier || !PRICE_IDS[tier]) {
     return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
+  }
+
+  // Enforce capacity
+  const supabase = createServiceClient();
+  const { count } = await supabase
+    .from("orders")
+    .select("*", { count: "exact", head: true })
+    .eq("status", "paid");
+
+  if ((count ?? 0) >= CAPACITY) {
+    return NextResponse.json({ error: "sold_out" }, { status: 409 });
   }
 
   const stripe = getStripe();
@@ -49,10 +63,13 @@ export async function POST(req: NextRequest) {
     allow_promotion_codes: true,
   });
 
+  const ref = req.cookies.get("ref")?.value;
+
   await captureEvent(userId, "checkout_session_created", {
     tier,
     stripe_session_id: session.id,
     email: customerEmail,
+    ...(ref ? { ref } : {}),
   });
 
   return NextResponse.json({ url: session.url });

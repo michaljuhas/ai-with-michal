@@ -3,9 +3,56 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle, Calendar, Download, ExternalLink } from "lucide-react";
+import { CheckCircle, Calendar, Download, ExternalLink, Copy, Share2 } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 import posthog from "posthog-js";
+
+const WORKSHOP_URL = "https://aiwithmichal.com";
+
+function ShareButtons() {
+  const [copied, setCopied] = useState(false);
+
+  function copyLink() {
+    navigator.clipboard.writeText(WORKSHOP_URL).then(() => {
+      setCopied(true);
+      posthog.capture("referral_link_copied");
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }
+
+  const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(WORKSHOP_URL)}`;
+  const emailUrl = `mailto:?subject=${encodeURIComponent("Join me at this AI recruiting workshop")}&body=${encodeURIComponent(`Hey, I just signed up for this workshop on building AI talent pools outside LinkedIn. Thought you might find it useful: ${WORKSHOP_URL}`)}`;
+
+  return (
+    <div className="flex flex-wrap justify-center gap-3">
+      <a
+        href={linkedInUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        onClick={() => posthog.capture("referral_shared", { channel: "linkedin" })}
+        className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-all"
+      >
+        <Share2 size={14} />
+        Share on LinkedIn
+      </a>
+      <a
+        href={emailUrl}
+        onClick={() => posthog.capture("referral_shared", { channel: "email" })}
+        className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-all"
+      >
+        <ExternalLink size={14} />
+        Send via Email
+      </a>
+      <button
+        onClick={copyLink}
+        className="flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-sm font-medium px-5 py-2.5 rounded-xl transition-all"
+      >
+        <Copy size={14} />
+        {copied ? "Copied!" : "Copy Link"}
+      </button>
+    </div>
+  );
+}
 
 function generateICSContent() {
   const lines = [
@@ -174,6 +221,25 @@ function ThankYouContent() {
               Download .ics
             </button>
           </div>
+        </motion.div>
+
+        {/* Share / refer a colleague */}
+        <motion.div
+          className="mt-6 bg-blue-600 rounded-2xl p-8 text-center"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.35 }}
+        >
+          <p className="text-blue-100 text-xs font-semibold tracking-widest uppercase mb-2">
+            Know a recruiter who'd love this?
+          </p>
+          <h2 className="text-white font-bold text-xl mb-3">
+            Share the workshop with a colleague
+          </h2>
+          <p className="text-blue-200 text-sm mb-6">
+            Forward this link — early registrants get the best price before it fills up.
+          </p>
+          <ShareButtons />
         </motion.div>
 
         {verified === false && (

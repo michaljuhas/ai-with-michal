@@ -2,17 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, Star, ArrowRight, Loader2 } from "lucide-react";
+import { CheckCircle, Star, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { TICKET_OPTIONS, PriceTier } from "@/lib/stripe";
 import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
 
+const CAPACITY = 50;
+const URGENCY_THRESHOLD = 15;
+
 export default function TicketsPage() {
   const [loading, setLoading] = useState<PriceTier | null>(null);
+  const [soldCount, setSoldCount] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
 
   useEffect(() => {
     posthog.capture("ticket_tier_viewed");
+    fetch("/api/count")
+      .then((r) => r.json())
+      .then((d) => setSoldCount(d.count ?? 0))
+      .catch(() => setSoldCount(null));
   }, []);
 
   useEffect(() => {
@@ -24,8 +33,13 @@ export default function TicketsPage() {
     }
   }, [user]);
 
+  const spotsLeft = soldCount !== null ? CAPACITY - soldCount : null;
+  const isSoldOut = spotsLeft !== null && spotsLeft <= 0;
+  const showUrgency = spotsLeft !== null && spotsLeft > 0 && spotsLeft <= URGENCY_THRESHOLD;
+
   async function handleCheckout(tier: PriceTier) {
     setLoading(tier);
+    setError(null);
     const option = TICKET_OPTIONS.find((o) => o.id === tier);
     posthog.capture("checkout_initiated", {
       tier,
@@ -41,15 +55,19 @@ export default function TicketsPage() {
 
       const data = await res.json();
 
+      if (res.status === 409) {
+        setError("Sorry, this workshop just sold out. Email hello@aiwithmichal.com to join the waitlist.");
+        setLoading(null);
+        return;
+      }
+
       if (data.url) {
         window.location.href = data.url;
       } else {
-        console.error("No checkout URL returned", data);
         posthog.capture("checkout_error", { tier, reason: "no_url" });
         setLoading(null);
       }
     } catch (err) {
-      console.error("Checkout error:", err);
       posthog.captureException(err);
       posthog.capture("checkout_error", { tier, reason: "network_error" });
       setLoading(null);
@@ -58,14 +76,13 @@ export default function TicketsPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-6 py-16">
-      {/* Background accent */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-blue-100/50 rounded-full blur-3xl" />
       </div>
 
       <div className="relative z-10 w-full max-w-3xl">
         <motion.div
-          className="text-center mb-12"
+          className="text-center mb-10"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -79,7 +96,48 @@ export default function TicketsPage() {
           <p className="mt-3 text-slate-500 text-lg">
             Select the option that works best for you.
           </p>
+
+          {/* Urgency / sold out banner */}
+          {isSoldOut && (
+            <motion.div
+              className="mt-5 inline-flex items-center gap-2 bg-red-50 border border-red-200 text-red-700 text-sm font-medium px-5 py-2.5 rounded-full"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              <AlertCircle size={15} />
+              Workshop is sold out — email us to join the waitlist
+            </motion.div>
+          )}
+          {showUrgency && !isSoldOut && (
+            <motion.div
+              className="mt-5 inline-flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-800 text-sm font-semibold px-5 py-2.5 rounded-full"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+            >
+              🔥 Only {spotsLeft} spots left
+            </motion.div>
+          )}
+          {soldCount !== null && soldCount > 0 && !isSoldOut && !showUrgency && (
+            <motion.p
+              className="mt-4 text-slate-400 text-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              {soldCount} people already registered
+            </motion.p>
+          )}
         </motion.div>
+
+        {error && (
+          <motion.div
+            className="mb-6 flex items-start gap-3 bg-red-50 border border-red-200 text-red-700 text-sm px-5 py-4 rounded-xl"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+            {error}
+          </motion.div>
+        )}
 
         <div className="grid md:grid-cols-2 gap-6">
           {TICKET_OPTIONS.map((option, i) => (
@@ -129,7 +187,7 @@ export default function TicketsPage() {
 
               <button
                 onClick={() => handleCheckout(option.id)}
-                disabled={loading !== null}
+                disabled={loading !== null || isSoldOut}
                 className={`flex items-center justify-center gap-2 w-full py-4 rounded-xl font-semibold transition-all group disabled:opacity-70 disabled:cursor-not-allowed ${
                   option.recommended
                     ? "bg-white text-blue-600 hover:bg-blue-50"
@@ -141,6 +199,8 @@ export default function TicketsPage() {
                     <Loader2 size={18} className="animate-spin" />
                     Redirecting...
                   </>
+                ) : isSoldOut ? (
+                  "Sold Out"
                 ) : (
                   <>
                     Get {option.name}
