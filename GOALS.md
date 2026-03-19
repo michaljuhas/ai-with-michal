@@ -47,6 +47,14 @@ node --env-file=.env scripts/stripe-report.mjs
 # Send reminder emails to all paid attendees
 node --env-file=.env scripts/send-reminders.mjs
 
+# Check Meta Ads campaigns and performance (spend, CTR, leads, purchases)
+node --env-file=.env scripts/meta-ads-stats.mjs
+
+# Meta Ads CLI — fine-grained control (list/create/update/delete campaigns, get insights)
+node --env-file=.env scripts/meta-ads/index.mjs campaigns list --pretty
+node --env-file=.env scripts/meta-ads/index.mjs insights <campaign-id> --preset last_30d --pretty
+# Full CLI reference: .claude/skills/meta-ads-cli.md
+
 # Deploy changes (git commit + push to main)
 ./scripts/deploy.sh "your commit message"
 ```
@@ -60,3 +68,4 @@ node --env-file=.env scripts/send-reminders.mjs
 - 1 week before (Mar 26): send reminder email to all paid attendees
 - 1 day before (Apr 1): send final reminder with meeting link
 - Day of (Apr 2): send day-of email 1 hour before start
+- Review Meta Ads: run `meta-ads-stats.mjs` → check spend, CTR, leads; pause campaigns with CTR < 0.5% or no conversions; scale up campaigns with CTR > 3% or confirmed purchases

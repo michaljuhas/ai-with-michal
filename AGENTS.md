@@ -39,6 +39,12 @@ node --env-file=.env scripts/send-reminders.mjs --dry-run         # preview with
 # PostHog CLI (analytics queries, feature flags, etc.)
 scripts/posthog-cli/bin/posthog-cli --help
 
+# Meta Ads CLI — list/create/update/delete campaigns, ad sets, ads, and insights
+node --env-file=.env scripts/meta-ads/index.mjs campaigns list --pretty
+node --env-file=.env scripts/meta-ads/index.mjs campaigns list --status ACTIVE
+node --env-file=.env scripts/meta-ads/index.mjs insights <campaign-id> --preset last_7d --pretty
+# Full usage: node --env-file=.env scripts/meta-ads/index.mjs --help (or see .claude/skills/meta-ads-cli.md)
+
 # Deploy: git add + commit + push to main
 ./scripts/deploy.sh "your commit message"
 ```
@@ -67,3 +73,4 @@ See `.env.local.example` for all variables.
 Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`,
 `SENDGRID_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `WORKSHOP_CAPACITY` (default 50),
 `ADMIN_EMAIL` (default michal@michaljuhas.com), `WORKSHOP_MEETING_URL`.
+Meta Ads CLI: `META_SYSTEM_USER_ACCESS_TOKEN` (System User Token from Meta Business Manager), `META_AD_ACCOUNT_ID` (e.g. `act_123456789`).
