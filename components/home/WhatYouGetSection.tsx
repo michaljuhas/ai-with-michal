@@ -1,44 +1,51 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Video, Map, BookOpen, PlayCircle, Wand2 } from "lucide-react";
+import { Workflow, Bot, Globe, Database, PlayCircle, FileText } from "lucide-react";
 import Image from "next/image";
 
-const items = [
+const assets = [
   {
-    icon: Video,
-    title: "Live Workshop (90 min)",
-    desc: "Hands-on session where we build it together, step by step.",
+    icon: Workflow,
+    title: "Talent Discovery Workflow Blueprint",
+    desc: "A visual step-by-step map of the entire system — print it, pin it, follow it.",
     iconBg: "bg-blue-100",
     iconColor: "text-blue-600",
   },
   {
-    icon: Map,
-    title: "Workflow Blueprint",
-    desc: "A visual cheat-sheet of the full system so you never get lost.",
+    icon: Bot,
+    title: "AI Candidate Analysis Templates",
+    desc: "Copy-paste prompts that turn raw profiles into structured summaries with strengths, risks, and fit scores.",
     iconBg: "bg-violet-100",
     iconColor: "text-violet-600",
   },
   {
-    icon: BookOpen,
-    title: "Sourcing Playbook",
-    desc: "Where to find hidden candidates — with real examples for each source.",
+    icon: Globe,
+    title: "10+ Alternative Candidate Sources",
+    desc: "A curated list of where to find engineers, designers, and leaders outside LinkedIn — with real examples.",
     iconBg: "bg-cyan-100",
     iconColor: "text-cyan-600",
   },
   {
+    icon: Database,
+    title: "Reusable Talent Pool Structure",
+    desc: "A ready-made database template to organize, search, and track every candidate you discover.",
+    iconBg: "bg-emerald-100",
+    iconColor: "text-emerald-600",
+  },
+  {
     icon: PlayCircle,
-    title: "Full Recording",
-    desc: "Rewatch at your own pace. Available right after the session.",
+    title: "Full Workshop Recording",
+    desc: "Rewatch at your own pace. Available immediately after the live session.",
     iconBg: "bg-pink-100",
     iconColor: "text-pink-600",
   },
   {
-    icon: Wand2,
-    title: "AI Prompts & Templates",
-    desc: "Copy-paste prompts to analyze candidates instantly.",
-    iconBg: "bg-emerald-100",
-    iconColor: "text-emerald-600",
+    icon: FileText,
+    title: "90-Minute Live Implementation",
+    desc: "Not a lecture — you build the system live with me. Ask questions, get help in real time.",
+    iconBg: "bg-orange-100",
+    iconColor: "text-orange-600",
   },
 ];
 
@@ -54,11 +61,15 @@ export default function WhatYouGetSection() {
           className="text-center mb-14"
         >
           <span className="text-blue-600 text-sm font-semibold tracking-widest uppercase">
-            Everything Included
+            Your Toolkit
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-            What You Get
+            You Get the AI Talent Discovery System
           </h2>
+          <p className="mt-4 text-slate-500 text-lg max-w-2xl mx-auto">
+            This isn&apos;t just a workshop — it&apos;s a complete toolkit you keep
+            forever and use for every search.
+          </p>
         </motion.div>
 
         {/* Laptop mockup */}
@@ -79,7 +90,7 @@ export default function WhatYouGetSection() {
         </motion.div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {items.map((item, i) => {
+          {assets.map((item, i) => {
             const Icon = item.icon;
             return (
               <motion.div
@@ -88,13 +99,13 @@ export default function WhatYouGetSection() {
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
               >
                 <div className={`w-10 h-10 rounded-xl ${item.iconBg} flex items-center justify-center mb-4`}>
                   <Icon className={item.iconColor} size={20} />
                 </div>
                 <h3 className="text-slate-900 font-semibold mb-2">{item.title}</h3>
-                <p className="text-slate-500 text-sm">{item.desc}</p>
+                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
               </motion.div>
             );
           })}

@@ -30,8 +30,8 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Find Top Talent{" "}
-              <span className="text-blue-600">Before Anyone Else Does</span>
+              Stop Competing on LinkedIn.{" "}
+              <span className="text-blue-600">Build Your Own AI Talent Pool.</span>
             </motion.h1>
 
             <motion.p
@@ -40,10 +40,10 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              The best recruiters aren&apos;t just searching harder — they&apos;re
-              searching smarter. In this hands-on workshop, I&apos;ll show you how
-              to <b>use AI to discover amazing candidates</b> that your competition
-              will never find.
+              While everyone fights over the same LinkedIn profiles, smart
+              recruiters are using AI to find candidates{" "}
+              <b>nobody else can reach</b>. In 90 minutes, I&apos;ll show you
+              exactly how — and you&apos;ll build the system yourself.
             </motion.p>
 
             <motion.div

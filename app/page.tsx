@@ -7,6 +7,7 @@ import WhatYouBuildSection from "@/components/home/WhatYouBuildSection";
 import WhoItsForSection from "@/components/home/WhoItsForSection";
 import AgendaSection from "@/components/home/AgendaSection";
 import WhatYouGetSection from "@/components/home/WhatYouGetSection";
+import WhyNowSection from "@/components/home/WhyNowSection";
 import PricingSection from "@/components/home/PricingSection";
 import GuaranteeSection from "@/components/home/GuaranteeSection";
 import AboutSection from "@/components/home/AboutSection";
@@ -24,6 +25,7 @@ export default function HomePage() {
       <WhoItsForSection />
       <AgendaSection />
       <WhatYouGetSection />
+      <WhyNowSection />
       <PricingSection />
       <GuaranteeSection />
       <AboutSection />
