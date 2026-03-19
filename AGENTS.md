@@ -50,6 +50,25 @@ node --env-file=.env scripts/meta-ads/index.mjs insights <campaign-id> --preset 
 node --env-file=.env scripts/daily-report.mjs       # run manually / test now
 bash scripts/install-launchagent.sh                  # one-time setup: schedule at 7:15am daily
 
+# Campaign creative generator — creates a new campaigns/YYYY-MM-DD-HH-mm/ folder with:
+#   copy.md / copy.json  — 5 headline + 5 primary text variations (via Claude)
+#   square-1.png, square-2.png    — 1:1 images, two visual concepts (via Imagen 4)
+#   portrait-1.png, portrait-2.png — 9:16 images, same two concepts
+node --env-file=.env scripts/generate-campaign-assets.mjs                                        # default angle
+node --env-file=.env scripts/generate-campaign-assets.mjs --focus "AI automation for recruiting"
+node --env-file=.env scripts/generate-campaign-assets.mjs --focus "replacing manual sourcing with AI workflows"
+node --env-file=.env scripts/generate-campaign-assets.mjs --focus "building talent pipelines on autopilot"
+# Run every other day before creating new Meta Ads campaigns/ad sets.
+# Portrait images are 9:16 — crop to 4:5 inside Meta Ads Manager at upload time.
+
+# Launch a Meta Ads campaign from the most recent campaign assets folder.
+# Creates: campaign (PAUSED) → ad set → uploads 4 images → 4 creatives + 4 ads.
+# Review everything in Meta Ads Manager before activating.
+node --env-file=.env scripts/launch-campaign.mjs                                     # uses most recent campaigns/ folder
+node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/2026-03-19-21-13 # specific folder
+node --env-file=.env scripts/launch-campaign.mjs --dry-run                           # preview without creating
+node --env-file=.env scripts/launch-campaign.mjs --budget 2000                       # €20/day (amount in cents, default €10)
+
 # Deploy: git add + commit + push to main
 ./scripts/deploy.sh "your commit message"
 ```
@@ -80,3 +99,4 @@ Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `
 `ADMIN_EMAIL` (default michal@michaljuhas.com), `WORKSHOP_MEETING_URL`.
 Meta Ads CLI: `META_SYSTEM_USER_ACCESS_TOKEN` (System User Token from Meta Business Manager), `META_AD_ACCOUNT_ID` (e.g. `act_123456789`).
 Daily report AI analysis: `ANTHROPIC_API_KEY` (get from https://console.anthropic.com/settings/keys — required for AI-written reports; without it the report falls back to raw data).
+Campaign generator: `ANTHROPIC_API_KEY` (copy generation) + `GEMINI_API_KEY` (image generation via Imagen 4) — both required.

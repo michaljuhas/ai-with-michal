@@ -1,0 +1,33 @@
+# Campaign Copy — 2026-03-19-21-06
+
+> **Topic focus:** AI automation for recruiting
+
+## Headlines (5 variations)
+
+1. Automate Your Talent Sourcing Now
+2. AI Finds Candidates While You Sleep
+3. Stop Manual Recruiting Forever
+4. Your AI Recruiting Edge Awaits
+5. Recruit Smarter With Automation
+
+## Primary Texts (5 variations)
+
+### Variation 1
+
+Still spending hours manually searching for candidates? In this 90-minute workshop, you'll discover how to build AI-powered systems that automatically surface top talent—no LinkedIn required. Seats are limited. Grab your spot →
+
+### Variation 2
+
+What if your talent pipeline filled itself? Learn the exact AI automation workflows top recruiters use to find and organise candidates 10x faster than traditional methods. Join us April 2nd. Reserve your seat →
+
+### Variation 3
+
+LinkedIn isn't the only game in town. This hands-on workshop reveals how to deploy AI tools that continuously build qualified talent pools from untapped sources—completely on autopilot. Save your spot →
+
+### Variation 4
+
+The recruiters winning right now? They've automated their sourcing. Join this live session to get the AI toolkit and step-by-step system for building talent pools that work around the clock. Claim your seat →
+
+### Variation 5
+
+Tired of the LinkedIn grind? Discover how AI automation can transform your recruiting workflow—finding, filtering, and organising candidates while you focus on what matters: closing great hires. Register now →
