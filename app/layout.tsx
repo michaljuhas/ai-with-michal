@@ -24,6 +24,21 @@ export const metadata: Metadata = {
     description:
       "Stop searching the same LinkedIn profiles as everyone else. Learn AI-powered talent discovery.",
     type: "website",
+    images: [
+      {
+        url: "/workshop-og.jpeg",
+        width: 2048,
+        height: 1152,
+        alt: "Build Your Own AI Talent Pool – Live Workshop · April 2, 2026 · 90 Min",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Build AI-Powered Talent Pools Outside LinkedIn",
+    description:
+      "Stop searching the same LinkedIn profiles as everyone else. Learn AI-powered talent discovery.",
+    images: ["/workshop-og.jpeg"],
   },
 };
 
