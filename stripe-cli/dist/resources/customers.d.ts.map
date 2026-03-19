@@ -1,0 +1,1 @@
+{"version":3,"file":"customers.d.ts","sourceRoot":"","sources":["../../src/resources/customers.ts"],"names":[],"mappings":"AAAA,OAAO,MAAM,MAAM,QAAQ,CAAC;;mBAIX,MAAM,UAAU,MAAM,CAAC,oBAAoB;qBAIzC,MAAM,MAAM,MAAM;mBAIpB,MAAM,MAAM,MAAM,UAAU,MAAM,CAAC,oBAAoB;gBAI1D,MAAM,MAAM,MAAM;iBAIjB,MAAM,WAAW,MAAM,CAAC,kBAAkB;mBAIxC,MAAM,UAAU,MAAM,CAAC,oBAAoB;;AArB5D,wBAwBE"}

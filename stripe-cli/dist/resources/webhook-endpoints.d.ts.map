@@ -1,0 +1,1 @@
+{"version":3,"file":"webhook-endpoints.d.ts","sourceRoot":"","sources":["../../src/resources/webhook-endpoints.ts"],"names":[],"mappings":"AAAA,OAAO,MAAM,MAAM,QAAQ,CAAC;;mBAIX,MAAM,UAAU,MAAM,CAAC,2BAA2B;qBAIhD,MAAM,MAAM,MAAM;mBAIpB,MAAM,MAAM,MAAM,UAAU,MAAM,CAAC,2BAA2B;gBAIjE,MAAM,MAAM,MAAM;iBAIjB,MAAM,WAAW,MAAM,CAAC,yBAAyB;;AAjBhE,wBAoBE"}

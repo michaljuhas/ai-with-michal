@@ -1,0 +1,28 @@
+{
+  "name": "stripe-cli",
+  "version": "1.0.0",
+  "private": true,
+  "main": "dist/index.js",
+  "bin": { "stripe-cli": "bin/stripe-cli" },
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "cli-table3": "^0.6.5",
+    "commander": "^12.1.0",
+    "stripe": "^17.7.0",
+    "uuid": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^20.17.0",
+    "@types/uuid": "^10.0.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.3"
+  }
+}
