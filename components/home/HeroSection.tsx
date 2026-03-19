@@ -11,7 +11,7 @@ export default function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-blue-100/60 rounded-full blur-3xl" />
 
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-6 py-24 lg:py-32">
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-6 py-12 lg:py-16">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           <div>
             <motion.div

@@ -32,25 +32,25 @@ export default function StickyCountdown() {
         visible ? "translate-y-0" : "translate-y-full"
       }`}
     >
-      <div className="bg-slate-900/95 backdrop-blur-md border-t border-slate-700/50 px-4 py-3">
+      <div className="bg-slate-950 border-t-2 border-blue-500 px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           {/* Left: date + countdown */}
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 text-slate-400 text-sm">
+            <div className="hidden sm:flex items-center gap-2 text-slate-200 text-sm font-medium">
               <Clock size={14} className="text-blue-400" />
               <span>{WORKSHOP.displayDateShort}</span>
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="bg-blue-600 text-white font-bold text-sm px-3 py-1.5 rounded-lg min-w-[3rem] text-center">
+              <div className="bg-blue-500 text-white font-bold text-base px-3 py-1.5 rounded-lg min-w-[3rem] text-center shadow-lg shadow-blue-500/30">
                 {daysLeft}
               </div>
-              <span className="text-slate-300 text-sm font-medium">
+              <span className="text-white text-sm font-semibold">
                 {daysLeft === 1 ? "day" : "days"} left
               </span>
             </div>
 
-            <span className="hidden md:inline text-slate-500 text-sm">
+            <span className="hidden md:inline text-amber-400 text-sm font-medium">
               — seats are limited, don&apos;t wait
             </span>
           </div>

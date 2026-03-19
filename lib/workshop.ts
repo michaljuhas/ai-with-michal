@@ -14,7 +14,7 @@ export const WORKSHOP = {
 export function getDaysUntilWorkshop(): number {
   const now = new Date();
   const diff = WORKSHOP.date.getTime() - now.getTime();
-  return Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+  return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
 }
 
 export function isRegistrationOpen(): boolean {
