@@ -3,9 +3,10 @@ import { sendMetaEvent } from "@/lib/meta-capi";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { event_name, event_source_url } = body as {
+  const { event_name, event_source_url, event_id } = body as {
     event_name: string;
     event_source_url: string;
+    event_id?: string;
   };
 
   if (!event_name || !event_source_url) {
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest) {
   await sendMetaEvent({
     event_name,
     event_source_url,
+    event_id,
     user_data: {
       client_user_agent: req.headers.get("user-agent") ?? undefined,
       client_ip_address: clientIp,

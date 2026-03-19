@@ -1,9 +1,11 @@
+import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
 import { sendWorkshopConfirmation } from "@/lib/email";
+import { sendMetaEvent } from "@/lib/meta-capi";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -57,12 +59,35 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
 
+    const amountEur = Math.round((session.amount_total ?? 0) / 100);
+
     await captureEvent(clerkUserId, "payment_completed", {
       tier,
       stripe_session_id: session.id,
-      amount_eur: Math.round((session.amount_total ?? 0) / 100),
+      amount_eur: amountEur,
       customer_email: session.customer_email,
     });
+
+    const customerEmail =
+      session.customer_details?.email ?? session.customer_email ?? "";
+    if (customerEmail) {
+      const hashedEmail = createHash("sha256")
+        .update(customerEmail.toLowerCase().trim())
+        .digest("hex");
+
+      await sendMetaEvent({
+        event_name: "Purchase",
+        event_source_url: `${process.env.NEXT_PUBLIC_APP_URL}/tickets`,
+        event_id: `purchase_${session.id}`,
+        user_data: { em: hashedEmail },
+        custom_data: {
+          value: amountEur,
+          currency: (session.currency ?? "eur").toUpperCase(),
+          content_name: tier === "pro" ? "Workshop + Toolkit" : "Workshop Ticket",
+          content_category: "workshop",
+        },
+      });
+    }
 
     const toEmail =
       session.customer_details?.email ?? session.customer_email ?? "";

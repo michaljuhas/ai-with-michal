@@ -17,7 +17,7 @@ function getCookie(name: string): string | undefined {
     ?.split("=")[1];
 }
 
-function fireMetaEvent(event_name: string) {
+function fireMetaEvent(event_name: string, event_id?: string) {
   fetch("/api/meta-event", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -26,8 +26,20 @@ function fireMetaEvent(event_name: string) {
       event_source_url: window.location.href,
       fbc: getCookie("_fbc"),
       fbp: getCookie("_fbp"),
+      ...(event_id ? { event_id } : {}),
     }),
   }).catch(() => {});
+}
+
+declare global {
+  interface Window {
+    fbq?: (
+      type: string,
+      event: string,
+      params?: Record<string, unknown>,
+      options?: Record<string, unknown>
+    ) => void;
+  }
 }
 
 export default function TicketsPage() {
@@ -51,6 +63,11 @@ export default function TicketsPage() {
         email: user.primaryEmailAddress?.emailAddress,
         name: user.fullName,
       });
+
+      // Fire Lead event — deduplicated with server-side CAPI event from Clerk webhook
+      const eventId = `registration_${user.id}`;
+      fireMetaEvent("Lead", eventId);
+      window.fbq?.("track", "Lead", {}, { eventID: eventId });
     }
   }, [user]);
 

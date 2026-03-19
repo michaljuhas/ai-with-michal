@@ -1,6 +1,8 @@
+import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { createServiceClient } from "@/lib/supabase";
+import { sendMetaEvent } from "@/lib/meta-capi";
 
 type EmailAddress = {
   email_address: string;
@@ -81,6 +83,17 @@ export async function POST(req: NextRequest) {
       console.error("Supabase upsert error:", error);
       return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
+
+    const hashedEmail = createHash("sha256")
+      .update(email.toLowerCase().trim())
+      .digest("hex");
+
+    await sendMetaEvent({
+      event_name: "Lead",
+      event_source_url: `${process.env.NEXT_PUBLIC_APP_URL}/tickets`,
+      event_id: `registration_${clerkUserId}`,
+      user_data: { em: hashedEmail },
+    });
   }
 
   return NextResponse.json({ received: true });
