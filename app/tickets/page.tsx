@@ -10,6 +10,26 @@ import posthog from "posthog-js";
 const CAPACITY = 50;
 const URGENCY_THRESHOLD = 15;
 
+function getCookie(name: string): string | undefined {
+  return document.cookie
+    .split("; ")
+    .find((row) => row.startsWith(name + "="))
+    ?.split("=")[1];
+}
+
+function fireMetaEvent(event_name: string) {
+  fetch("/api/meta-event", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      event_name,
+      event_source_url: window.location.href,
+      fbc: getCookie("_fbc"),
+      fbp: getCookie("_fbp"),
+    }),
+  }).catch(() => {});
+}
+
 export default function TicketsPage() {
   const [loading, setLoading] = useState<PriceTier | null>(null);
   const [soldCount, setSoldCount] = useState<number | null>(null);
@@ -18,6 +38,7 @@ export default function TicketsPage() {
 
   useEffect(() => {
     posthog.capture("ticket_tier_viewed");
+    fireMetaEvent("ViewContent");
     fetch("/api/count")
       .then((r) => r.json())
       .then((d) => setSoldCount(d.count ?? 0))
@@ -46,6 +67,7 @@ export default function TicketsPage() {
       price: option?.price,
       name: option?.name,
     });
+    fireMetaEvent("AddToCart");
     try {
       const res = await fetch("/api/checkout", {
         method: "POST",

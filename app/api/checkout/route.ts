@@ -3,6 +3,7 @@ import { auth, currentUser } from "@clerk/nextjs/server";
 import { getStripe, PRICE_IDS, PriceTier } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
+import { sendMetaEvent } from "@/lib/meta-capi";
 
 const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
 
@@ -70,6 +71,21 @@ export async function POST(req: NextRequest) {
     stripe_session_id: session.id,
     email: customerEmail,
     ...(ref ? { ref } : {}),
+  });
+
+  const clientIp =
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    req.headers.get("x-real-ip") ??
+    undefined;
+
+  // Fire-and-forget — never block the checkout response
+  sendMetaEvent({
+    event_name: "InitiateCheckout",
+    event_source_url: `${appUrl}/tickets`,
+    user_data: {
+      client_user_agent: req.headers.get("user-agent") ?? undefined,
+      client_ip_address: clientIp,
+    },
   });
 
   return NextResponse.json({ url: session.url });
