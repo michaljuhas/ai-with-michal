@@ -1,11 +1,19 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Clock } from "lucide-react";
+import { Clock, Calendar } from "lucide-react";
 import Image from "next/image";
 import RegisterButton from "@/components/RegisterButton";
+import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
 
 export default function HeroSection() {
+  const [daysLeft, setDaysLeft] = useState<number | null>(null);
+
+  useEffect(() => {
+    setDaysLeft(getDaysUntilWorkshop());
+  }, []);
+
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-white">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-white" />
@@ -18,10 +26,17 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
+              className="flex flex-wrap items-center gap-2 mb-6"
             >
-              <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-blue-700 mb-6 border border-blue-200 rounded-full px-4 py-1.5 bg-blue-50">
-                Live Workshop · 90 Minutes
+              <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-blue-700 border border-blue-200 rounded-full px-4 py-1.5 bg-blue-50">
+                <Calendar size={12} />
+                {WORKSHOP.displayDate} · 90 Min Live
               </span>
+              {daysLeft !== null && daysLeft > 0 && (
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 border border-amber-200 rounded-full px-3 py-1.5 bg-amber-50">
+                  🔥 {daysLeft} {daysLeft === 1 ? "day" : "days"} left
+                </span>
+              )}
             </motion.div>
 
             <motion.h1
