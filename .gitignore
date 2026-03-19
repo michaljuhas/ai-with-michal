@@ -40,3 +40,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 .env.local
+
+# daily reports (auto-generated, not committed)
+/reports/*.md

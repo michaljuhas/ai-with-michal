@@ -45,6 +45,11 @@ node --env-file=.env scripts/meta-ads/index.mjs campaigns list --status ACTIVE
 node --env-file=.env scripts/meta-ads/index.mjs insights <campaign-id> --preset last_7d --pretty
 # Full usage: node --env-file=.env scripts/meta-ads/index.mjs --help (or see .claude/skills/meta-ads-cli.md)
 
+# Daily morning report — runs automatically at 7:15am via LaunchAgent
+# Collects Stripe + PostHog + Meta Ads data, analyses with Claude, saves to reports/YYYY-MM-DD.md, emails result
+node --env-file=.env scripts/daily-report.mjs       # run manually / test now
+bash scripts/install-launchagent.sh                  # one-time setup: schedule at 7:15am daily
+
 # Deploy: git add + commit + push to main
 ./scripts/deploy.sh "your commit message"
 ```
@@ -74,3 +79,4 @@ Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `
 `SENDGRID_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `WORKSHOP_CAPACITY` (default 50),
 `ADMIN_EMAIL` (default michal@michaljuhas.com), `WORKSHOP_MEETING_URL`.
 Meta Ads CLI: `META_SYSTEM_USER_ACCESS_TOKEN` (System User Token from Meta Business Manager), `META_AD_ACCOUNT_ID` (e.g. `act_123456789`).
+Daily report AI analysis: `ANTHROPIC_API_KEY` (get from https://console.anthropic.com/settings/keys — required for AI-written reports; without it the report falls back to raw data).

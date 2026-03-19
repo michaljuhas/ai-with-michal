@@ -15,24 +15,19 @@ if (!API_KEY || !PROJECT_ID) {
   process.exit(1);
 }
 
-async function phGet(path) {
-  const res = await fetch(`${HOST}${path}`, {
-    headers: { Authorization: `Bearer ${API_KEY}` },
+async function hogql(query) {
+  const res = await fetch(`${HOST}/api/projects/${PROJECT_ID}/query`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query: { kind: "HogQLQuery", query } }),
   });
   if (!res.ok) throw new Error(`PostHog error: ${res.status} ${await res.text()}`);
-  return res.json();
-}
-
-async function getEventCount(eventName, dateFrom = "-30d") {
-  const params = new URLSearchParams({
-    events: JSON.stringify([{ id: eventName, name: eventName, type: "events" }]),
-    date_from: dateFrom,
-    display: "ActionsTable",
-  });
-  const data = await phGet(`/api/projects/${PROJECT_ID}/insights/trend/?${params}`);
-  const result = data.result?.[0];
-  if (!result) return 0;
-  return result.aggregated_value ?? result.count ?? 0;
+  const data = await res.json();
+  if (data.error) throw new Error(`HogQL error: ${data.error}`);
+  return data.results ?? [];
 }
 
 async function main() {
@@ -41,54 +36,70 @@ async function main() {
   console.log("╚══════════════════════════════════════════════════╝");
   console.log("  Fetching event counts...\n");
 
-  const events = [
-    ["$pageview", "Page views (homepage)"],
-    ["ticket_tier_viewed", "Reached /tickets page"],
-    ["checkout_initiated", "Clicked checkout"],
-    ["checkout_session_created", "Stripe session created"],
-    ["payment_completed", "Payment completed"],
+  const FUNNEL_EVENTS = [
+    ["$pageview",               "Page views (homepage)"],
+    ["ticket_tier_viewed",      "Reached /tickets page"],
+    ["checkout_initiated",      "Clicked checkout"],
+    ["checkout_session_created","Stripe session created"],
+    ["payment_completed",       "Payment completed"],
   ];
 
-  const counts = [];
-  for (const [name, label] of events) {
-    try {
-      const count = await getEventCount(name);
-      counts.push({ name, label, count });
-    } catch {
-      counts.push({ name, label, count: null });
-    }
+  // Fetch all event counts in one query
+  const eventNames = FUNNEL_EVENTS.map(([e]) => `'${e}'`).join(", ");
+  let rows = [];
+  try {
+    rows = await hogql(
+      `SELECT event, count() AS cnt
+       FROM events
+       WHERE timestamp >= now() - interval 30 day
+         AND event IN (${eventNames})
+       GROUP BY event`
+    );
+  } catch (err) {
+    console.error(`  Error fetching funnel: ${err.message}\n`);
+    process.exit(1);
   }
+
+  // Build a map: event → count
+  const countMap = Object.fromEntries(rows.map(([event, cnt]) => [event, Number(cnt)]));
+  const counts = FUNNEL_EVENTS.map(([name, label]) => ({
+    name,
+    label,
+    count: countMap[name] ?? 0,
+  }));
 
   const baseline = counts[0]?.count || 1;
   for (let i = 0; i < counts.length; i++) {
     const { label, count } = counts[i];
-    const pct = count != null ? ((count / baseline) * 100).toFixed(1) : "?";
-    const bar = count != null ? "█".repeat(Math.min(30, Math.round((count / baseline) * 30))) : "";
+    const pct = ((count / baseline) * 100).toFixed(1);
+    const bar = "█".repeat(Math.min(30, Math.round((count / baseline) * 30)));
     const dropoff =
-      i > 0 && counts[i - 1].count && count != null
+      i > 0 && counts[i - 1].count > 0
         ? ` (${(100 - (count / counts[i - 1].count) * 100).toFixed(0)}% drop)`
         : "";
     console.log(`  ${label}`);
-    console.log(`  ${bar} ${count ?? "?"} (${pct}%)${dropoff}`);
+    console.log(`  ${bar} ${count} (${pct}%)${dropoff}`);
     console.log("");
   }
 
-  // Top referrers
+  // Top referrers via ref property on checkout_initiated
   console.log("  TOP REFERRAL SOURCES (ref= param)");
   try {
-    const params = new URLSearchParams({
-      properties: JSON.stringify([{ key: "ref", type: "event" }]),
-      date_from: "-30d",
-      breakdown: "ref",
-      events: JSON.stringify([{ id: "checkout_initiated", name: "checkout_initiated", type: "events" }]),
-    });
-    const data = await phGet(`/api/projects/${PROJECT_ID}/insights/trend/?${params}`);
-    const results = (data.result || []).slice(0, 5);
-    if (results.length === 0) {
+    const refRows = await hogql(
+      `SELECT properties.ref AS ref, count() AS cnt
+       FROM events
+       WHERE event = 'checkout_initiated'
+         AND timestamp >= now() - interval 30 day
+         AND properties.ref IS NOT NULL
+       GROUP BY ref
+       ORDER BY cnt DESC
+       LIMIT 5`
+    );
+    if (refRows.length === 0) {
       console.log("  No referral data yet.\n");
     } else {
-      for (const r of results) {
-        console.log(`  ├─ ${r.breakdown_value || "direct"}: ${r.aggregated_value ?? r.count} checkouts`);
+      for (const [ref, cnt] of refRows) {
+        console.log(`  ├─ ${ref || "direct"}: ${cnt} checkouts`);
       }
       console.log("");
     }
