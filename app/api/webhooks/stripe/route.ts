@@ -62,6 +62,7 @@ export async function POST(req: NextRequest) {
     const amountEur = Math.round((session.amount_total ?? 0) / 100);
 
     await captureEvent(clerkUserId, "payment_completed", {
+      $insert_id: `purchase_${session.id}`,
       tier,
       stripe_session_id: session.id,
       amount_eur: amountEur,

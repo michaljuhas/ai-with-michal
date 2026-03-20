@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { createServiceClient } from "@/lib/supabase";
+import { captureEvent } from "@/lib/posthog-server";
 import { sendMetaEvent } from "@/lib/meta-capi";
 
 type EmailAddress = {
@@ -83,6 +84,10 @@ export async function POST(req: NextRequest) {
       console.error("Supabase upsert error:", error);
       return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
+
+    await captureEvent(clerkUserId, "user_registered", {
+      $insert_id: `registration_${clerkUserId}`,
+    });
 
     const hashedEmail = createHash("sha256")
       .update(email.toLowerCase().trim())
