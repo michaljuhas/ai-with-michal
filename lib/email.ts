@@ -219,16 +219,23 @@ function buildWelcomeHtml(params: { firstName: string }) {
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Welcome to AI with Michal</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .email-outer { padding: 16px 8px !important; }
+      .email-header { padding: 24px 20px !important; }
+      .email-body { padding: 24px 20px 20px 20px !important; }
+    }
+  </style>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8fafc; padding: 40px 20px;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" class="email-outer" style="background-color: #f8fafc; padding: 40px 20px;">
     <tr>
       <td align="center">
         <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%;">
 
           <!-- Header -->
           <tr>
-            <td style="background-color: #1e40af; border-radius: 12px 12px 0 0; padding: 32px 40px; text-align: center;">
+            <td class="email-header" style="background-color: #1e40af; border-radius: 12px 12px 0 0; padding: 32px 40px; text-align: center;">
               <p style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #93c5fd;">AI with Michal</p>
               <h1 style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700; color: #ffffff;">Welcome, ${firstName}!</h1>
             </td>
@@ -236,7 +243,7 @@ function buildWelcomeHtml(params: { firstName: string }) {
 
           <!-- Body -->
           <tr>
-            <td style="background-color: #ffffff; padding: 40px 40px 32px 40px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
+            <td class="email-body" style="background-color: #ffffff; padding: 40px 40px 32px 40px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
               <table width="100%" cellpadding="0" cellspacing="0" border="0">
 
                 <tr>
