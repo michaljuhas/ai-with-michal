@@ -1,4 +1,5 @@
 import HeroSection from "@/components/home/HeroSection";
+import HostIntroSection from "@/components/home/HostIntroSection";
 import ProblemSection from "@/components/home/ProblemSection";
 import NewApproachSection from "@/components/home/NewApproachSection";
 import ToolsSection from "@/components/home/ToolsSection";
@@ -17,6 +18,7 @@ export default function HomePage() {
   return (
     <main>
       <HeroSection />
+      <HostIntroSection />
       <ProblemSection />
       <NewApproachSection />
       <ToolsSection />
