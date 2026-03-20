@@ -7,13 +7,14 @@ export const metadata = {
 
 export default function RegisterPage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 py-16 bg-slate-50">
+    <div className="relative min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-start px-6 pt-6 pb-14 md:pt-8 bg-slate-50 overflow-x-hidden">
       {/* Background accent */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-blue-100/60 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative z-10 w-full max-w-md">
+      {/* Block + mx-auto avoids flex item min-width quirks; grid below forces Clerk to respect column width */}
+      <div className="relative z-10 mx-auto w-full max-w-md min-w-0">
         <div className="text-center mb-8">
           <span className="text-blue-600 text-xs font-semibold tracking-widest uppercase">
             Step 1 of 3
@@ -26,11 +27,14 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        <SignUp
-          appearance={{
-            elements: {
-              rootBox: "w-full",
-              card: "bg-white border border-slate-200 shadow-md rounded-2xl",
+        <div className="register-clerk-slot grid w-full min-w-0 [grid-template-columns:minmax(0,1fr)] justify-items-stretch">
+          <SignUp
+            appearance={{
+              elements: {
+                rootBox:
+                  "!w-full !max-w-full min-w-0 shrink-0 flex flex-col items-stretch",
+                card:
+                  "!w-full !max-w-full min-w-0 bg-white border border-slate-200 shadow-md rounded-2xl",
               headerTitle: "text-slate-900",
               headerSubtitle: "text-slate-500",
               formFieldLabel: "text-slate-700",
@@ -49,7 +53,8 @@ export default function RegisterPage() {
             },
           }}
           fallbackRedirectUrl="/tickets"
-        />
+          />
+        </div>
       </div>
     </div>
   );
