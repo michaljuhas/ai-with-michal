@@ -6,6 +6,8 @@
  * Requires: POSTHOG_PERSONAL_API_KEY, POSTHOG_PROJECT_ID
  */
 
+import { CAMPAIGN_START } from './config.mjs';
+
 const API_KEY = process.env.POSTHOG_PERSONAL_API_KEY;
 const PROJECT_ID = process.env.POSTHOG_PROJECT_ID;
 const HOST = "https://eu.posthog.com";
@@ -31,28 +33,32 @@ async function hogql(query) {
 }
 
 async function main() {
+  const now = new Date();
+  const dateEnd = now.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const dateStart = new Date(CAMPAIGN_START).toLocaleDateString("en-US", { month: "short", day: "numeric" });
   console.log("\n╔══════════════════════════════════════════════════╗");
-  console.log("║         POSTHOG FUNNEL (last 30 days)            ║");
+  console.log(`║     POSTHOG FUNNEL (${dateStart} – ${dateEnd})`.padEnd(51) + "║");
   console.log("╚══════════════════════════════════════════════════╝");
   console.log("  Fetching event counts...\n");
 
   const FUNNEL_EVENTS = [
-    ["$pageview",               "Page views (homepage)"],
-    ["ticket_tier_viewed",      "Reached /tickets page"],
-    ["checkout_initiated",      "Clicked checkout"],
-    ["checkout_session_created","Stripe session created"],
-    ["payment_completed",       "Payment completed"],
+    { key: "$pageview",                label: "Page views (homepage)" },
+    { key: "$pageview:/register",      label: "Visited sign-up page (/register)" },
+    { key: "ticket_tier_viewed",       label: "Reached /tickets page" },
+    { key: "checkout_initiated",       label: "Clicked checkout" },
+    { key: "checkout_session_created", label: "Stripe session created" },
+    { key: "payment_completed",        label: "Payment completed" },
   ];
 
-  // Fetch all event counts in one query
-  const eventNames = FUNNEL_EVENTS.map(([e]) => `'${e}'`).join(", ");
+  // Fetch named events in bulk
+  const namedEvents = FUNNEL_EVENTS.filter(e => !e.key.includes(":")).map(e => `'${e.key}'`).join(", ");
   let rows = [];
   try {
     rows = await hogql(
       `SELECT event, count() AS cnt
        FROM events
-       WHERE timestamp >= now() - interval 30 day
-         AND event IN (${eventNames})
+       WHERE timestamp >= '${CAMPAIGN_START}'
+         AND event IN (${namedEvents})
        GROUP BY event`
     );
   } catch (err) {
@@ -60,12 +66,28 @@ async function main() {
     process.exit(1);
   }
 
-  // Build a map: event → count
+  // Fetch /register pageviews separately (filtered pageview)
+  let registerCount = 0;
+  try {
+    const registerRows = await hogql(
+      `SELECT count() AS cnt
+       FROM events
+       WHERE event = '$pageview'
+         AND timestamp >= '${CAMPAIGN_START}'
+         AND properties.$pathname LIKE '/register%'`
+    );
+    registerCount = Number(registerRows?.[0]?.[0] ?? 0);
+  } catch {
+    // leave as 0
+  }
+
+  // Build a map: key → count
   const countMap = Object.fromEntries(rows.map(([event, cnt]) => [event, Number(cnt)]));
-  const counts = FUNNEL_EVENTS.map(([name, label]) => ({
-    name,
+  countMap["$pageview:/register"] = registerCount;
+
+  const counts = FUNNEL_EVENTS.map(({ key, label }) => ({
     label,
-    count: countMap[name] ?? 0,
+    count: countMap[key] ?? 0,
   }));
 
   const baseline = counts[0]?.count || 1;
@@ -89,7 +111,7 @@ async function main() {
       `SELECT properties.ref AS ref, count() AS cnt
        FROM events
        WHERE event = 'checkout_initiated'
-         AND timestamp >= now() - interval 30 day
+         AND timestamp >= '${CAMPAIGN_START}'
          AND properties.ref IS NOT NULL
        GROUP BY ref
        ORDER BY cnt DESC

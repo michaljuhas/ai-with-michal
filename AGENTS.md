@@ -104,7 +104,7 @@ node --env-file=.env scripts/todoist/index.mjs projects list --pretty
 
 ## Environment variables
 
-See `.env.local.example` for all variables.
+See `.env.example` for all variables.
 Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`,
 `SENDGRID_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `WORKSHOP_CAPACITY` (default 50),
 `ADMIN_EMAIL` (default michal@michaljuhas.com), `WORKSHOP_MEETING_URL`.

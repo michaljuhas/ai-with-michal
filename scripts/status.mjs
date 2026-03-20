@@ -4,14 +4,32 @@
  * Usage: node --env-file=.env scripts/status.mjs
  */
 
+import { createClient } from './meta-ads/client.mjs';
+import { getInsights } from './meta-ads/insights.mjs';
+import { CAMPAIGN_START } from './config.mjs';
+
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const WORKSHOP_DATE = new Date("2026-04-02T15:00:00Z");
 const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
 
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
-  process.exit(1);
+async function fetchMetaInsights() {
+  const token = process.env.META_SYSTEM_USER_ACCESS_TOKEN;
+  const rawId = process.env.META_AD_ACCOUNT_ID;
+  if (!token || !rawId) return null;
+  const accountId = rawId.startsWith('act_') ? rawId : `act_${rawId}`;
+  try {
+    const client = createClient(token, accountId);
+    const rows = await getInsights(client, accountId, {
+      since: CAMPAIGN_START,
+      until: new Date().toISOString().slice(0, 10),
+      level: 'account',
+      fields: 'impressions,clicks,spend,cpm,ctr',
+    });
+    return rows[0] ?? null;
+  } catch {
+    return null;
+  }
 }
 
 async function supabaseGet(path) {
@@ -30,9 +48,10 @@ async function main() {
   const now = new Date();
   const daysLeft = Math.max(0, Math.ceil((WORKSHOP_DATE - now) / (1000 * 60 * 60 * 24)));
 
-  const [registrations, orders] = await Promise.all([
+  const [registrations, orders, metaInsights] = await Promise.all([
     supabaseGet("registrations?select=id,created_at"),
     supabaseGet("orders?select=id,tier,amount_eur,status,created_at&status=eq.paid"),
+    fetchMetaInsights(),
   ]);
 
   const totalReg = registrations.length;
@@ -67,6 +86,25 @@ async function main() {
   console.log(`  └─ Pro tier mix:  ${proMix}% (target: 50%)`);
   console.log("");
 
+  const metaDateEnd = now.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const metaDateStart = new Date(CAMPAIGN_START).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  console.log(`  META ADS (${metaDateStart} – ${metaDateEnd})`);
+  if (metaInsights) {
+    const spend = parseFloat(metaInsights.spend || 0).toFixed(2);
+    const impressions = parseInt(metaInsights.impressions || 0).toLocaleString("en");
+    const clicks = parseInt(metaInsights.clicks || 0).toLocaleString("en");
+    const ctr = parseFloat(metaInsights.ctr || 0).toFixed(2);
+    const cpm = parseFloat(metaInsights.cpm || 0).toFixed(2);
+    console.log(`  ├─ Spend:       €${spend}`);
+    console.log(`  ├─ Impressions: ${impressions}`);
+    console.log(`  ├─ Clicks:      ${clicks}`);
+    console.log(`  ├─ CTR:         ${ctr}%`);
+    console.log(`  └─ CPM:         €${cpm}`);
+  } else {
+    console.log("  └─ (no data — check META_SYSTEM_USER_ACCESS_TOKEN / META_AD_ACCOUNT_ID)");
+  }
+  console.log("");
+
   if (recent.length > 0) {
     console.log("  RECENT ORDERS");
     for (const o of recent) {
@@ -95,10 +133,11 @@ async function main() {
   }
 
   console.log("  NEXT COMMANDS");
-  console.log("  node --env-file=.env scripts/analytics.mjs    # PostHog funnel");
-  console.log("  node --env-file=.env scripts/stripe-report.mjs  # Stripe details");
-  console.log("  node --env-file=.env scripts/send-reminders.mjs # Email attendees");
-  console.log('  ./scripts/deploy.sh "message"                    # Deploy changes');
+  console.log("  node --env-file=.env scripts/analytics.mjs                              # PostHog funnel");
+  console.log("  node --env-file=.env scripts/stripe-report.mjs                          # Stripe details");
+  console.log("  node --env-file=.env scripts/meta-ads/index.mjs campaigns list --pretty # Meta Ads campaigns");
+  console.log("  node --env-file=.env scripts/send-reminders.mjs                         # Email attendees");
+  console.log('  ./scripts/deploy.sh "message"                                            # Deploy changes');
   console.log("");
 }
 

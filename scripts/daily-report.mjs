@@ -13,6 +13,7 @@ import { promisify } from 'node:util';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { CAMPAIGN_START } from './config.mjs';
 import { createClient } from './todoist/client.mjs';
 import { addTask } from './todoist/tasks.mjs';
 
@@ -58,14 +59,33 @@ function readGoals() {
   }
 }
 
-function buildPrompt({ goals, status, analytics, stripe, meta }) {
+function readRecentActivity() {
+  try {
+    const raw = readFileSync(join(ROOT, 'ACTIVITY.md'), 'utf8');
+    // Extract entries from the last 14 days
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 14);
+    const sections = raw.split(/^## /m).slice(1); // skip header
+    const recent = sections.filter((s) => {
+      const dateStr = s.match(/^(\d{4}-\d{2}-\d{2})/)?.[1];
+      return dateStr && new Date(dateStr) >= cutoff;
+    });
+    return recent.length > 0
+      ? recent.map((s) => `## ${s.trim()}`).join('\n\n')
+      : '(no activity in the last 14 days)';
+  } catch {
+    return '(ACTIVITY.md not found)';
+  }
+}
+
+function buildPrompt({ goals, status, analytics, stripe, meta, activity }) {
   const date = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
   return `You are an AI assistant producing a daily marketing performance report for a live workshop.
 
-Today is ${date}.
+Today is ${date}. Campaign started on ${CAMPAIGN_START}. All analytics data is filtered from ${CAMPAIGN_START} onwards — earlier data (development/testing) is excluded.
 
 ## Workshop Goals
 
@@ -92,6 +112,9 @@ ${stripe.trim()}
 \`\`\`
 ${meta.trim()}
 \`\`\`
+
+### Recent Activity (last 14 days)
+${activity}
 
 ## Your task
 
@@ -426,9 +449,10 @@ async function main() {
   ]);
 
   const goals = readGoals();
+  const activity = readRecentActivity();
 
   // AI analysis via Claude CLI
-  const prompt = buildPrompt({ goals, status, analytics, stripe, meta });
+  const prompt = buildPrompt({ goals, status, analytics, stripe, meta, activity });
   let report = await analyzeWithClaude(prompt);
 
   if (!report) {
