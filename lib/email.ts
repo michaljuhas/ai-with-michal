@@ -11,6 +11,10 @@ function getSendGrid() {
 const FROM_EMAIL = "hello@aiwithmichal.com";
 const FROM_NAME = "Michal Juhas";
 
+function getAdminEmail(): string {
+  return process.env.ADMIN_EMAIL ?? "michal@michaljuhas.com";
+}
+
 export type TicketTier = "basic" | "pro";
 
 const TIER_LABEL: Record<TicketTier, string> = {
@@ -201,4 +205,82 @@ export async function sendWorkshopConfirmation(params: {
     html: buildConfirmationHtml({ firstName, tier, meetingUrl }),
     text: buildConfirmationText({ firstName, tier, meetingUrl }),
   });
+}
+
+export async function notifyAdminNewRegistration(params: {
+  clerkUserId: string;
+  email: string;
+}) {
+  const { clerkUserId, email } = params;
+  const admin = getAdminEmail();
+  const mail = getSendGrid();
+  const subject = `[AI with Michal] New registration — ${email}`;
+  const text = `Someone registered on the site.
+
+Email: ${email}
+Clerk user ID: ${clerkUserId}`;
+  const html = `<p style="font-family: sans-serif; font-size: 15px; color: #334155; line-height: 1.5;">
+  <strong>New registration</strong></p>
+  <table style="font-family: sans-serif; font-size: 14px; color: #475569;" cellpadding="0" cellspacing="0">
+  <tr><td style="padding: 4px 16px 4px 0;"><strong>Email</strong></td><td>${escapeHtml(email)}</td></tr>
+  <tr><td style="padding: 4px 16px 4px 0;"><strong>Clerk user ID</strong></td><td><code>${escapeHtml(clerkUserId)}</code></td></tr>
+  </table>`;
+  await mail.send({
+    to: admin,
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    subject,
+    text,
+    html,
+  });
+}
+
+export async function notifyAdminPaymentCompleted(params: {
+  clerkUserId: string;
+  tier: TicketTier;
+  amountEur: number;
+  stripeSessionId: string;
+  customerEmail?: string;
+}) {
+  const { clerkUserId, tier, amountEur, stripeSessionId, customerEmail } =
+    params;
+  const admin = getAdminEmail();
+  const mail = getSendGrid();
+  const tierLabel = TIER_LABEL[tier];
+  const subject = `[AI with Michal] Payment completed — ${tierLabel} (€${amountEur})`;
+  const emailLine = customerEmail
+    ? `Customer email: ${customerEmail}\n`
+    : "";
+  const text = `A workshop payment was completed.
+
+${emailLine}Tier: ${tierLabel}
+Amount: €${amountEur}
+Stripe session: ${stripeSessionId}
+Clerk user ID: ${clerkUserId}`;
+  const emailRow = customerEmail
+    ? `<tr><td style="padding: 4px 16px 4px 0;"><strong>Customer email</strong></td><td>${escapeHtml(customerEmail)}</td></tr>`
+    : "";
+  const html = `<p style="font-family: sans-serif; font-size: 15px; color: #334155; line-height: 1.5;">
+  <strong>Payment completed</strong></p>
+  <table style="font-family: sans-serif; font-size: 14px; color: #475569;" cellpadding="0" cellspacing="0">
+  ${emailRow}
+  <tr><td style="padding: 4px 16px 4px 0;"><strong>Tier</strong></td><td>${escapeHtml(tierLabel)}</td></tr>
+  <tr><td style="padding: 4px 16px 4px 0;"><strong>Amount</strong></td><td>€${amountEur}</td></tr>
+  <tr><td style="padding: 4px 16px 4px 0;"><strong>Stripe session</strong></td><td><code>${escapeHtml(stripeSessionId)}</code></td></tr>
+  <tr><td style="padding: 4px 16px 4px 0;"><strong>Clerk user ID</strong></td><td><code>${escapeHtml(clerkUserId)}</code></td></tr>
+  </table>`;
+  await mail.send({
+    to: admin,
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    subject,
+    text,
+    html,
+  });
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }

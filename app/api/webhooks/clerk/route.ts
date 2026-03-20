@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
+import { notifyAdminNewRegistration } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
 
 type EmailAddress = {
@@ -99,6 +100,12 @@ export async function POST(req: NextRequest) {
       event_id: `registration_${clerkUserId}`,
       user_data: { em: hashedEmail },
     });
+
+    try {
+      await notifyAdminNewRegistration({ clerkUserId, email });
+    } catch (notifyErr) {
+      console.error("Failed to send admin registration notification:", notifyErr);
+    }
   }
 
   return NextResponse.json({ received: true });

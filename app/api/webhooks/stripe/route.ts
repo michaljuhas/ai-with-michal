@@ -4,7 +4,10 @@ import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
-import { sendWorkshopConfirmation } from "@/lib/email";
+import {
+  notifyAdminPaymentCompleted,
+  sendWorkshopConfirmation,
+} from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
 
 export async function POST(req: NextRequest) {
@@ -68,6 +71,19 @@ export async function POST(req: NextRequest) {
       amount_eur: amountEur,
       customer_email: session.customer_email,
     });
+
+    try {
+      await notifyAdminPaymentCompleted({
+        clerkUserId,
+        tier,
+        amountEur,
+        stripeSessionId: session.id,
+        customerEmail:
+          session.customer_details?.email ?? session.customer_email ?? undefined,
+      });
+    } catch (notifyErr) {
+      console.error("Failed to send admin payment notification:", notifyErr);
+    }
 
     const customerEmail =
       session.customer_details?.email ?? session.customer_email ?? "";

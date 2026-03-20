@@ -448,11 +448,8 @@ async function main() {
 
   // Email the report
   const now = new Date();
-  const dateLabel = now.toLocaleDateString('en-US', {
-    month: 'short', day: 'numeric', year: 'numeric',
-  });
   const timeLabel = now.toLocaleString('sv', { timeZone: 'Europe/Prague' }).slice(0, 16);
-  await sendEmail(`Daily Report — ${dateLabel} ${timeLabel}`, report);
+  await sendEmail(`Daily Report — ${timeLabel}`, report);
 
   log('Done.');
 }
