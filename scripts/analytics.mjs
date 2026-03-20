@@ -42,11 +42,11 @@ async function main() {
   console.log("  Fetching event counts...\n");
 
   const FUNNEL_EVENTS = [
-    { key: "$pageview",                label: "Page views (homepage)" },
+    { key: "$pageview",                label: "Page views (sales page)" },
     { key: "$pageview:/register",      label: "Visited sign-up page (/register)" },
     { key: "ticket_tier_viewed",       label: "Reached /tickets page" },
     { key: "checkout_initiated",       label: "Clicked checkout" },
-    { key: "checkout_session_created", label: "Stripe session created" },
+    // { key: "checkout_session_created", label: "Stripe session created" },
     { key: "payment_completed",        label: "Payment completed" },
   ];
 
