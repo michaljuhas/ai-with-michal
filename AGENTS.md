@@ -69,6 +69,14 @@ node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/2026-03-19-2
 node --env-file=.env scripts/launch-campaign.mjs --dry-run                           # preview without creating
 node --env-file=.env scripts/launch-campaign.mjs --budget 2000                       # €20/day (amount in cents, default €10)
 
+# Todoist CLI — manage tasks, projects, labels, comments, reminders
+node --env-file=.env scripts/todoist/index.mjs tasks list --pretty
+node --env-file=.env scripts/todoist/index.mjs tasks add --content "Buy milk" --due-string "tomorrow"
+node --env-file=.env scripts/todoist/index.mjs tasks filter --filter "today & p1" --pretty
+node --env-file=.env scripts/todoist/index.mjs tasks close <id>
+node --env-file=.env scripts/todoist/index.mjs projects list --pretty
+# Full usage: see .claude/skills/todoist-cli.md
+
 # Deploy: git add + commit + push to main
 ./scripts/deploy.sh "your commit message"
 ```
@@ -100,3 +108,4 @@ Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `
 Meta Ads CLI: `META_SYSTEM_USER_ACCESS_TOKEN` (System User Token from Meta Business Manager), `META_AD_ACCOUNT_ID` (e.g. `act_123456789`).
 Daily report AI analysis: `ANTHROPIC_API_KEY` (get from https://console.anthropic.com/settings/keys — required for AI-written reports; without it the report falls back to raw data).
 Campaign generator: `ANTHROPIC_API_KEY` (copy generation) + `GEMINI_API_KEY` (image generation via Imagen 4) — both required.
+Todoist CLI: `TODOIST_API_TOKEN` (from Todoist Settings → Integrations → API token), `TODOIST_PROJECT_ID` (default `6gCJVXq7MX73MxFv` — the "AI with Michal" project).

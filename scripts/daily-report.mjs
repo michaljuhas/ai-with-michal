@@ -13,6 +13,8 @@ import { promisify } from 'node:util';
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { createClient } from './todoist/client.mjs';
+import { addTask } from './todoist/tasks.mjs';
 
 const execFileAsync = promisify(execFile);
 
@@ -21,6 +23,8 @@ const ROOT = join(__dirname, '..');
 
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const TODOIST_API_TOKEN = process.env.TODOIST_API_TOKEN;
+const TODOIST_PROJECT_ID = process.env.TODOIST_PROJECT_ID || '6gCJVXq7MX73MxFv';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'michal@michaljuhas.com';
 const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL || 'hello@aiwithmichal.com';
 const FROM_NAME = 'AI with Michal – Reporting';
@@ -368,6 +372,48 @@ async function sendEmail(subject, markdownContent) {
   }
 }
 
+function extractTasks(report) {
+  const lines = report.split('\n');
+  const tasks = [];
+  let inTasksSection = false;
+  for (const line of lines) {
+    if (/^## Tasks/.test(line)) { inTasksSection = true; continue; }
+    if (inTasksSection && /^## /.test(line)) break;
+    if (inTasksSection) {
+      const m = line.match(/^- \[ \] (.+)/);
+      if (m) tasks.push(m[1].trim());
+    }
+  }
+  return tasks;
+}
+
+async function createTodoistTasks(report) {
+  if (!TODOIST_API_TOKEN) {
+    log('TODOIST_API_TOKEN not set — skipping Todoist task creation');
+    return;
+  }
+
+  const tasks = extractTasks(report);
+  if (tasks.length === 0) {
+    log('No open tasks found in report — nothing to add to Todoist');
+    return;
+  }
+
+  log(`Creating ${tasks.length} task(s) in Todoist...`);
+  const client = createClient(TODOIST_API_TOKEN);
+  let created = 0;
+  for (const content of tasks) {
+    try {
+      await addTask(client, { content, due_date: TODAY, project_id: TODOIST_PROJECT_ID });
+      created++;
+    } catch (err) {
+      const detail = err.httpStatus ? ` (HTTP ${err.httpStatus}, code=${err.errorCode})` : '';
+      log(`Warning: failed to create Todoist task "${content}" — ${err.message}${detail}`);
+    }
+  }
+  log(`Todoist: ${created}/${tasks.length} task(s) created.`);
+}
+
 async function main() {
   log(`Starting daily report for ${TODAY}`);
 
@@ -397,11 +443,16 @@ async function main() {
   writeFileSync(reportPath, report, 'utf8');
   log(`Saved to reports/${TODAY}.md`);
 
+  // Create Todoist tasks from the ## Tasks section
+  await createTodoistTasks(report);
+
   // Email the report
-  const dateLabel = new Date().toLocaleDateString('en-US', {
+  const now = new Date();
+  const dateLabel = now.toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   });
-  await sendEmail(`Daily Report — ${dateLabel}`, report);
+  const timeLabel = now.toLocaleString('sv', { timeZone: 'Europe/Prague' }).slice(0, 16);
+  await sendEmail(`Daily Report — ${dateLabel} ${timeLabel}`, report);
 
   log('Done.');
 }
