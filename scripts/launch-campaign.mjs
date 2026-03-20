@@ -3,7 +3,7 @@
  * Launch a Meta Ads campaign from the most recent (or specified) campaign assets folder.
  *
  * Full flow:
- *   1. Create campaign  (OUTCOME_LEADS, PAUSED)
+ *   1. Create campaign  (OUTCOME_SALES, PAUSED)
  *   2. Create ad set    (EU countries, 25–45, pixel tracking via OFFSITE_CONVERSIONS)
  *   3. Upload 4 images  (square-1, square-2, portrait-1, portrait-2)
  *   4. Create 4 creatives + 4 ads — one per image, each seeded with headline[0] + primary_text[0]
@@ -176,7 +176,7 @@ async function main() {
   if (dryRun) {
     log('');
     log('--- DRY RUN — nothing will be created ---');
-    log(`Campaign:  "Workshop – ${folderName}"  (OUTCOME_LEADS, PAUSED)`);
+    log(`Campaign:  "Workshop – ${folderName}"  (OUTCOME_SALES, PAUSED)`);
     log(`Ad Set:    daily budget €${(dailyBudget / 100).toFixed(2)}, EU only, age 25–45, ends Apr 2 2026`);
     log(`Website URL:    ${WEBSITE_URL}`);
     log(`URL parameters: ${URL_TAGS}`);
@@ -199,7 +199,7 @@ async function main() {
   log('Creating campaign...');
   const campaign = await apiPost(`/act_${ACCOUNT_ID}/campaigns`, {
     name: `Workshop – ${folderName}`,
-    objective: 'OUTCOME_LEADS',
+    objective: 'OUTCOME_SALES',
     status: 'PAUSED',
     special_ad_categories: [],
     is_adset_budget_sharing_enabled: false,

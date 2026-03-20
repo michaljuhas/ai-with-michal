@@ -40,13 +40,13 @@ export default function HeroSection() {
             </motion.div>
 
             <motion.h1
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-slate-900 leading-tight tracking-tight"
+              className="text-4xl md:text-5xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Stop Competing on LinkedIn.{" "}
-              <span className="text-blue-600">Build Your Own AI Talent Pool.</span>
+              Learn How to Automate Talent Sourcing{" "}
+              <span className="text-blue-600">And Use AI to Find Candidates Quickly.</span>
             </motion.h1>
 
             <motion.p
