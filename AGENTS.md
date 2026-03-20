@@ -69,6 +69,9 @@ node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/2026-03-19-2
 node --env-file=.env scripts/launch-campaign.mjs --dry-run                           # preview without creating
 node --env-file=.env scripts/launch-campaign.mjs --budget 2000                       # €20/day (amount in cents, default €10)
 
+# Newsletter / broadcast email — send to all registered users via SendGrid
+# See .claude/skills/send-newsletter.md for full conventions and script template
+
 # Todoist CLI — manage tasks, projects, labels, comments, reminders
 node --env-file=.env scripts/todoist/index.mjs tasks list --pretty
 node --env-file=.env scripts/todoist/index.mjs tasks add --content "Buy milk" --due-string "tomorrow"

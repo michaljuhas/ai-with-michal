@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
-import { notifyAdminNewRegistration } from "@/lib/email";
+import { notifyAdminNewRegistration, sendWelcomeEmail } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
 
 type EmailAddress = {
@@ -17,6 +17,8 @@ type UserCreatedEvent = {
     id: string;
     email_addresses: EmailAddress[];
     primary_email_address_id: string;
+    first_name: string | null;
+    last_name: string | null;
   };
 };
 
@@ -61,8 +63,13 @@ export async function POST(req: NextRequest) {
   }
 
   if (event.type === "user.created") {
-    const { id: clerkUserId, email_addresses, primary_email_address_id } =
-      (event as UserCreatedEvent).data;
+    const {
+      id: clerkUserId,
+      email_addresses,
+      primary_email_address_id,
+      first_name,
+      last_name,
+    } = (event as UserCreatedEvent).data;
 
     const primaryEmail = email_addresses.find(
       (e) => e.id === primary_email_address_id
@@ -100,6 +107,14 @@ export async function POST(req: NextRequest) {
       event_id: `registration_${clerkUserId}`,
       user_data: { em: hashedEmail },
     });
+
+    const fullName = [first_name, last_name].filter(Boolean).join(" ") || email;
+
+    try {
+      await sendWelcomeEmail({ toEmail: email, toName: fullName });
+    } catch (welcomeErr) {
+      console.error("Failed to send welcome email:", welcomeErr);
+    }
 
     try {
       await notifyAdminNewRegistration({ clerkUserId, email });

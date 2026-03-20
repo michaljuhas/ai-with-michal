@@ -207,6 +207,230 @@ export async function sendWorkshopConfirmation(params: {
   });
 }
 
+function buildWelcomeHtml(params: { firstName: string }) {
+  const { firstName } = params;
+  const ticketsUrl = "https://aiwithmichal.com/tickets";
+  const photoUrl =
+    "https://aiwithmichal.com/Michal-Juhas-headshot-square-v1.jpg";
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Welcome to AI with Michal</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8fafc; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1e40af; border-radius: 12px 12px 0 0; padding: 32px 40px; text-align: center;">
+              <p style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #93c5fd;">AI with Michal</p>
+              <h1 style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700; color: #ffffff;">Welcome, ${firstName}!</h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 40px 40px 32px 40px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                <tr>
+                  <td style="padding: 0 0 24px 0;">
+                    <p style="margin: 0; font-size: 15px; color: #334155; line-height: 1.7;">
+                      Thanks for joining the community. I'm glad you're here.
+                    </p>
+                    <p style="margin: 12px 0 0 0; font-size: 15px; color: #334155; line-height: 1.7;">
+                      I run live implementation workshops for recruiting professionals who want to move beyond LinkedIn and build smarter, AI-powered talent pipelines. No fluff — we build real workflows during the session.
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- Workshop box -->
+                <tr>
+                  <td style="padding: 0 0 28px 0;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                      style="background-color: #f1f5f9; border-radius: 10px; padding: 24px;">
+                      <tr>
+                        <td>
+                          <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Upcoming Live Workshop</p>
+                          <p style="margin: 0 0 12px 0; font-size: 17px; font-weight: 700; color: #0f172a; line-height: 1.4;">${WORKSHOP.title}</p>
+                          <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Date &amp; Time</p>
+                          <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 600; color: #0f172a;">${WORKSHOP.displayDate} · ${WORKSHOP.displayTime}</p>
+                          <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Tickets</p>
+                          <p style="margin: 0; font-size: 15px; color: #334155;">
+                            Basic — <strong>€79</strong> &nbsp;|&nbsp; Pro (+ recording &amp; toolkit) — <strong>€129</strong>
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- CTA button -->
+                <tr>
+                  <td style="padding: 0 0 36px 0; text-align: center;">
+                    <a href="${ticketsUrl}"
+                      style="display: inline-block; background-color: #1d4ed8; color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px;">
+                      Get Your Ticket →
+                    </a>
+                    <p style="margin: 10px 0 0 0; font-size: 12px; color: #94a3b8;">Feel free to forward this to a colleague who'd benefit.</p>
+                  </td>
+                </tr>
+
+                <!-- Divider -->
+                <tr>
+                  <td style="padding: 0 0 28px 0; border-top: 1px solid #e2e8f0;"></td>
+                </tr>
+
+                <!-- About Michal -->
+                <tr>
+                  <td style="padding: 0 0 20px 0;">
+                    <p style="margin: 0 0 16px 0; font-size: 13px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">About Your Host</p>
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td width="100" valign="top" style="padding-right: 20px;">
+                          <img src="${photoUrl}" alt="Michal Juhas" width="88" height="88"
+                            style="border-radius: 50%; display: block; border: 3px solid #e2e8f0;" />
+                        </td>
+                        <td valign="top">
+                          <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 700; color: #0f172a;">Michal Juhas</p>
+                          <p style="margin: 0 0 10px 0; font-size: 13px; color: #64748b;">Tech Recruiter turned AI Educator · AIwithMichal.com</p>
+                          <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.7;">
+                            I spent years in the trenches of technical recruiting — sourcing engineers and product talent across Europe. When AI started reshaping how candidates are found, I switched to teaching recruiting professionals how to use these tools before the window of advantage closes.
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Key insights -->
+                <tr>
+                  <td style="padding: 0 0 28px 0;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #eff6ff; border-radius: 10px; padding: 20px;">
+                      <tr>
+                        <td>
+                          <p style="margin: 0 0 12px 0; font-size: 13px; font-weight: 700; color: #1e40af;">What makes this different</p>
+                          <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                            <tr>
+                              <td style="padding: 0 0 8px 0; font-size: 14px; color: #334155; line-height: 1.6;">
+                                <span style="color: #1d4ed8; font-weight: 700;">→</span>&nbsp; <strong>Live implementation</strong> — you build real AI workflows during the session, not just watch slides
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 0 0 8px 0; font-size: 14px; color: #334155; line-height: 1.6;">
+                                <span style="color: #1d4ed8; font-weight: 700;">→</span>&nbsp; <strong>Beyond LinkedIn</strong> — discover candidates using alternative data sources your competitors ignore
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 0 0 8px 0; font-size: 14px; color: #334155; line-height: 1.6;">
+                                <span style="color: #1d4ed8; font-weight: 700;">→</span>&nbsp; <strong>Small group</strong> — direct access to Michal, real examples from actual recruiting campaigns
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="font-size: 14px; color: #334155; line-height: 1.6;">
+                                <span style="color: #1d4ed8; font-weight: 700;">→</span>&nbsp; <strong>Immediately applicable</strong> — walk away with a workflow you can run next week
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td style="padding: 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                    <p style="margin: 0; font-size: 14px; color: #334155; line-height: 1.6;">
+                      See you inside,<br />
+                      <strong>Michal Juhas</strong><br />
+                      <a href="https://aiwithmichal.com" style="color: #1d4ed8; text-decoration: none;">AIwithMichal.com</a>
+                    </p>
+                    <p style="margin: 12px 0 0 0; font-size: 12px; color: #94a3b8;">
+                      Questions? Reply to this email or write to
+                      <a href="mailto:michal@michaljuhas.com" style="color: #94a3b8;">michal@michaljuhas.com</a>.
+                    </p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildWelcomeText(params: { firstName: string }) {
+  const { firstName } = params;
+  return `Hi ${firstName},
+
+Thanks for joining the AI with Michal community. I'm glad you're here.
+
+I run live implementation workshops for recruiting professionals who want to move beyond LinkedIn and build smarter, AI-powered talent pipelines. No fluff — we build real workflows during the session.
+
+---
+
+UPCOMING LIVE WORKSHOP
+${WORKSHOP.title}
+
+Date: ${WORKSHOP.displayDate} · ${WORKSHOP.displayTime}
+Tickets: Basic €79 | Pro (+ recording & toolkit) €129
+
+Get your ticket → https://aiwithmichal.com/tickets
+
+Feel free to forward this to a colleague who'd benefit.
+
+---
+
+ABOUT YOUR HOST
+
+I'm Michal Juhas — a tech recruiter turned AI educator. I spent years sourcing engineers and product talent across Europe. When AI started reshaping how candidates are found, I switched to teaching recruiting professionals how to use these tools before the window of advantage closes.
+
+What makes this workshop different:
+→ Live implementation — you build real AI workflows during the session
+→ Beyond LinkedIn — discover candidates using alternative data sources
+→ Small group — direct access to me, real examples from actual campaigns
+→ Immediately applicable — walk away with a workflow you can run next week
+
+---
+
+See you inside,
+Michal Juhas
+AIwithMichal.com
+
+Questions? Reply to this email or write to michal@michaljuhas.com.
+`;
+}
+
+export async function sendWelcomeEmail(params: {
+  toEmail: string;
+  toName: string;
+}) {
+  const { toEmail, toName } = params;
+  const firstName = toName.split(" ")[0] || toName;
+
+  const mail = getSendGrid();
+  await mail.send({
+    to: { email: toEmail, name: toName },
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    replyTo: getAdminEmail(),
+    subject: "Welcome to AI with Michal",
+    html: buildWelcomeHtml({ firstName }),
+    text: buildWelcomeText({ firstName }),
+  });
+}
+
 export async function notifyAdminNewRegistration(params: {
   clerkUserId: string;
   email: string;
