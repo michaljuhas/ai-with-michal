@@ -14,6 +14,7 @@ Claude reads the last 14 days during the daily report.
 - Created knowledge base file for Michal Juhas bio
 - Removed email verification during registration to speed up the process for users.
 - Meta pixels are not saved, it's probably because the domain aiwithmichal.com was not allowed, I whitelisted it today in Meta Events settings.
+- Added a new section under Hero (Hi, I'm Michal)
 
 ## 2026-03-19
 - Launched first Meta Ads campaign
