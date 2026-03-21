@@ -13,31 +13,31 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Build AI-Powered Talent Pools Outside LinkedIn | AI with Michal",
+  title: "Live AI Recruiting Workshop for Recruiters | AI with Michal",
   description:
-    "Learn how to discover and analyze candidates using alternative data sources and AI. Live 90-minute implementation workshop with Michal Juhas.",
+    "Live 90-minute AI recruiting workshop for recruiters and talent teams. Learn practical workflows for talent pools, candidate pre-screening, and recruiting automation with Michal Juhas.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "https://aiwithmichal.com"
   ),
   openGraph: {
-    title: "Build AI-Powered Talent Pools Outside LinkedIn",
+    title: "Live AI Recruiting Workshop for Recruiters",
     description:
-      "Stop searching the same LinkedIn profiles as everyone else. Learn AI-powered talent discovery.",
+      "A live 90-minute workshop for recruiters and talent teams. Learn how to use AI for sourcing, pre-screening, and practical recruiting workflows.",
     type: "website",
     images: [
       {
         url: "/workshop-og.jpeg",
         width: 2048,
         height: 1152,
-        alt: "Build Your Own AI Talent Pool – Live Workshop · April 2, 2026 · 90 Min",
+        alt: "Live AI Recruiting Workshop for Recruiters · April 2, 2026 · 90 Min",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Build AI-Powered Talent Pools Outside LinkedIn",
+    title: "Live AI Recruiting Workshop for Recruiters",
     description:
-      "Stop searching the same LinkedIn profiles as everyone else. Learn AI-powered talent discovery.",
+      "A live 90-minute workshop for recruiters and talent teams. Learn how to use AI for sourcing, pre-screening, and practical recruiting workflows.",
     images: ["/workshop-og.jpeg"],
   },
 };

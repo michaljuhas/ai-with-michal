@@ -1,7 +1,7 @@
 export const WORKSHOP = {
-  title: "Build AI-Powered Talent Pools Outside LinkedIn",
+  title: "Live AI Recruiting Workshop for Recruiters and Talent Teams",
   description:
-    "Live 90-minute implementation workshop with Michal Juhas. Learn to discover and analyze candidates using alternative data sources and AI.",
+    "Live 90-minute workshop with Michal Juhas for recruiters and talent teams. Learn practical AI workflows for talent pools, candidate pre-screening, and recruiting automation you can use right away.",
   location: "Online (Video call link will be emailed to you)",
   date: new Date("2026-04-02T15:00:00Z"),
   startDate: "20260402T150000Z",

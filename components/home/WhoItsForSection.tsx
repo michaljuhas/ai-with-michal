@@ -4,12 +4,12 @@ import { motion } from "framer-motion";
 import { UserCheck } from "lucide-react";
 
 const audience = [
-  { title: "In-House Recruiters", desc: "Tired of fighting over the same LinkedIn profiles" },
-  { title: "Talent Acquisition Leads", desc: "Looking for a competitive edge for your team" },
-  { title: "Agency Recruiters", desc: "Want to impress clients with candidates nobody else found" },
-  { title: "Recruitment Consultants", desc: "Ready to offer a premium, AI-powered service" },
-  { title: "Technical Recruiters", desc: "Need to find engineers who aren't active on LinkedIn" },
-  { title: "Hiring Managers", desc: "Want to build your own pipeline without waiting for HR" },
+  { title: "In-House Recruiters", desc: "Who want practical AI workflows they can use immediately" },
+  { title: "Talent Acquisition Specialists", desc: "Who need to source and screen candidates faster" },
+  { title: "Talent Acquisition Leads", desc: "Who want their team to stay ahead of the market shift" },
+  { title: "Agency Recruiters", desc: "Who want to deliver faster, smarter candidate shortlists" },
+  { title: "Recruitment Consultants", desc: "Who want to turn AI into a real recruiting advantage" },
+  { title: "Technical Recruiters", desc: "Who need better ways to research and assess candidates" },
 ];
 
 export default function WhoItsForSection() {
@@ -27,11 +27,11 @@ export default function WhoItsForSection() {
             Is This For You?
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-            Built for Recruiters Who Want to Stay Ahead
+            Built for Recruiters and TA Teams Who Want to Stay Ahead
           </h2>
           <p className="mt-4 text-slate-500 text-lg max-w-2xl mx-auto">
-            If you&apos;ve ever thought &ldquo;there has to be a better way to find
-            good candidates&rdquo; — this workshop is for you.
+            If you want to use AI to source, screen, and organize candidates more
+            effectively, this workshop is built for you.
           </p>
         </motion.div>
 

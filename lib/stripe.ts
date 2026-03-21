@@ -33,7 +33,11 @@ export const TICKET_OPTIONS = [
     name: "Workshop Ticket",
     price: 79,
     currency: "EUR",
-    includes: ["Live 90-min workshop", "Build the system with me", "Q&A with Michal"],
+    includes: [
+      "Members-area pre-training",
+      "Live 90-minute workshop",
+      "Live Q&A with Michal",
+    ],
     recommended: false,
   },
   {
@@ -44,10 +48,9 @@ export const TICKET_OPTIONS = [
     includes: [
       "Everything in Workshop Ticket",
       "Full recording — rewatch forever",
-      "10+ alternative candidate source list",
-      "Copy-paste AI analysis prompts",
-      "Ready-made talent pool database template",
-      "Talent Discovery Workflow Blueprint",
+      "Private work group access",
+      "Bonus workflow examples and notes",
+      "Extra recruiting automation resources",
     ],
     recommended: true,
   },

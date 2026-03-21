@@ -4,10 +4,10 @@ import { motion } from "framer-motion";
 import { CheckCircle } from "lucide-react";
 
 const benefits = [
-  "Find candidates that nobody else has contacted yet",
-  "Let AI do the research and analysis for you",
-  "Get ready-to-use candidate profiles in minutes",
-  "Build a personal talent pool you can reuse anytime",
+  "Use AI to research and organize candidate data faster",
+  "Pre-screen profiles without hours of manual review",
+  "Generate recruiter-ready summaries in minutes",
+  "Build repeatable workflows you can reuse across roles",
 ];
 
 export default function NewApproachSection() {
@@ -25,7 +25,7 @@ export default function NewApproachSection() {
             There&apos;s a Better Way
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-            What If AI Could Do Your Sourcing?
+            What If AI Could Handle More of the Recruiting Busywork?
           </h2>
         </motion.div>
 
@@ -37,14 +37,13 @@ export default function NewApproachSection() {
           transition={{ duration: 0.6, delay: 0.1 }}
         >
           <p className="text-slate-600 text-lg mb-4">
-            Imagine having a system that works for you around the clock —
-            finding great people from places like ContactOut, Apollo, Coresignal, BrightData, 
-            GitHub, conferences, and online communities such as Discord that most recruiters 
-            never think to look.
+            Imagine having a workflow that helps you source candidates, review profiles,
+            organize talent pools, and prepare recruiter-ready notes without doing every
+            repetitive step by hand.
           </p>
           <p className="text-slate-600 text-lg mb-8">
-            No more copy-pasting. No more guessing. Just a steady flow of
-            qualified, untapped candidates.
+            Less copy-pasting. Less guesswork. More time spent on the parts of
+            recruiting where your judgment actually matters.
           </p>
           <div className="grid sm:grid-cols-2 gap-4">
             {benefits.map((benefit, i) => (
@@ -62,7 +61,7 @@ export default function NewApproachSection() {
             ))}
           </div>
           <p className="mt-8 text-blue-700 font-semibold text-lg">
-            That&apos;s exactly what we&apos;ll build together — step by step — in this workshop.
+            That&apos;s exactly what we&apos;ll build together, step by step, in this live workshop.
           </p>
         </motion.div>
       </div>

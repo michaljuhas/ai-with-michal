@@ -14,17 +14,17 @@ const shifts = [
   },
   {
     icon: Users,
-    stat: "The same candidates get contacted by dozens of recruiters.",
+    stat: "Recruiters who keep relying on manual workflows will fall behind.",
     detail:
-      "If you're finding them on LinkedIn, so is everyone else. There's no competitive advantage left.",
+      "The market is moving toward faster sourcing, smarter screening, and better workflow leverage. Doing everything by hand gets harder every month.",
     color: "text-amber-500",
     bg: "bg-amber-50",
   },
   {
     icon: Zap,
-    stat: "The advantage is shifting to recruiters who use AI — now.",
+    stat: "The question is no longer whether AI is involved in recruiting.",
     detail:
-      "Early adopters are already building talent pools nobody else has access to. Every week you wait, they get further ahead.",
+      "If you want to stay relevant in the market, the real question is how aggressively you're using AI to source, screen, and move faster.",
     color: "text-blue-600",
     bg: "bg-blue-50",
   },
@@ -45,11 +45,11 @@ export default function WhyNowSection() {
             Why Now
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-            The Window Is Closing
+            AI Is Becoming Part of the Recruiter Job
           </h2>
           <p className="mt-4 text-slate-500 text-lg max-w-xl mx-auto">
-            Recruiting is changing faster than most people realize.
-            The ones who move first win.
+            Recruiting is changing faster than most people realize. The recruiters
+            who learn practical AI workflows early will build the advantage.
           </p>
         </motion.div>
 
@@ -88,10 +88,10 @@ export default function WhyNowSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.4 }}
         >
-          You can keep doing what everyone else is doing.
+          You can wait until these workflows become standard.
           <br />
           Or you can{" "}
-          <span className="text-blue-600">build something they don&apos;t have</span>.
+          <span className="text-blue-600">start using them now</span>.
         </motion.p>
       </div>
     </section>

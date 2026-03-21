@@ -58,16 +58,18 @@ export default function AboutSection() {
                 AI Recruiting & Automation Expert
               </p>
               <p className="text-slate-600 leading-relaxed mb-3">
-                I&apos;ve spent years helping companies find and hire the right
-                people. Along the way, I became obsessed with one question:{" "}
+                I&apos;ve spent years in the trenches of technical recruiting, helping
+                companies find engineers, data scientists, and product talent.
+                Along the way, I became obsessed with one question:{" "}
                 <span className="text-slate-800 font-medium italic">
                   how can recruiters work smarter, not harder?
                 </span>
               </p>
               <p className="text-slate-600 leading-relaxed mb-5">
-                This workshop is the answer. It&apos;s the exact system I use
-                and teach — packed into 90 minutes so you can start using it
-                right away.
+                This workshop is my answer to that question. It pulls together the
+                practical AI workflows I teach recruiters and talent teams, from
+                building talent pools to pre-screening candidates faster, and packs
+                them into 90 focused minutes so you can start using them right away.
               </p>
 
               {/* Social proof stats */}

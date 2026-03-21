@@ -2,16 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Clock, Calendar } from "lucide-react";
+import { Clock, Calendar, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import RegisterButton from "@/components/RegisterButton";
 import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
+
+const highlights = [
+  "Build an AI agent to create a talent pool",
+  "Pre-screen candidates faster with practical AI workflows",
+  "Level up your recruiting process no matter your starting point",
+];
 
 export default function HeroSection() {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
-    setDaysLeft(getDaysUntilWorkshop());
+    const timer = window.setTimeout(() => {
+      setDaysLeft(getDaysUntilWorkshop());
+    }, 0);
+
+    return () => window.clearTimeout(timer);
   }, []);
 
   return (
@@ -30,7 +40,10 @@ export default function HeroSection() {
             >
               <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-blue-700 border border-blue-200 rounded-full px-4 py-1.5 bg-blue-50">
                 <Calendar size={12} />
-                {WORKSHOP.displayDate} · 90 Min Live
+                {WORKSHOP.displayDate} · Live 90-minute workshop
+              </span>
+              <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-slate-700 border border-slate-200 rounded-full px-4 py-1.5 bg-white">
+                For recruiters and talent teams
               </span>
               {daysLeft !== null && daysLeft > 0 && (
                 <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 border border-amber-200 rounded-full px-3 py-1.5 bg-amber-50">
@@ -45,8 +58,8 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Learn How to Automate Talent Sourcing{" "}
-              <span className="text-blue-600">And Use AI to Find Candidates Quickly.</span>
+              Learn Practical AI Recruiting Workflows{" "}
+              <span className="text-blue-600">In a Live 90-Minute Workshop.</span>
             </motion.h1>
 
             <motion.p
@@ -55,11 +68,25 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              While everyone fights over the same LinkedIn profiles, smart
-              recruiters are using AI to find candidates{" "}
-              <b>nobody else can reach</b>. In 90 minutes, I&apos;ll show you
-              exactly how — and you&apos;ll build the system yourself.
+              For recruiters and talent acquisition teams who want real workflows,
+              not theory. Michal Juhas will show you how recruiting teams use AI
+              to build talent pools, pre-screen candidates, and automate repetitive
+              work so you leave with a simple system you can use right away.
             </motion.p>
+
+            <motion.div
+              className="mt-6 space-y-3"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+            >
+              {highlights.map((item) => (
+                <div key={item} className="flex items-start gap-3 text-slate-700">
+                  <CheckCircle2 className="text-blue-600 shrink-0 mt-0.5" size={18} />
+                  <span>{item}</span>
+                </div>
+              ))}
+            </motion.div>
 
             <motion.div
               className="mt-10 flex flex-col items-start gap-3"
@@ -70,8 +97,11 @@ export default function HeroSection() {
               <RegisterButton />
               <div className="flex items-center gap-2 text-slate-500 text-sm">
                 <Clock size={14} />
-                <span>90 minutes · Hands-on · No coding needed</span>
+                <span>90 minutes · Live online · No coding needed</span>
               </div>
+              <p className="text-sm text-slate-500">
+                Includes members-area pre-training and a private work group after the live session.
+              </p>
             </motion.div>
           </div>
 
@@ -83,7 +113,7 @@ export default function HeroSection() {
           >
             <Image
               src="/seminar-belgrade-1.jpg"
-              alt="Michal Juhas presenting at a live workshop"
+              alt="Michal Juhas teaching recruiters in a live workshop"
               width={800}
               height={600}
               className="w-full h-auto object-cover"

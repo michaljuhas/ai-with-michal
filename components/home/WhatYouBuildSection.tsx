@@ -35,14 +35,14 @@ export default function WhatYouBuildSection() {
           transition={{ duration: 0.5 }}
         >
           <p className="text-slate-800 font-semibold text-lg mb-5">
-            A working system that:
+            A simple system that helps you recruit faster:
           </p>
           <div className="space-y-3">
             {[
-              "Finds candidates from GitHub, conferences, and other sources your competitors aren't using",
-              "Generates AI-powered candidate summaries automatically (see example below)",
-              "Stores every candidate in a structured talent pool you own and control",
-              "Works for any role — engineering, product, design, leadership",
+              "Captures candidate profiles into a structured talent pool you control",
+              "Uses AI to pre-screen, summarize, and compare candidates faster",
+              "Highlights strengths, risks, and likely fit in a recruiter-friendly format",
+              "Can be adapted for sourcing, screening, and follow-up across different roles",
             ].map((item, i) => (
               <motion.div
                 key={item}
@@ -157,7 +157,8 @@ export default function WhatYouBuildSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          This is generated automatically. You just provide the role — AI does the rest.
+          This is one example of the kind of recruiter-ready output you&apos;ll learn
+          to create during the workshop.
         </motion.p>
       </div>
     </section>

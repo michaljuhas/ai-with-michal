@@ -5,32 +5,32 @@ import { motion } from "framer-motion";
 const agenda = [
   {
     step: "01",
-    title: "Why Sourcing Is Broken",
-    desc: "What changed, why LinkedIn alone isn't enough anymore, and where the opportunity is.",
+    title: "Why AI Is Reshaping Recruiting",
+    desc: "What changed, where recruiters are falling behind, and why practical AI workflows matter now.",
     duration: "~10 min",
   },
   {
     step: "02",
-    title: "The AI Talent Discovery Framework",
-    desc: "A simple mental model for thinking about sourcing with AI — no jargon, just common sense.",
+    title: "Build Your First Talent-Pool Workflow",
+    desc: "Set up a simple AI-assisted process for collecting, organizing, and evaluating candidate profiles.",
     duration: "~15 min",
   },
   {
     step: "03",
-    title: "Build Your System (Together)",
-    desc: "I'll walk you through it step by step. You'll follow along and have a working setup by the end.",
+    title: "Pre-Screen Candidates with AI",
+    desc: "See how to summarize candidate strengths, risks, and likely fit without doing every review manually.",
     duration: "~45 min",
   },
   {
     step: "04",
-    title: "Adapt It to Your Roles",
-    desc: "How to tweak the system for different positions, industries, and seniority levels.",
+    title: "Adapt It to Your Team and Skill Level",
+    desc: "Learn how to apply the workflow whether you're just starting with AI or already experimenting.",
     duration: "~10 min",
   },
   {
     step: "05",
-    title: "Live Q&A",
-    desc: "Ask me anything. We'll troubleshoot, customize, and make sure you're set up for success.",
+    title: "Live Q&A and Next Steps",
+    desc: "Ask questions, troubleshoot your setup, and leave with a clear plan for using the workflow after the session.",
     duration: "~10 min",
   },
 ];
@@ -52,7 +52,10 @@ export default function AgendaSection() {
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
             90 Minutes, Zero Fluff
           </h2>
-          <p className="mt-4 text-slate-500">Every minute is practical. You&apos;ll be building, not just watching.</p>
+          <p className="mt-4 text-slate-500">
+            Every minute is practical. You&apos;ll leave with a simple recruiting setup,
+            not just more notes.
+          </p>
         </motion.div>
 
         <div className="relative">

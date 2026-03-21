@@ -38,15 +38,15 @@ export default function FinalCTA() {
               Don&apos;t Get Left Behind
             </div>
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
-              Your Competition Is Already Using AI. Are You?
+              Stay Relevant in Recruiting by Learning AI Workflows Now
             </h2>
             <p className="text-slate-400 text-xl mb-4">
-              Recruiting is changing fast. The ones who adapt now will have
-              the biggest advantage.
+              Recruiting is changing fast. The people who learn practical AI
+              workflows early will build the biggest edge.
             </p>
             <p className="text-slate-300 text-lg mb-10">
-              Join me for 90 minutes and walk away with a system that puts you
-              ahead of 95% of recruiters.
+              Join the live 90-minute workshop, start with pre-training, and leave
+              with a simple system you can use immediately.
             </p>
 
             <div className="flex flex-col items-center lg:items-start gap-4">

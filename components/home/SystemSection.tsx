@@ -5,41 +5,41 @@ import { Globe, Search, Brain, FileText, LayoutDashboard, ChevronDown } from "lu
 
 const steps = [
   {
-    icon: Globe,
-    label: "Discover Hidden Talent",
-    sublabel: "ContactOut, Apollo, Coresignal, BrightData, GitHub, and online communities — places others aren't looking",
+    icon: Search,
+    label: "Set Your Search Brief",
+    sublabel: "Define the role, signals, and criteria so the workflow knows what good looks like",
     bg: "bg-blue-50 border-blue-200",
     iconBg: "bg-blue-100",
     iconColor: "text-blue-600",
   },
   {
-    icon: Search,
-    label: "AI Finds the Right People",
-    sublabel: "Automatically surfaces candidates who match what you need",
+    icon: Globe,
+    label: "Collect Candidate Data",
+    sublabel: "Pull in candidate information from the sources and tools your team already uses",
     bg: "bg-violet-50 border-violet-200",
     iconBg: "bg-violet-100",
     iconColor: "text-violet-600",
   },
   {
     icon: Brain,
-    label: "Instant Profile Analysis",
-    sublabel: "AI reads their work and tells you why they're a fit",
+    label: "AI Pre-Screens Profiles",
+    sublabel: "Use AI to summarize strengths, risks, and likely fit before deeper review",
     bg: "bg-pink-50 border-pink-200",
     iconBg: "bg-pink-100",
     iconColor: "text-pink-600",
   },
   {
     icon: FileText,
-    label: "Ready-to-Use Summaries",
-    sublabel: "Share with hiring managers — no extra formatting needed",
+    label: "Generate Recruiter-Ready Summaries",
+    sublabel: "Produce notes you can use for internal review, outreach, and next steps",
     bg: "bg-cyan-50 border-cyan-200",
     iconBg: "bg-cyan-100",
     iconColor: "text-cyan-600",
   },
   {
     icon: LayoutDashboard,
-    label: "Your Own Talent Pool",
-    sublabel: "A growing database of candidates you can search anytime",
+    label: "Build a Reusable Workflow",
+    sublabel: "Save candidates into a structured talent pool and keep improving the process over time",
     bg: "bg-emerald-50 border-emerald-200",
     iconBg: "bg-emerald-100",
     iconColor: "text-emerald-600",
@@ -61,11 +61,11 @@ export default function SystemSection() {
             How It Works
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-            A Simple System You Can Set Up in 90 Minutes
+            A Simple Recruiting Workflow You Can Set Up in 90 Minutes
           </h2>
           <p className="mt-4 text-slate-500 text-lg">
-            No coding, no complicated tools. Just follow along and you&apos;ll walk
-            away with this working for you.
+            No coding and no giant implementation project. Follow along live and
+            leave with a workflow you can start using right away.
           </p>
         </motion.div>
 
