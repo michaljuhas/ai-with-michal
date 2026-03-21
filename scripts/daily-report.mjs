@@ -410,6 +410,26 @@ function extractTasks(report) {
   return tasks;
 }
 
+async function resolveTodoistAssignee(token) {
+  const res = await fetch('https://api.todoist.com/api/v1/user', {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to resolve Todoist user (${res.status})`);
+  }
+
+  const user = await res.json();
+  if (!user?.id) {
+    throw new Error('Todoist user response did not include an id');
+  }
+
+  return {
+    id: String(user.id),
+    name: user.full_name || user.email || String(user.id),
+  };
+}
+
 async function createTodoistTasks(report) {
   if (!TODOIST_API_TOKEN) {
     log('TODOIST_API_TOKEN not set — skipping Todoist task creation');
@@ -424,10 +444,17 @@ async function createTodoistTasks(report) {
 
   log(`Creating ${tasks.length} task(s) in Todoist...`);
   const client = createClient(TODOIST_API_TOKEN);
+  const assignee = await resolveTodoistAssignee(TODOIST_API_TOKEN);
+  log(`Assigning new Todoist tasks to ${assignee.name} (${assignee.id}).`);
   let created = 0;
   for (const content of tasks) {
     try {
-      await addTask(client, { content, due_date: TODAY, project_id: TODOIST_PROJECT_ID });
+      await addTask(client, {
+        content,
+        due_date: TODAY,
+        project_id: TODOIST_PROJECT_ID,
+        assignee_id: assignee.id,
+      });
       created++;
     } catch (err) {
       const detail = err.httpStatus ? ` (HTTP ${err.httpStatus}, code=${err.errorCode})` : '';

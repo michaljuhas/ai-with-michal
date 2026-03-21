@@ -5,6 +5,10 @@ Claude reads the last 14 days during the daily report.
 
 ---
 
+## 2026-03-21
+- Updated sales page (homepage), with two more sections below Hero
+- New /admin page with a daily report
+
 ## 2026-03-20
 - Campaign launched in the morning
 - Added Meta Ads section to status dashboard

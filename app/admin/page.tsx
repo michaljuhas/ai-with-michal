@@ -1,18 +1,17 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase";
 import type { Order, Registration } from "@/lib/supabase";
 
-const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "michal@michaljuhas.com";
+const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
 
 export default async function AdminPage() {
   const { userId } = await auth();
   if (!userId) redirect("/register");
 
-  const user = await currentUser();
-  const email = user?.emailAddresses[0]?.emailAddress;
-  if (email !== ADMIN_EMAIL) {
+  if (userId !== ADMIN_USER_ID) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <p className="text-slate-500">Access denied.</p>
@@ -42,7 +41,12 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-12">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-2xl font-bold text-slate-900 mb-2">Admin Dashboard</h1>
+        <div className="flex items-center justify-between mb-2">
+          <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
+          <Link href="/admin/report" className="text-sm font-medium text-blue-600 hover:text-blue-800 underline underline-offset-2">
+            Daily Report →
+          </Link>
+        </div>
         <p className="text-slate-500 text-sm mb-8">Build AI-Powered Talent Pools · April 2, 2026</p>
 
         {/* KPI cards */}
