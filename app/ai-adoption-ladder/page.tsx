@@ -142,14 +142,13 @@ const stages = [
   },
 ];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] },
-  }),
-};
+const fadeUpBase = { opacity: 0, y: 28 };
+const fadeUpVisible = { opacity: 1, y: 0 };
+const fadeUpTransition = (i: number) => ({
+  duration: 0.55,
+  delay: i * 0.1,
+  ease: [0.22, 1, 0.36, 1] as [number, number, number, number] as [number, number, number, number],
+});
 
 export default function AiAdoptionLadderPage() {
   return (
@@ -167,7 +166,7 @@ export default function AiAdoptionLadderPage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="relative z-10 flex flex-wrap items-center justify-center gap-2 mb-10"
         >
           {stages.map((s) => (
@@ -184,7 +183,7 @@ export default function AiAdoptionLadderPage() {
         <motion.h1
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.65, delay: 0.1, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="relative z-10 text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight max-w-4xl"
         >
           Your{" "}
@@ -197,7 +196,7 @@ export default function AiAdoptionLadderPage() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.22, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, delay: 0.22, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="relative z-10 mt-6 text-lg sm:text-xl text-slate-400 max-w-2xl leading-relaxed"
         >
           5 stages every professional goes through when adopting AI.
@@ -208,7 +207,7 @@ export default function AiAdoptionLadderPage() {
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.6, delay: 0.34, ease: [0.22, 1, 0.36, 1] as [number, number, number, number] }}
           className="relative z-10 mt-10"
         >
           <Link
@@ -242,11 +241,10 @@ export default function AiAdoptionLadderPage() {
             return (
               <motion.div
                 key={stage.number}
-                custom={i}
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: "-60px" }}
+                initial={fadeUpBase}
+                whileInView={fadeUpVisible}
+                viewport={{ once: true }}
+                transition={fadeUpTransition(i)}
                 className={`relative flex flex-col rounded-2xl border p-6 ${stage.color.bg} ${stage.color.border} backdrop-blur-sm overflow-hidden`}
               >
                 {/* Subtle inner glow */}
@@ -405,11 +403,10 @@ export default function AiAdoptionLadderPage() {
           ].map((domain, i) => (
             <motion.div
               key={domain.title}
-              custom={i}
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
+              initial={fadeUpBase}
+              whileInView={fadeUpVisible}
               viewport={{ once: true }}
+              transition={fadeUpTransition(i)}
               className="rounded-2xl border border-slate-800/80 bg-slate-900/50 p-7"
             >
               <div className="text-3xl mb-3">{domain.emoji}</div>
