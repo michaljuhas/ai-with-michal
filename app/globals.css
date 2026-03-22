@@ -47,9 +47,9 @@ body {
 }
 
 /*
- * /register — The slot/grid is full width (matches max-w-md). Misalignment comes from
- * Clerk’s inner shells (below cl-rootBox), which often use a smaller max-width or
- * flex alignment that leaves empty space on the right.
+ * /register and /login — The slot/grid is full width (matches max-w-md).
+ * Misalignment comes from Clerk's inner shells (below cl-rootBox), which often
+ * use a smaller max-width or flex alignment that leaves empty space on the right.
  */
 .register-clerk-slot > * {
   width: 100% !important;
@@ -58,14 +58,18 @@ body {
   justify-self: stretch;
 }
 
-.register-clerk-slot [data-clerk-component="SignUp"] {
+.register-clerk-slot [data-clerk-component="SignUp"],
+.register-clerk-slot [data-clerk-component="SignIn"] {
   align-items: stretch !important;
 }
 
 /* Typical depth: rootBox → scroll/page shell → card */
 .register-clerk-slot [data-clerk-component="SignUp"] > *,
+.register-clerk-slot [data-clerk-component="SignIn"] > *,
 .register-clerk-slot [data-clerk-component="SignUp"] > * > *,
-.register-clerk-slot [data-clerk-component="SignUp"] > * > * > * {
+.register-clerk-slot [data-clerk-component="SignIn"] > * > *,
+.register-clerk-slot [data-clerk-component="SignUp"] > * > * > *,
+.register-clerk-slot [data-clerk-component="SignIn"] > * > * > * {
   width: 100% !important;
   max-width: 100% !important;
   min-width: 0 !important;

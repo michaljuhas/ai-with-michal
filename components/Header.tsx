@@ -7,6 +7,8 @@ import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
 import RegisterButton from "@/components/RegisterButton";
 
+const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+
 function UserMenu() {
   const { user } = useUser();
   const { signOut } = useClerk();
@@ -29,6 +31,7 @@ function UserMenu() {
     user?.fullName ||
     user?.primaryEmailAddress?.emailAddress ||
     "Account";
+  const isAdmin = user?.id === ADMIN_USER_ID;
 
   return (
     <div ref={ref} className="relative">
@@ -50,6 +53,15 @@ function UserMenu() {
 
       {open && (
         <div className="absolute right-0 mt-1 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              Admin
+            </Link>
+          )}
           <button
             onClick={() => signOut({ redirectUrl: "/" })}
             className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
