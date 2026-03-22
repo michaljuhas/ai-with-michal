@@ -74,7 +74,12 @@ jobs:
             --set-env-vars "STRIPE_PRICE_PRO=${{ vars.STRIPE_PRICE_PRO }}" \
             --set-env-vars "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" \
             --set-env-vars "WORKSHOP_MEETING_URL=${{ vars.WORKSHOP_MEETING_URL }}" \
-            --set-env-vars "META_ACCESS_TOKEN=${{ secrets.META_ACCESS_TOKEN }}"
+            --set-env-vars "META_ACCESS_TOKEN=${{ secrets.META_ACCESS_TOKEN }}" \
+            --set-env-vars "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" \
+            --set-env-vars "POSTHOG_PERSONAL_API_KEY=${{ secrets.POSTHOG_PERSONAL_API_KEY }}" \
+            --set-env-vars "POSTHOG_PROJECT_ID=${{ vars.POSTHOG_PROJECT_ID }}" \
+            --set-env-vars "META_SYSTEM_USER_ACCESS_TOKEN=${{ secrets.META_SYSTEM_USER_ACCESS_TOKEN }}" \
+            --set-env-vars "META_AD_ACCOUNT_ID=${{ vars.META_AD_ACCOUNT_ID }}"
 
       - name: Show service URL
         run: |
