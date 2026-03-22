@@ -16,7 +16,7 @@
  *   node --env-file=.env scripts/launch-campaign.mjs --budget 2000   # €20/day (in cents)
  */
 
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -166,8 +166,11 @@ async function main() {
   const copy = JSON.parse(readFileSync(join(campaignDir, 'copy.json'), 'utf8'));
   log(`Copy loaded — ${copy.headlines.length} headlines, ${copy.primary_texts.length} primary texts`);
 
-  // Load images
-  const imageFiles = ['square-1.png', 'square-2.png', 'portrait-1.png', 'portrait-2.png'];
+  // Load images — only those that actually exist in the campaign folder
+  const imageFiles = ['square-1.png', 'square-2.png', 'portrait-1.png', 'portrait-2.png']
+    .filter((f) => existsSync(join(campaignDir, f)));
+  if (imageFiles.length === 0) throw new Error('No image files found in campaign folder.');
+  log(`Images found: ${imageFiles.join(', ')}`);
   const imageBuffers = Object.fromEntries(
     imageFiles.map((f) => [f, readFileSync(join(campaignDir, f))]),
   );
@@ -176,17 +179,19 @@ async function main() {
   if (dryRun) {
     log('');
     log('--- DRY RUN — nothing will be created ---');
-    log(`Campaign:  "Workshop – ${folderName}"  (OUTCOME_SALES, PAUSED)`);
+    log(`Campaign:  "Workshop – ${folderName}"  (OUTCOME_LEADS, PAUSED)`);
     log(`Ad Set:    daily budget €${(dailyBudget / 100).toFixed(2)}, EU only, age 25–45, ends Apr 2 2026`);
     log(`Website URL:    ${WEBSITE_URL}`);
     log(`URL parameters: ${URL_TAGS}`);
     log(`Instagram/Threads: michal.juhas.life (resolved via page connection)`);
-    log('Headlines (variation 1 seeded into creative; 2–5 printed after creation for manual entry):');
-    copy.headlines.forEach((h, i) => log(`  ${i + 1}. ${h}`));
-    log('Primary texts:');
-    copy.primary_texts.forEach((t, i) => log(`  ${i + 1}. ${t.slice(0, 80)}…`));
-    log('Images → 4 ads (one creative per image):');
-    imageFiles.forEach((f, i) => log(`  Ad ${i + 1}: ${f}`));
+    log(`Images (${imageFiles.length}) × ${copy.headlines.length} copy variations = ${imageFiles.length * copy.headlines.length} ads:`);
+    let adNum = 0;
+    for (const f of imageFiles) {
+      for (let i = 0; i < copy.headlines.length; i++) {
+        adNum++;
+        log(`  Ad ${adNum}: ${f}  |  "${copy.headlines[i]}"  |  "${copy.primary_texts[i].slice(0, 60)}…"`);
+      }
+    }
     log('');
     log('Re-run without --dry-run to create.');
     return;
@@ -199,7 +204,7 @@ async function main() {
   log('Creating campaign...');
   const campaign = await apiPost(`/act_${ACCOUNT_ID}/campaigns`, {
     name: `Workshop – ${folderName}`,
-    objective: 'OUTCOME_SALES',
+    objective: 'OUTCOME_LEADS',
     status: 'PAUSED',
     special_ad_categories: [],
     is_adset_budget_sharing_enabled: false,
@@ -240,49 +245,55 @@ async function main() {
   }
 
   // ---- Step 4: Creatives + Ads ----------------------------------------
-  // One creative per image using object_story_spec (page_id required).
-  // Seeded with headline[0] + primary_text[0]; remaining variations are
-  // printed below for manual entry via Ads Manager → "Add another option".
-  log('Creating creatives and ads (4 ads — one per image)...');
+  // One creative + ad per (image, copy variation) combination.
+  // Each ad gets its own unique headline + primary text.
+  const totalAds = imageFiles.length * copy.headlines.length;
+  log(`Creating creatives and ads (${totalAds} ads — ${imageFiles.length} images × ${copy.headlines.length} copy variations)...`);
   const createdAds = [];
 
   for (const filename of imageFiles) {
-    const creative = await apiPost(`/act_${ACCOUNT_ID}/adcreatives`, {
-      name: `Creative – ${filename.replace('.png', '')} – ${folderName}`,
-      object_story_spec: {
-        page_id: pageId,
-        // instagram_user_id omitted — Meta resolves michal.juhas.life automatically
-        // from the page's connected Instagram/Threads account for all placements.
-        link_data: {
-          image_hash: imageHashes[filename],
-          link: WEBSITE_URL,
-          message: copy.primary_texts[0],
-          name: copy.headlines[0],
-          call_to_action: {
-            type: 'SIGN_UP',
-            value: { link: WEBSITE_URL },
+    for (let i = 0; i < copy.headlines.length; i++) {
+      const headline = copy.headlines[i];
+      const primaryText = copy.primary_texts[i];
+      const varLabel = `v${i + 1}`;
+
+      const creative = await apiPost(`/act_${ACCOUNT_ID}/adcreatives`, {
+        name: `Creative – ${filename.replace('.png', '')} – ${varLabel} – ${folderName}`,
+        object_story_spec: {
+          page_id: pageId,
+          // instagram_user_id omitted — Meta resolves michal.juhas.life automatically
+          // from the page's connected Instagram/Threads account for all placements.
+          link_data: {
+            image_hash: imageHashes[filename],
+            link: WEBSITE_URL,
+            message: primaryText,
+            name: headline,
+            call_to_action: {
+              type: 'SIGN_UP',
+              value: { link: WEBSITE_URL },
+            },
           },
         },
-      },
-      // "URL parameters" field in Ads Manager Tracking section — Meta resolves {{...}} at serve time
-      url_tags: URL_TAGS,
-      tracking_specs: [
-        { 'action.type': ['offsite_conversion'], fb_pixel: [pixelId] },
-      ],
-    });
+        // "URL parameters" field in Ads Manager Tracking section — Meta resolves {{...}} at serve time
+        url_tags: URL_TAGS,
+        tracking_specs: [
+          { 'action.type': ['offsite_conversion'], fb_pixel: [pixelId] },
+        ],
+      });
 
-    const ad = await apiPost(`/act_${ACCOUNT_ID}/ads`, {
-      name: `Ad – ${filename.replace('.png', '')} – ${folderName}`,
-      adset_id: adSet.id,
-      creative: { creative_id: creative.id },
-      status: 'PAUSED',
-      tracking_specs: [
-        { 'action.type': ['offsite_conversion'], fb_pixel: [pixelId] },
-      ],
-    });
+      const ad = await apiPost(`/act_${ACCOUNT_ID}/ads`, {
+        name: `Ad – ${filename.replace('.png', '')} – ${varLabel} – ${folderName}`,
+        adset_id: adSet.id,
+        creative: { creative_id: creative.id },
+        status: 'PAUSED',
+        tracking_specs: [
+          { 'action.type': ['offsite_conversion'], fb_pixel: [pixelId] },
+        ],
+      });
 
-    log(`  ${ad.id}  ← ${filename}`);
-    createdAds.push(ad.id);
+      log(`  ${ad.id}  ← ${filename} + ${varLabel}: "${headline}"`);
+      createdAds.push(ad.id);
+    }
   }
 
   log('');
@@ -293,15 +304,7 @@ async function main() {
   log(`  Ad Set ID   : ${adSet.id}`);
   log(`  Ad IDs      : ${createdAds.join(', ')}`);
   log('');
-  log('Each creative was seeded with variation 1 of the copy.');
-  log('Open each ad in Ads Manager → click "Add another option" to paste the');
-  log('remaining 4 headlines and 4 primary texts listed below.');
-  log('');
-  log('── Headlines 2–5 ──────────────────────────────────────');
-  copy.headlines.slice(1).forEach((h, i) => log(`  ${i + 2}. ${h}`));
-  log('');
-  log('── Primary texts 2–5 ──────────────────────────────────');
-  copy.primary_texts.slice(1).forEach((t, i) => log(`  ${i + 2}. ${t}`));
+  log(`${totalAds} ads created — each with its own image + headline + primary text.`);
   log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 
