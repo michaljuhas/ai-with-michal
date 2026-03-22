@@ -70,7 +70,7 @@ export default function NewApproachSection() {
 
             <div className="rounded-3xl overflow-hidden border border-blue-200 bg-white shadow-sm">
               <Image
-                src="/Recruiters-in-agencies-2024-vs-2026-v1.png"
+                src="/recruiters-and-ta-teams-2024-vs-2026-square.png"
                 alt="Comparison of how recruiters in agencies worked in 2024 versus 2026"
                 width={1200}
                 height={1200}

@@ -9,6 +9,7 @@ export default function StickyCountdown() {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   const [open, setOpen] = useState(true);
   const [visible, setVisible] = useState(false);
+  const [viewportBottomOffset, setViewportBottomOffset] = useState(0);
 
   useEffect(() => {
     setDaysLeft(getDaysUntilWorkshop());
@@ -18,21 +19,52 @@ export default function StickyCountdown() {
       setVisible(window.scrollY > 600);
     };
 
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
+    const updateViewportOffset = () => {
+      const viewport = window.visualViewport;
+      if (!viewport) {
+        setViewportBottomOffset(0);
+        return;
+      }
 
-    return () => window.removeEventListener("scroll", handleScroll);
+      // Track the visible viewport edge on iOS so the fixed bar stays attached
+      // when the browser chrome expands/collapses.
+      const nextOffset = Math.max(
+        0,
+        window.innerHeight - viewport.height - viewport.offsetTop
+      );
+      setViewportBottomOffset(nextOffset);
+    };
+
+    const viewport = window.visualViewport;
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", updateViewportOffset);
+    viewport?.addEventListener("resize", updateViewportOffset);
+    viewport?.addEventListener("scroll", updateViewportOffset);
+    handleScroll();
+    updateViewportOffset();
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", updateViewportOffset);
+      viewport?.removeEventListener("resize", updateViewportOffset);
+      viewport?.removeEventListener("scroll", updateViewportOffset);
+    };
   }, []);
 
   if (daysLeft === null || !open) return null;
 
   return (
     <div
-      className={`fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300 ${
-        visible ? "translate-y-0" : "translate-y-full"
-      }`}
+      className="fixed left-0 right-0 z-50 pointer-events-none"
+      style={{ bottom: viewportBottomOffset }}
     >
-      <div className="bg-slate-950 border-t-2 border-blue-500 px-4 py-3">
+      <div
+        className={`pointer-events-auto bg-slate-950 border-t-2 border-blue-500 px-4 pt-3 transition-transform duration-300 ${
+          visible ? "translate-y-0" : "translate-y-full"
+        }`}
+        style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom, 0px))" }}
+      >
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-4">
           {/* Left: date + countdown */}
           <div className="flex items-center gap-4">
