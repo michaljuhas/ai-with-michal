@@ -14,8 +14,8 @@ const workflowExamples = [
 export default function HostIntroSection() {
   return (
     <section className="py-20 px-6 bg-white overflow-hidden">
-      <div className="max-w-5xl mx-auto">
-        <div className="grid md:grid-cols-2 gap-8 md:gap-16 items-center">
+      <div className="max-w-6xl mx-auto">
+        <div className="grid items-center gap-8 md:gap-16 lg:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
 
           {/* Photo */}
           <motion.div
@@ -23,14 +23,14 @@ export default function HostIntroSection() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="flex justify-center md:justify-start"
+            className="flex justify-center lg:justify-start"
           >
             <Image
               src="/Michal profile - faded.png"
               alt="Michal Juhas"
               width={460}
               height={460}
-              className="w-full max-w-sm md:max-w-none"
+              className="w-full max-w-xs sm:max-w-sm"
               priority
             />
           </motion.div>
