@@ -33,6 +33,11 @@ function UserMenu() {
     "Account";
   const isAdmin = user?.id === ADMIN_USER_ID;
 
+  async function handleSignOut() {
+    setOpen(false);
+    await signOut({ redirectUrl: "/" });
+  }
+
   return (
     <div ref={ref} className="relative">
       <button
@@ -52,7 +57,10 @@ function UserMenu() {
       </button>
 
       {open && (
-        <div className="absolute right-0 mt-1 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-50">
+        <div
+          className="absolute right-0 mt-1 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[60]"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           {isAdmin && (
             <Link
               href="/admin"
@@ -63,7 +71,8 @@ function UserMenu() {
             </Link>
           )}
           <button
-            onClick={() => signOut({ redirectUrl: "/" })}
+            type="button"
+            onClick={handleSignOut}
             className="w-full text-left px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
           >
             Log out
