@@ -6,7 +6,7 @@ const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 
 export default async function AdminReportPage() {
   const { userId } = await auth();
-  if (!userId) redirect("/register");
+  if (!userId) redirect("/login");
 
   if (userId !== ADMIN_USER_ID) {
     return (

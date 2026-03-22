@@ -9,7 +9,7 @@ const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
 
 export default async function AdminPage() {
   const { userId } = await auth();
-  if (!userId) redirect("/register");
+  if (!userId) redirect("/login");
 
   if (userId !== ADMIN_USER_ID) {
     return (

@@ -50,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider signInUrl="/login" signUpUrl="/register">
       <html lang="en" className={`${inter.variable} h-full`}>
         <head>
           {GTM_ID && (
