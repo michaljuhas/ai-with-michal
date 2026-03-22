@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import StickyCountdown from "@/components/StickyCountdown";
+import { WORKSHOP } from "@/lib/workshop";
 import "./globals.css";
 
 const inter = Inter({
@@ -13,31 +14,31 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Live AI Recruiting Workshop for Recruiters | AI with Michal",
+  title: `${WORKSHOP.title} | AI with Michal`,
   description:
-    "Live 90-minute AI recruiting workshop for recruiters and talent teams. Learn practical workflows for talent pools, candidate pre-screening, and recruiting automation with Michal Juhas.",
+    "AI in Recruiting and Talent Acquisition: a live 90-minute online workshop for recruiters and talent teams. Learn how high-performing recruiters use AI, Claude Code, and workflow automation to move faster and stay relevant.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "https://aiwithmichal.com"
   ),
   openGraph: {
-    title: "Live AI Recruiting Workshop for Recruiters",
+    title: WORKSHOP.title,
     description:
-      "A live 90-minute workshop for recruiters and talent teams. Learn how to use AI for sourcing, pre-screening, and practical recruiting workflows.",
+      "Live 90-minute online workshop for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, and report faster.",
     type: "website",
     images: [
       {
         url: "/workshop-og.jpeg",
         width: 2048,
         height: 1152,
-        alt: "Live AI Recruiting Workshop for Recruiters · April 2, 2026 · 90 Min",
+        alt: `${WORKSHOP.title} · April 2, 2026`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Live AI Recruiting Workshop for Recruiters",
+    title: WORKSHOP.title,
     description:
-      "A live 90-minute workshop for recruiters and talent teams. Learn how to use AI for sourcing, pre-screening, and practical recruiting workflows.",
+      "Live 90-minute online workshop for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, and report faster.",
     images: ["/workshop-og.jpeg"],
   },
 };

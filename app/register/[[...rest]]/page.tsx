@@ -1,8 +1,8 @@
 import { SignUp } from "@clerk/nextjs";
 
 export const metadata = {
-  title: "Register Free | AI with Michal",
-  description: "Create your free account to reserve your workshop seat.",
+  title: "Register | AI in Recruiting and Talent Acquisition",
+  description: "Create your free account to reserve your seat for the AI in Recruiting and Talent Acquisition workshop.",
 };
 
 export default function RegisterPage() {
@@ -23,7 +23,7 @@ export default function RegisterPage() {
             Create Your Free Account
           </h1>
           <p className="mt-2 text-slate-500">
-            Register to choose your workshop ticket.
+            Register to choose your ticket for AI in Recruiting and Talent Acquisition.
           </p>
         </div>
 

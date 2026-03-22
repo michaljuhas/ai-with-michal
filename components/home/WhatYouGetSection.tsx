@@ -59,7 +59,7 @@ const assets = [
 export default function WhatYouGetSection() {
   return (
     <section className="py-24 px-6 bg-slate-50">
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -79,43 +79,44 @@ export default function WhatYouGetSection() {
           </p>
         </motion.div>
 
-        {/* Laptop mockup */}
-        <motion.div
-          className="mb-12 rounded-2xl overflow-hidden shadow-lg"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <Image
-            src="/windows-laptop-mockup-template-at-the-office.jpg"
-            alt="Workshop preview on a laptop screen"
-            width={1200}
-            height={700}
-            className="w-full h-auto object-cover"
-          />
-        </motion.div>
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)] lg:items-start">
+          <div className="grid sm:grid-cols-2 gap-5">
+            {assets.map((item, i) => {
+              const Icon = item.icon;
+              return (
+                <motion.div
+                  key={item.title}
+                  className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: i * 0.08 }}
+                >
+                  <div className={`w-10 h-10 rounded-xl ${item.iconBg} flex items-center justify-center mb-4`}>
+                    <Icon className={item.iconColor} size={20} />
+                  </div>
+                  <h3 className="text-slate-900 font-semibold mb-2">{item.title}</h3>
+                  <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
+                </motion.div>
+              );
+            })}
+          </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {assets.map((item, i) => {
-            const Icon = item.icon;
-            return (
-              <motion.div
-                key={item.title}
-                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm hover:shadow-md transition-shadow"
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.08 }}
-              >
-                <div className={`w-10 h-10 rounded-xl ${item.iconBg} flex items-center justify-center mb-4`}>
-                  <Icon className={item.iconColor} size={20} />
-                </div>
-                <h3 className="text-slate-900 font-semibold mb-2">{item.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed">{item.desc}</p>
-              </motion.div>
-            );
-          })}
+          <motion.div
+            className="rounded-3xl overflow-hidden border border-slate-200 bg-white shadow-lg"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <Image
+              src="/windows-laptop-mockup-template-at-the-office.jpg"
+              alt="Workshop preview on a laptop screen"
+              width={1200}
+              height={700}
+              className="w-full h-auto object-cover"
+            />
+          </motion.div>
         </div>
       </div>
     </section>

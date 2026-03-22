@@ -1,21 +1,24 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { AlertTriangle, TrendingDown, Users } from "lucide-react";
-import Image from "next/image";
+import { AlertTriangle, ClipboardPaste, FileSpreadsheet, SearchCheck } from "lucide-react";
 
 const problems = [
   {
-    icon: Users,
-    text: "You're messaging the same candidates as hundreds of other recruiters",
+    icon: ClipboardPaste,
+    text: "Copy-pasting prompts and outputs back and forth from ChatGPT",
   },
   {
-    icon: TrendingDown,
-    text: "Response rates keep dropping — and it's only getting worse",
+    icon: SearchCheck,
+    text: "Manually reviewing LinkedIn profiles one by one",
   },
   {
     icon: AlertTriangle,
-    text: "The best people already ignore recruiter outreach",
+    text: "Processing candidates one by one instead of through repeatable workflows",
+  },
+  {
+    icon: FileSpreadsheet,
+    text: "Manually preparing weekly or monthly reports for managers",
   },
 ];
 
@@ -30,16 +33,16 @@ export default function ProblemSection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-            Let&apos;s Be Honest About LinkedIn
+            If you are still doing things like in 2024, you&apos;re doing something wrong.
           </h2>
           <p className="text-xl text-slate-600 mb-12 leading-relaxed">
-            You already feel it. The same searches, the same profiles, the same
-            silence in your inbox. Every recruiter is fishing in the same pond —
-            and the pond is getting crowded.
+            Recruiters do not need more tabs, more copying, or more manual admin.
+            They need systems. The teams moving ahead are replacing repetitive recruiter
+            work with AI-assisted workflows that scale.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-12">
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
           {problems.map((problem, i) => {
             const Icon = problem.icon;
             return (
@@ -59,32 +62,21 @@ export default function ProblemSection() {
         </div>
 
         <motion.div
-          className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm"
+          className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.3 }}
         >
-          <div className="relative w-full">
-            <Image
-              src="/linkedin-recruiter-screenshot-cropped.jpg"
-              alt="LinkedIn recruiter search showing saturated candidate pools"
-              width={1200}
-              height={600}
-              className="w-full h-auto object-cover"
-            />
-          </div>
-          <div className="p-8">
-            <p className="text-slate-600 text-lg leading-relaxed mb-4">
-              You spend hours searching, filtering, and writing personalized
-              messages — only to find out ten other recruiters got there first.
-              It&apos;s exhausting, and it&apos;s not your fault.
-            </p>
-            <p className="text-slate-900 font-semibold text-xl">
-              The recruiters who win today are the ones who{" "}
-              <span className="text-blue-600">look where nobody else is looking</span>.
-            </p>
-          </div>
+          <p className="text-slate-600 text-lg leading-relaxed mb-4">
+            You can still work this way for a while. But it is slower, harder to
+            defend, and increasingly difficult to justify when other recruiters can
+            cover more roles with better systems.
+          </p>
+          <p className="text-slate-900 font-semibold text-xl leading-relaxed">
+            The new baseline is not just using AI. It is using AI{" "}
+            <span className="text-blue-600">systematically</span>.
+          </p>
         </motion.div>
       </div>
     </section>

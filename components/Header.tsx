@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
-import RegisterButton from "@/components/RegisterButton";
 
 const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 
@@ -88,6 +87,12 @@ export default function Header() {
   const isHomepage = pathname === "/";
   const { isSignedIn } = useUser();
 
+  function scrollToPricing() {
+    const pricingSection = document.getElementById("pricing");
+    if (!pricingSection) return;
+    pricingSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <motion.header
       className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80"
@@ -105,11 +110,21 @@ export default function Header() {
         </Link>
 
         <div className="flex items-center gap-3">
-          {isHomepage && !isSignedIn && (
-            <RegisterButton
-              className="text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg transition-colors inline-flex items-center gap-1.5 group whitespace-nowrap"
-              disabledClassName="text-sm font-semibold bg-slate-200 text-slate-400 px-5 py-2 rounded-lg cursor-not-allowed whitespace-nowrap"
-            />
+          {isHomepage ? (
+            <button
+              type="button"
+              onClick={scrollToPricing}
+              className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              Pricing
+            </button>
+          ) : (
+            <a
+              href="/#pricing"
+              className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+            >
+              Pricing
+            </a>
           )}
           {isSignedIn && <UserMenu />}
         </div>

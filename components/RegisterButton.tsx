@@ -13,7 +13,7 @@ interface RegisterButtonProps {
 }
 
 export default function RegisterButton({
-  label = "Reserve Your Seat",
+  label = "Join the workshop",
   className = "inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-base group shadow-lg shadow-blue-600/20 whitespace-nowrap",
   disabledClassName = "inline-flex items-center gap-2 bg-slate-300 text-slate-500 font-semibold px-8 py-4 rounded-xl text-base cursor-not-allowed whitespace-nowrap",
 }: RegisterButtonProps) {

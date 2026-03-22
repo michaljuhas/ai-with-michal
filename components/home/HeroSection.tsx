@@ -8,9 +8,9 @@ import RegisterButton from "@/components/RegisterButton";
 import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
 
 const highlights = [
-  "Build an AI agent to create a talent pool",
-  "Pre-screen candidates faster with practical AI workflows",
-  "Level up your recruiting process no matter your starting point",
+  "Understand how top recruiters use AI at different levels of sophistication",
+  "Build practical workflows with Claude Code and automation tools",
+  "Handle more roles with less busywork and stronger output",
 ];
 
 export default function HeroSection() {
@@ -58,8 +58,8 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
             >
-              Learn Practical AI Recruiting Workflows{" "}
-              <span className="text-blue-600">In a Live 90-Minute Workshop.</span>
+              How to use AI in recruiting and talent acquisition like a Pro,{" "}
+              <span className="text-blue-600">with Claude Code and workflow automation tools.</span>
             </motion.h1>
 
             <motion.p
@@ -68,11 +68,26 @@ export default function HeroSection() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              For recruiters and talent acquisition teams who want real workflows,
-              not theory. Michal Juhas will show you how recruiting teams use AI
-              to build talent pools, pre-screen candidates, and automate repetitive
-              work so you leave with a simple system you can use right away.
+              This is for recruiters and talent acquisition teams who want real
+              leverage, not generic AI inspiration. You will see how modern recruiters
+              use AI to research faster, screen faster, report faster, and operate
+              at a level that used to require a much bigger team.
             </motion.p>
+
+            <motion.div
+              className="mt-6 rounded-2xl border border-red-200 bg-red-50 px-5 py-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.23 }}
+            >
+              <p className="text-sm font-semibold uppercase tracking-widest text-red-700">
+                The market is already changing
+              </p>
+              <p className="mt-2 text-lg font-semibold leading-relaxed text-slate-900">
+                Managers are starting to back recruiters who use AI to outperform,
+                and replace those who still do everything manually.
+              </p>
+            </motion.div>
 
             <motion.div
               className="mt-6 space-y-3"
@@ -97,10 +112,10 @@ export default function HeroSection() {
               <RegisterButton />
               <div className="flex items-center gap-2 text-slate-500 text-sm">
                 <Clock size={14} />
-                <span>90 minutes · Live online · No coding needed</span>
+                <span>90 minutes · Live online · Built around real recruiting workflows</span>
               </div>
               <p className="text-sm text-slate-500">
-                Includes members-area pre-training and a private work group after the live session.
+                Includes members-area pre-training, live walkthroughs, and recordings in the advanced tier.
               </p>
             </motion.div>
           </div>

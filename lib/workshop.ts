@@ -1,7 +1,7 @@
 export const WORKSHOP = {
-  title: "Live AI Recruiting Workshop for Recruiters and Talent Teams",
+  title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
   description:
-    "Live 90-minute workshop with Michal Juhas for recruiters and talent teams. Learn practical AI workflows for talent pools, candidate pre-screening, and recruiting automation you can use right away.",
+    "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
   location: "Online (Video call link will be emailed to you)",
   date: new Date("2026-04-02T15:00:00Z"),
   startDate: "20260402T150000Z",

@@ -16,9 +16,9 @@ const mobileScreenshots = [
 ];
 
 const workshopPerks = [
-  "Members-area pre-training before the live session",
-  "Join a live Zoom workshop with Michal and other recruiters",
-  "Keep learning inside the private work group after the session",
+  "See what high-leverage recruiting with AI actually looks like",
+  "Build practical workflows live with Michal and other recruiters",
+  "Leave with templates, examples, and a clearer path forward",
 ];
 
 export default function RecruiterFomoSection() {
@@ -36,12 +36,16 @@ export default function RecruiterFomoSection() {
             AI In Recruiting
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-            Recruiters are learning Claude Code and AI workflows. Are you?
+            Plenty of recruiters already use Claude Code and AI workflows. Are you?
           </h2>
           <p className="mt-4 text-slate-600 text-lg leading-relaxed">
-            If you want to stay relevant in recruiting, the question is no longer
-            whether AI is part of the job. The real question is how aggressively
-            you&apos;re learning to use it.
+            The uncomfortable truth is that AI is already becoming part of recruiter
+            performance. If you still treat it like an optional extra, you are giving
+            faster recruiters an advantage over you every week.
+          </p>
+          <p className="mt-5 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-semibold leading-relaxed text-slate-900 shadow-sm">
+            Teams are not just rewarding recruiters who use AI well. They are steadily
+            making manual recruiters easier to ignore, easier to outperform, and easier to replace.
           </p>
         </motion.div>
 
@@ -105,17 +109,14 @@ export default function RecruiterFomoSection() {
           </div>
 
           <div>
-            <span className="inline-flex items-center rounded-full bg-blue-50 border border-blue-200 px-3 py-1 text-xs font-semibold tracking-widest uppercase text-blue-700">
-              Join The Next Live Workshop
-            </span>
-            <h3 className="mt-4 text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
-              Learn how to use AI in recruiting with Michal and a live group of recruiters.
+            <h3 className="text-2xl md:text-3xl font-bold text-slate-900 leading-tight">
+              To stay relevant in the job market and increase your productivity, join our upcoming workshop: AI in recruiting and talent acquisition.
             </h3>
             <p className="mt-4 text-slate-600 leading-relaxed">
               Start with pre-training in the members area, then join the live session
-              to see practical recruiting workflows for sourcing, talent pools, and
-              AI-assisted pre-screening. After the workshop, keep sharing automations
-              and ideas inside the private work group.
+              to see how recruiters use Claude Code and workflow automation to handle
+              sourcing, screening, reporting, and repetitive execution faster. After
+              the workshop, you will know what good looks like and how to start applying it.
             </p>
             <div className="mt-6 space-y-3">
               {workshopPerks.map((perk) => (

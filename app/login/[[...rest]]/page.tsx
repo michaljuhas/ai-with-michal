@@ -1,8 +1,8 @@
 import { SignIn } from "@clerk/nextjs";
 
 export const metadata = {
-  title: "Log In | AI with Michal",
-  description: "Sign in to continue to workshop tickets and your account.",
+  title: "Log In | AI in Recruiting and Talent Acquisition",
+  description: "Sign in to continue to your AI in Recruiting and Talent Acquisition workshop registration.",
 };
 
 export default function LoginPage() {

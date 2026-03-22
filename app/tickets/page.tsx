@@ -101,7 +101,7 @@ export default function TicketsPage() {
       }
 
       if (data.url) {
-        window.location.href = data.url;
+        window.location.assign(data.url);
       } else {
         posthog.capture("checkout_error", { tier, reason: "no_url" });
         setLoading(null);
@@ -133,7 +133,7 @@ export default function TicketsPage() {
             Choose Your Ticket
           </h1>
           <p className="mt-3 text-slate-500 text-lg">
-            Select the option that works best for you.
+            Select the option that works best for AI in Recruiting and Talent Acquisition.
           </p>
 
           {/* Urgency / sold out banner */}

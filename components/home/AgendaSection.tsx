@@ -5,32 +5,26 @@ import { motion } from "framer-motion";
 const agenda = [
   {
     step: "01",
-    title: "Why AI Is Reshaping Recruiting",
-    desc: "What changed, where recruiters are falling behind, and why practical AI workflows matter now.",
-    duration: "~10 min",
+    title: "Different Levels of AI Use in Recruiting",
+    desc: "See the progression from basic prompting to high-leverage recruiting systems so you know where you are and what better looks like.",
+    duration: "~20 min",
   },
   {
     step: "02",
-    title: "Build Your First Talent-Pool Workflow",
-    desc: "Set up a simple AI-assisted process for collecting, organizing, and evaluating candidate profiles.",
-    duration: "~15 min",
+    title: "Three Advanced Workflow Examples",
+    desc: "Walk through practical examples for sourcing, screening, and reporting so you can see how serious recruiters actually use AI day to day.",
+    duration: "~35 min",
   },
   {
     step: "03",
-    title: "Pre-Screen Candidates with AI",
-    desc: "See how to summarize candidate strengths, risks, and likely fit without doing every review manually.",
-    duration: "~45 min",
+    title: "Deep Dive into Claude Code",
+    desc: "Understand why Claude Code matters, how it fits into recruiter workflows, and how to use it without getting lost in technical complexity.",
+    duration: "~25 min",
   },
   {
     step: "04",
-    title: "Adapt It to Your Team and Skill Level",
-    desc: "Learn how to apply the workflow whether you're just starting with AI or already experimenting.",
-    duration: "~10 min",
-  },
-  {
-    step: "05",
     title: "Live Q&A and Next Steps",
-    desc: "Ask questions, troubleshoot your setup, and leave with a clear plan for using the workflow after the session.",
+    desc: "Ask questions, pressure-test your own recruiting setup, and leave with a clearer plan for what to implement first.",
     duration: "~10 min",
   },
 ];
@@ -53,8 +47,8 @@ export default function AgendaSection() {
             90 Minutes, Zero Fluff
           </h2>
           <p className="mt-4 text-slate-500">
-            Every minute is practical. You&apos;ll leave with a simple recruiting setup,
-            not just more notes.
+            Every minute is practical. The goal is to show how strong recruiters use AI,
+            what advanced workflows look like, and where Claude Code fits in.
           </p>
         </motion.div>
 
