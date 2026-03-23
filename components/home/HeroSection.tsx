@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { Clock, Calendar, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import RegisterButton from "@/components/RegisterButton";
+import CredibilityBadges from "@/components/CredibilityBadges";
 import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
 
 const highlights = [
@@ -160,6 +161,15 @@ export default function HeroSection() {
               </div>
             </div>
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+          className="mt-10"
+        >
+          <CredibilityBadges />
         </motion.div>
       </div>
     </section>

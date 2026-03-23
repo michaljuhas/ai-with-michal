@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle, Star, ArrowRight, Loader2, AlertCircle } from "lucide-react";
 import { TICKET_OPTIONS, PriceTier } from "@/lib/stripe";
+import CredibilityBadges from "@/components/CredibilityBadges";
 import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
 
@@ -253,6 +254,15 @@ export default function TicketsPage() {
             </motion.div>
           ))}
         </div>
+
+        <motion.div
+          className="mt-10"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.45 }}
+        >
+          <CredibilityBadges />
+        </motion.div>
 
         <motion.p
           className="mt-8 text-center text-slate-400 text-sm"
