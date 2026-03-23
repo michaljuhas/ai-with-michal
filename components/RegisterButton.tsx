@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { isRegistrationOpen } from "@/lib/workshop";
@@ -17,11 +16,7 @@ export default function RegisterButton({
   className = "inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-base group shadow-lg shadow-blue-600/20 whitespace-nowrap",
   disabledClassName = "inline-flex items-center gap-2 bg-slate-300 text-slate-500 font-semibold px-8 py-4 rounded-xl text-base cursor-not-allowed whitespace-nowrap",
 }: RegisterButtonProps) {
-  const [open, setOpen] = useState(true);
-
-  useEffect(() => {
-    setOpen(isRegistrationOpen());
-  }, []);
+  const open = isRegistrationOpen();
 
   if (!open) {
     return (
@@ -33,7 +28,7 @@ export default function RegisterButton({
 
   return (
     <Link
-      href="/register"
+      href="/tickets"
       className={className}
       onClick={() => posthog.capture("register_button_clicked", { label })}
     >

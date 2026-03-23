@@ -9,7 +9,16 @@ const isProtectedRoute = createRouteMatcher([
 
 export default clerkMiddleware(async (auth, req) => {
   if (isProtectedRoute(req)) {
-    await auth.protect();
+    const { userId } = await auth();
+
+    if (!userId) {
+      if (req.nextUrl.pathname.startsWith("/tickets")) {
+        const registerUrl = new URL("/register", req.url);
+        return NextResponse.redirect(registerUrl);
+      }
+
+      await auth.protect();
+    }
   }
 
   const ref = req.nextUrl.searchParams.get("ref");
