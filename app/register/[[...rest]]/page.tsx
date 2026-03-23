@@ -52,7 +52,7 @@ export default function RegisterPage() {
               dividerText: "text-slate-400",
             },
           }}
-          forceRedirectUrl="/tickets"
+          fallbackRedirectUrl="/tickets"
           />
         </div>
       </div>

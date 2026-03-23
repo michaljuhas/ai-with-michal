@@ -14,6 +14,10 @@ export default clerkMiddleware(async (auth, req) => {
     if (!userId) {
       if (req.nextUrl.pathname.startsWith("/tickets")) {
         const registerUrl = new URL("/register", req.url);
+        registerUrl.searchParams.set(
+          "redirect_url",
+          `${req.nextUrl.pathname}${req.nextUrl.search}`
+        );
         return NextResponse.redirect(registerUrl);
       }
 
