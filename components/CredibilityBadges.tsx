@@ -9,7 +9,7 @@ const badges = [
 
 export default function CredibilityBadges() {
   return (
-    <div className="grid grid-cols-2 gap-6 justify-items-center max-w-[820px] mx-auto">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 justify-items-center max-w-[820px] mx-auto">
       {badges.map((badge) => (
         <Image
           key={badge.src}

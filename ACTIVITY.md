@@ -5,6 +5,9 @@ Claude reads the last 14 days during the daily report.
 
 ---
 
+## 2026-03-23
+- Added screenshots of ratings from TrustPilot and Udemy
+
 ## 2026-03-21
 - Updated sales page (homepage), with two more sections below Hero
 - New /admin page with a daily report
