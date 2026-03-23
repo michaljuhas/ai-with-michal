@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle, Star, ArrowRight, Loader2, AlertCircle } from "lucide-react";
+import { CheckCircle, Star, ArrowRight, Loader2, AlertCircle, ShieldCheck, Clock } from "lucide-react";
 import { TICKET_OPTIONS, PriceTier } from "@/lib/stripe";
 import CredibilityBadges from "@/components/CredibilityBadges";
 import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
+import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
 
 const CAPACITY = 50;
 const URGENCY_THRESHOLD = 15;
@@ -77,6 +78,12 @@ export default function TicketsPage() {
   const showUrgency = spotsLeft !== null && spotsLeft > 0 && spotsLeft <= URGENCY_THRESHOLD;
 
   async function handleCheckout(tier: PriceTier) {
+    if (!user) {
+      posthog.capture("checkout_attempted_unauthenticated", { tier });
+      window.location.assign("/register?redirect_url=/tickets");
+      return;
+    }
+
     setLoading(tier);
     setError(null);
     const option = TICKET_OPTIONS.find((o) => o.id === tier);
@@ -98,6 +105,12 @@ export default function TicketsPage() {
       if (res.status === 409) {
         setError("Sorry, this workshop just sold out. Email michal@michaljuhas.com to join the waitlist.");
         setLoading(null);
+        return;
+      }
+
+      if (res.status === 401) {
+        posthog.capture("checkout_error", { tier, reason: "unauthorized" });
+        window.location.assign("/register?redirect_url=/tickets");
         return;
       }
 
@@ -166,6 +179,26 @@ export default function TicketsPage() {
               {soldCount} people already registered
             </motion.p>
           )}
+
+          {/* Deadline urgency — always visible */}
+          {!isSoldOut && (() => {
+            const days = getDaysUntilWorkshop();
+            return days > 0 ? (
+              <motion.div
+                className="mt-5 flex flex-wrap justify-center items-center gap-4 text-sm text-slate-500"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <span className="inline-flex items-center gap-1.5">
+                  <Clock size={14} className="text-blue-500" />
+                  <strong className="text-slate-700">{WORKSHOP.displayDate}</strong>
+                  <span>· {WORKSHOP.displayTime}</span>
+                </span>
+                <span className="text-amber-600 font-semibold">{days} {days === 1 ? "day" : "days"} left to register</span>
+              </motion.div>
+            ) : null;
+          })()}
         </motion.div>
 
         {error && (
@@ -255,8 +288,21 @@ export default function TicketsPage() {
           ))}
         </div>
 
+        {/* Money-back guarantee — prominent, above credentials */}
         <motion.div
-          className="mt-10"
+          className="mt-8 flex items-start gap-3 bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-4"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <ShieldCheck size={20} className="text-emerald-600 shrink-0 mt-0.5" />
+          <p className="text-sm text-slate-700">
+            <strong className="text-emerald-700">Full refund guarantee.</strong> If you feel the workshop wasn&apos;t worth your time, send a message and I&apos;ll refund you — no questions asked.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="mt-8"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.45 }}
@@ -265,12 +311,12 @@ export default function TicketsPage() {
         </motion.div>
 
         <motion.p
-          className="mt-8 text-center text-slate-400 text-sm"
+          className="mt-6 text-center text-slate-400 text-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
+          transition={{ duration: 0.5, delay: 0.5 }}
         >
-          Secure checkout powered by Stripe · Full refund if not satisfied
+          Secure checkout powered by Stripe
         </motion.p>
       </div>
     </div>

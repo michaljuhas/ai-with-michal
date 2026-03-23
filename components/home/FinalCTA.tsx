@@ -51,6 +51,7 @@ export default function FinalCTA() {
 
             <div className="flex flex-col items-center lg:items-start gap-4">
               <RegisterButton
+                label="Get my ticket — from €79"
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-bold px-10 py-5 rounded-xl transition-all duration-200 text-lg group shadow-2xl shadow-blue-600/30 whitespace-nowrap"
                 disabledClassName="inline-flex items-center gap-2 bg-slate-600 text-slate-400 font-bold px-10 py-5 rounded-xl text-lg cursor-not-allowed whitespace-nowrap"
               />

@@ -111,14 +111,11 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <RegisterButton />
+            <RegisterButton label="Get my ticket — from €79" />
             <div className="flex items-center gap-2 text-slate-500 text-sm">
               <Clock size={14} />
-              <span>90 minutes · Live online · Built around real recruiting workflows</span>
+              <span>90 minutes · Live online · Full refund if not satisfied</span>
             </div>
-            <p className="text-sm text-slate-500">
-              Includes members-area pre-training, live walkthroughs, and recordings in the advanced tier.
-            </p>
           </motion.div>
         </div>
 
