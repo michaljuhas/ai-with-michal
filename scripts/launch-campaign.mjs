@@ -67,6 +67,8 @@ function parseArgs() {
     folder: get('--folder'),
     dryRun: args.includes('--dry-run'),
     dailyBudget: get('--budget') ? parseInt(get('--budget'), 10) : 1000,
+    campaignId: get('--campaign-id'),
+    adsetId: get('--adset-id'),
   };
 }
 
@@ -155,7 +157,7 @@ async function main() {
     process.exit(1);
   }
 
-  const { folder, dryRun, dailyBudget } = parseArgs();
+  const { folder, dryRun, dailyBudget, campaignId: existingCampaignId, adsetId: existingAdsetId } = parseArgs();
 
   // Resolve assets folder
   const campaignDir = folder ? join(ROOT, folder) : findMostRecentFolder();
@@ -179,7 +181,7 @@ async function main() {
   if (dryRun) {
     log('');
     log('--- DRY RUN — nothing will be created ---');
-    log(`Campaign:  "Workshop – ${folderName}"  (OUTCOME_LEADS, PAUSED)`);
+    log(`Campaign:  "Workshop – ${folderName}"  (OUTCOME_SALES, PAUSED)`);
     log(`Ad Set:    daily budget €${(dailyBudget / 100).toFixed(2)}, EU only, age 25–45, ends Apr 2 2026`);
     log(`Website URL:    ${WEBSITE_URL}`);
     log(`URL parameters: ${URL_TAGS}`);
@@ -201,19 +203,30 @@ async function main() {
   const [pageId, pixelId] = await Promise.all([getPageId(), getPixelId()]);
 
   // ---- Step 1: Campaign ------------------------------------------------
-  log('Creating campaign...');
-  const campaign = await apiPost(`/act_${ACCOUNT_ID}/campaigns`, {
-    name: `Workshop – ${folderName}`,
-    objective: 'OUTCOME_LEADS',
-    status: 'PAUSED',
-    special_ad_categories: [],
-    is_adset_budget_sharing_enabled: false,
-  });
-  log(`  id: ${campaign.id}`);
+  let campaign;
+  if (existingCampaignId) {
+    campaign = { id: existingCampaignId };
+    log(`Reusing existing campaign: ${campaign.id}`);
+  } else {
+    log('Creating campaign...');
+    campaign = await apiPost(`/act_${ACCOUNT_ID}/campaigns`, {
+      name: `Workshop – ${folderName}`,
+      objective: 'OUTCOME_SALES',
+      status: 'PAUSED',
+      special_ad_categories: [],
+      is_adset_budget_sharing_enabled: false,
+    });
+    log(`  id: ${campaign.id}`);
+  }
 
   // ---- Step 2: Ad Set --------------------------------------------------
+  let adSet;
+  if (existingAdsetId) {
+    adSet = { id: existingAdsetId };
+    log(`Reusing existing ad set: ${adSet.id}`);
+  } else {
   log('Creating ad set...');
-  const adSet = await apiPost(`/act_${ACCOUNT_ID}/adsets`, {
+  adSet = await apiPost(`/act_${ACCOUNT_ID}/adsets`, {
     name: `Ad Set – ${folderName}`,
     campaign_id: campaign.id,
     daily_budget: dailyBudget,
@@ -222,7 +235,7 @@ async function main() {
     bid_strategy: 'LOWEST_COST_WITHOUT_CAP',
     promoted_object: {
       pixel_id: pixelId,
-      custom_event_type: 'LEAD',
+      custom_event_type: 'PURCHASE',
     },
     targeting: {
       geo_locations: { countries: EU_COUNTRIES },
@@ -234,6 +247,7 @@ async function main() {
     status: 'PAUSED',
   });
   log(`  id: ${adSet.id}`);
+  }
 
   // ---- Step 3: Upload images -------------------------------------------
   log('Uploading images...');
@@ -276,9 +290,6 @@ async function main() {
         },
         // "URL parameters" field in Ads Manager Tracking section — Meta resolves {{...}} at serve time
         url_tags: URL_TAGS,
-        tracking_specs: [
-          { 'action.type': ['offsite_conversion'], fb_pixel: [pixelId] },
-        ],
       });
 
       const ad = await apiPost(`/act_${ACCOUNT_ID}/ads`, {

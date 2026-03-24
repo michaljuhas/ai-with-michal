@@ -16,15 +16,29 @@
  *   node --env-file=.env scripts/generate-campaign-assets.mjs --focus "replacing manual sourcing with AI workflows"
  */
 
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { homedir } from 'node:os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+// Nano Banana CLI (uses GEMINI_API_KEY from env)
+const NB_CLI = join(homedir(), 'tools/nano-banana-2/src/cli.ts');
+const BUN = join(homedir(), '.bun/bin/bun');
+
+// Reference images of Michal Juhas — passed to every image generation call
+// so the model knows exactly what he looks like.
+const MICHAL_REFS = [
+  join(ROOT, 'knowledge-base/public-speaking-samples/Michal-profile.jpg'),
+  join(ROOT, 'knowledge-base/public-speaking-samples/michal-speaking-01.jpg'),
+  join(ROOT, 'knowledge-base/public-speaking-samples/michal-speaking-04.jpg'),
+  join(ROOT, 'knowledge-base/public-speaking-samples/michal-speaking-10.jpg'),
+];
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -136,79 +150,51 @@ Rules:
 }
 
 // ---------------------------------------------------------------------------
-// Image generation — gemini-3.1-flash-image-preview (generateContent)
+// Image generation — Nano Banana Pro (Gemini image) with Michal reference images
 // ---------------------------------------------------------------------------
 
+// Prompts describe the scene and composition only — physical likeness comes
+// from the MICHAL_REFS reference images passed via -r flags.
 const IMAGE_PROMPTS = {
   conceptA: {
-    square: `Square 1:1 format. Photorealistic digital art for a Facebook ad.
-A confident HR professional at a sleek modern desk looks at a holographic display
-showing an AI-powered talent graph — glowing nodes connected by light-blue lines
-representing candidates from diverse sources. Warm office background, soft studio
-lighting, blue-purple gradient accent colours. Clean, premium feel. No text, no logos.`,
-    portrait: `Tall portrait 9:16 format. Photorealistic digital art for a Facebook/Instagram story ad.
-A confident HR professional at a sleek modern desk looks at a holographic display
-showing an AI-powered talent graph — glowing nodes connected by light-blue lines
-representing candidates from diverse sources. Warm office background, soft studio
-lighting, blue-purple gradient accent colours. Clean, premium feel. No text, no logos.`,
+    square: `Photorealistic Facebook ad image, 1:1 square.
+The man from the reference photos stands confidently at the front of a sleek modern conference room, presenting to a group of engaged professionals seated around a table. He wears a smart navy blazer. A large screen behind him shows AI-powered recruiting dashboards and talent-pool graphs. Warm professional lighting, clean blue-and-white aesthetic. No text or logos.`,
+    portrait: `Photorealistic Facebook/Instagram story ad image, 9:16 portrait.
+The man from the reference photos stands at the front of a modern conference room, microphone in hand, presenting to an attentive audience (backs of heads visible in foreground). A large screen behind him shows AI recruiting dashboards. Warm professional lighting, clean blue-and-white palette. No text or logos.`,
   },
   conceptB: {
-    square: `Square 1:1 format. Abstract tech illustration for an Instagram ad.
-A luminous network of interconnected human silhouettes floats against a deep navy background.
-Golden and cyan connection lines pulse outward from a central AI brain icon.
-The overall shape suggests a talent pool being discovered outside traditional platforms.
-Minimalist, modern, aspirational. No text, no logos.`,
-    portrait: `Tall portrait 9:16 format. Abstract tech illustration for an Instagram story ad.
-A luminous network of interconnected human silhouettes floats against a deep navy background.
-Golden and cyan connection lines pulse outward from a central AI brain icon.
-The overall shape suggests a talent pool being discovered outside traditional platforms.
-Minimalist, modern, aspirational. No text, no logos.`,
+    square: `Photorealistic Instagram ad image, 1:1 square.
+The man from the reference photos stands at the front of a bright workshop space with floor-to-ceiling windows, smiling and presenting to a diverse group of HR professionals seated in rows. The screen behind him shows a colourful AI talent-network graph. Natural light, clean white-and-blue aesthetic. No text or logos.`,
+    portrait: `Photorealistic Instagram story ad image, 9:16 portrait.
+The man from the reference photos stands at the front of a bright modern workshop room, microphone in hand, passionately presenting to recruiters and HR managers seated in front of him. Screen in background shows colourful AI talent-pool data. Floor-to-ceiling windows, natural light, clean aesthetic. No text or logos.`,
   },
 };
 
-async function generateImage(prompt, aspectRatio) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-image-preview:generateContent?key=${GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          responseModalities: ['IMAGE', 'TEXT'],
-          // aspectRatio hint in the prompt itself; Gemini image models don't accept
-          // an aspectRatio parameter — include it in the text prompt instead.
-        },
-      }),
-    },
-  );
-
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`Gemini image API error (${res.status}): ${body}`);
+function generateImageWithNB(prompt, aspectRatio, outName, outDir) {
+  const refArgs = MICHAL_REFS.flatMap((r) => ['-r', r]);
+  const args = [
+    NB_CLI,
+    prompt,
+    '-a', aspectRatio,
+    '-m', 'pro',
+    '-o', outName,
+    '-d', outDir,
+    ...refArgs,
+  ];
+  log(`  nano-banana: ${outName} (${aspectRatio}) …`);
+  execFileSync(BUN, args, { stdio: 'inherit', env: process.env });
+  const outPath = join(outDir, `${outName}.png`);
+  if (!existsSync(outPath)) {
+    throw new Error(`Expected output not found after generation: ${outPath}`);
   }
-
-  const data = await res.json();
-  const parts = data.candidates?.[0]?.content?.parts ?? [];
-  const imagePart = parts.find((p) => p.inlineData?.mimeType?.startsWith('image/'));
-  if (!imagePart) {
-    throw new Error(`No image returned. Response: ${JSON.stringify(data)}`);
-  }
-  return Buffer.from(imagePart.inlineData.data, 'base64');
 }
 
-async function generateImages() {
-  log('Generating 4 images via gemini-3.1-flash-image-preview (square × 2, portrait × 2)...');
-
-  // Run all 4 in parallel; aspect ratio is embedded in each prompt
-  const [square1, square2, portrait1, portrait2] = await Promise.all([
-    generateImage(IMAGE_PROMPTS.conceptA.square),
-    generateImage(IMAGE_PROMPTS.conceptB.square),
-    generateImage(IMAGE_PROMPTS.conceptA.portrait),
-    generateImage(IMAGE_PROMPTS.conceptB.portrait),
-  ]);
-
-  return { square1, square2, portrait1, portrait2 };
+function generateImages(outDir) {
+  log('Generating 4 images via Nano Banana Pro with Michal reference images (square × 2, portrait × 2)...');
+  generateImageWithNB(IMAGE_PROMPTS.conceptA.square,   '1:1',  'square-1',   outDir);
+  generateImageWithNB(IMAGE_PROMPTS.conceptB.square,   '1:1',  'square-2',   outDir);
+  generateImageWithNB(IMAGE_PROMPTS.conceptA.portrait, '9:16', 'portrait-1', outDir);
+  generateImageWithNB(IMAGE_PROMPTS.conceptB.portrait, '9:16', 'portrait-2', outDir);
 }
 
 // ---------------------------------------------------------------------------
@@ -267,10 +253,6 @@ async function main() {
     console.error('[generate-campaign] Error: ANTHROPIC_API_KEY not set in environment.');
     process.exit(1);
   }
-  if (!GEMINI_API_KEY) {
-    console.error('[generate-campaign] Error: GEMINI_API_KEY not set in environment.');
-    process.exit(1);
-  }
 
   const { focus } = parseArgs();
 
@@ -280,11 +262,8 @@ async function main() {
   log(`Output folder: campaigns/${timestamp}/`);
   if (focus) log(`Topic focus: "${focus}"`);
 
-  // Run copy and image generation in parallel
-  const [copy, images] = await Promise.all([
-    generateCopy(focus),
-    generateImages(),
-  ]);
+  // Copy generation (async, Claude API)
+  const copy = await generateCopy(focus);
 
   // ---- Copy ----------------------------------------------------------------
   writeFileSync(join(outDir, 'copy.json'), JSON.stringify(copy, null, 2), 'utf8');
@@ -293,17 +272,11 @@ async function main() {
   writeFileSync(join(outDir, 'copy.md'), buildMarkdown(copy, timestamp, focus), 'utf8');
   log('Saved copy.md');
 
-  // ---- Images --------------------------------------------------------------
-  writeFileSync(join(outDir, 'square-1.png'), images.square1);
+  // ---- Images — Nano Banana writes files directly to outDir ----------------
+  generateImages(outDir);
   log('Saved square-1.png (1:1, concept A)');
-
-  writeFileSync(join(outDir, 'square-2.png'), images.square2);
   log('Saved square-2.png (1:1, concept B)');
-
-  writeFileSync(join(outDir, 'portrait-1.png'), images.portrait1);
   log('Saved portrait-1.png (9:16, concept A)');
-
-  writeFileSync(join(outDir, 'portrait-2.png'), images.portrait2);
   log('Saved portrait-2.png (9:16, concept B)');
 
   // ---- README --------------------------------------------------------------

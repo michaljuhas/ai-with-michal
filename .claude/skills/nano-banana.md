@@ -67,3 +67,25 @@ Requires `GEMINI_API_KEY`. Loaded in priority order:
 - For text in images: spell out exactly what text to include, keep it short
 - For OG/social images: use 16:9, 2K resolution, pro model
 - AI-generated text in images can be unreliable — if accuracy matters, generate the background and overlay text with a separate tool (sharp, canvas, etc.)
+
+## Using reference images for person likeness (Michal Juhas)
+
+When generating images that should feature Michal Juhas, pass multiple reference photos via `-r` (repeatable) so the model learns his exact appearance. Describe only the **scene and composition** in the prompt — not his physical features.
+
+Reference images are in `knowledge-base/public-speaking-samples/`. Recommended set:
+
+```bash
+~/.bun/bin/bun ~/tools/nano-banana-2/src/cli.ts \
+  "The man from the reference photos stands at the front of a modern conference room, presenting to an engaged audience. Large screen behind him shows AI recruiting data. Professional lighting, clean aesthetic." \
+  -r knowledge-base/public-speaking-samples/Michal-profile.jpg \
+  -r knowledge-base/public-speaking-samples/michal-speaking-01.jpg \
+  -r knowledge-base/public-speaking-samples/michal-speaking-04.jpg \
+  -r knowledge-base/public-speaking-samples/michal-speaking-10.jpg \
+  -a 1:1 -m pro -o square-1 -d campaigns/current/
+```
+
+**Tips for person likeness:**
+- Always use `-m pro` (Pro model) — the flash model is less accurate with faces
+- Pass 3–4 diverse reference images (different angles, lighting, outfits)
+- In the prompt, refer to the person as "the man from the reference photos" — don't re-describe his appearance
+- `generate-campaign-assets.mjs` already does this automatically for all campaign image generation

@@ -125,3 +125,57 @@ node --test 'scripts/meta-ads/tests/*.test.mjs'
 # Integration tests only
 node --test scripts/meta-ads/tests/integration.test.mjs
 ```
+
+---
+
+## Full Campaign Launch Workflow (`launch-campaign.mjs`)
+
+This script creates a complete campaign from a `campaigns/YYYY-MM-DD-HH-mm/` asset folder:
+campaign → ad set → upload images → creatives + ads (4 images × 5 copy variations = 20 ads).
+
+### Step 1 — Generate assets
+
+```bash
+node --env-file=.env scripts/generate-campaign-assets.mjs --focus "your angle"
+```
+
+### Step 2 — Launch campaign
+
+```bash
+# LEADS campaign (default behaviour, optimize for Lead pixel events)
+node --env-file=.env scripts/launch-campaign.mjs
+
+# SALES campaign (optimize for Purchase pixel events)
+# Before running: in launch-campaign.mjs set objective → OUTCOME_SALES and custom_event_type → PURCHASE
+node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/YYYY-MM-DD-HH-mm
+
+# Resume after a partial failure (skip campaign + ad set creation, go straight to images + creatives)
+node --env-file=.env scripts/launch-campaign.mjs \
+  --folder campaigns/YYYY-MM-DD-HH-mm \
+  --campaign-id <existing-campaign-id> \
+  --adset-id <existing-adset-id>
+
+# Set a custom daily budget (default €10/day = 1000 cents)
+node --env-file=.env scripts/launch-campaign.mjs --budget 2000   # €20/day
+```
+
+### Differences: LEADS vs SALES
+
+| Setting | LEADS | SALES |
+|---|---|---|
+| `objective` | `OUTCOME_LEADS` | `OUTCOME_SALES` |
+| `optimization_goal` | `OFFSITE_CONVERSIONS` | `OFFSITE_CONVERSIONS` |
+| `promoted_object.custom_event_type` | `LEAD` | `PURCHASE` |
+| Call-to-action type | `SIGN_UP` | `SIGN_UP` (works for both) |
+
+In `launch-campaign.mjs`, change these two lines to switch between modes:
+- `objective: 'OUTCOME_LEADS'` → `'OUTCOME_SALES'`
+- `custom_event_type: 'LEAD'` → `'PURCHASE'`
+
+### Common errors
+
+| Error | Cause | Fix |
+|---|---|---|
+| `[200/1487194] Permissions error` | Ad account is **UNSETTLED** (status 3) — outstanding billing balance | Pay the outstanding invoice in [Meta Business Manager → Billing](https://business.facebook.com/billing_hub/). Campaign + ad set are already created; resume with `--campaign-id` + `--adset-id` once account is active. |
+| `No Meta Pixel found` | No pixel in Events Manager | Create a pixel at business.facebook.com/events_manager |
+| `No Facebook page found` | Token lacks `pages_manage_ads` permission | Re-issue System User token with correct permissions |
