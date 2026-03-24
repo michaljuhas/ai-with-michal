@@ -24,12 +24,30 @@ const { data } = await supabase.from('registrations').select('email');
 ```
 
 ### Paid attendees only
+`orders` has no FK to `registrations` — join via `clerk_user_id`:
 ```js
-const { data } = await supabase
-  .from('orders')
-  .select('registrations(email)')
-  .eq('status', 'paid'); // or join via clerk_user_id
+const [{ data: allRegs }, { data: paidOrders }] = await Promise.all([
+  supabase.from('registrations').select('clerk_user_id, email'),
+  supabase.from('orders').select('clerk_user_id').eq('status', 'paid'),
+]);
+const paidIds = new Set((paidOrders ?? []).map(o => o.clerk_user_id).filter(Boolean));
+const recipients = (allRegs ?? []).filter(r => paidIds.has(r.clerk_user_id));
 ```
+
+### Registered but NOT paid (unpaid follow-up)
+```js
+const [{ data: allRegs }, { data: paidOrders }] = await Promise.all([
+  supabase.from('registrations').select('clerk_user_id, email'),
+  supabase.from('orders').select('clerk_user_id').eq('status', 'paid'),
+]);
+const paidIds = new Set((paidOrders ?? []).map(o => o.clerk_user_id).filter(Boolean));
+const seen = new Set();
+const recipients = (allRegs ?? [])
+  .filter(r => !paidIds.has(r.clerk_user_id))
+  .filter(r => { const e = r.email.toLowerCase(); if (seen.has(e)) return false; seen.add(e); return true; })
+  .map(r => ({ email: r.email, name: r.email.split('@')[0] }));
+```
+Note: always deduplicate by email — the same address can appear multiple times due to duplicate registrations.
 
 ### Manual list
 Pass an array of `{ email, name }` objects directly in the script.
@@ -63,10 +81,14 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
-const { data: rows, error } = await supabase.from('registrations').select('email');
+const { data: rows, error } = await supabase.from('registrations').select('clerk_user_id, email');
 if (error) { console.error(error); process.exit(1); }
 
-const recipients = rows.map(r => ({ email: r.email, name: r.email.split('@')[0] }));
+// Deduplicate by email (duplicate registrations exist in the DB)
+const seen = new Set();
+const recipients = rows
+  .filter(r => { const e = r.email.toLowerCase(); if (seen.has(e)) return false; seen.add(e); return true; })
+  .map(r => ({ email: r.email, name: r.email.split('@')[0] }));
 
 // --- Build email ---
 function buildHtml(firstName) {
@@ -80,6 +102,7 @@ function buildText(firstName) {
 // --- Send ---
 console.log(`Sending to ${recipients.length} recipients${DRY_RUN ? ' (DRY RUN)' : ''}...`);
 
+let sent = 0, failed = 0;
 for (const r of recipients) {
   const firstName = r.name || r.email;
   if (DRY_RUN) { console.log('  would send to', r.email); continue; }
@@ -93,10 +116,13 @@ for (const r of recipients) {
       text:    buildText(firstName),
     });
     console.log('✓', r.email);
+    sent++;
   } catch (err) {
     console.error('✗', r.email, err.response?.body?.errors || err.message);
+    failed++;
   }
 }
+if (!DRY_RUN) console.log(`\nDone. Sent: ${sent}, Failed: ${failed}`);
 ```
 
 ## HTML email design system
