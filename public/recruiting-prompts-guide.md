@@ -1,7 +1,6 @@
 # AI Recruiting Prompts: The Complete Field Guide
 ### 30+ Claude prompts to source faster, screen smarter, and hire better
 
----
 
 ## 🎯 Join the Live Workshop — April 2, 2026
 
@@ -12,17 +11,11 @@
 Live workflows. Real talent pools. Beyond LinkedIn.
 Spots are limited — secure yours before they're gone.
 
----
-
-&nbsp;
-
 ## Introduction
 
 These prompts are built for recruiters who want to move faster without cutting corners. Each one is ready to paste into Claude — just swap the bracketed placeholders for your actual role, company, or context.
 
 They're organized by recruiting stage so you can grab exactly what you need, when you need it.
-
----
 
 ## Part 1 — Role Definition & Candidate Profiling
 
@@ -70,8 +63,6 @@ competency framework with 5 core competencies. For each one, define:
 - What "exceptional" looks like
 ```
 
----
-
 ## Part 2 — Sourcing & Search Queries
 
 ### 6. Search Queries Beyond LinkedIn
@@ -110,8 +101,6 @@ I'm struggling to find [role] candidates directly. What roles or industries
 produce people who transition successfully into [role]?
 For each adjacent pool, explain what makes the transition natural.
 ```
-
----
 
 ## Part 3 — Screening & Evaluation
 
@@ -159,8 +148,6 @@ Generate 3 follow-up questions that probe deeper — not to trip them up,
 but to distinguish between someone who experienced this firsthand vs.
 someone who read about it.
 ```
-
----
 
 ## Part 4 — Outreach & Messaging
 
@@ -212,8 +199,6 @@ Keep it under 75 words.
 Original: [paste message]
 ```
 
----
-
 ## Part 5 — Pipeline & Decision Making
 
 ### 21. Rejection Pattern Analysis
@@ -263,8 +248,6 @@ Create a 30-60-90 day onboarding plan for a new [role] hire at a
 - What success looks like at each milestone
 ```
 
----
-
 ## Part 6 — Talent Intelligence & Strategy
 
 ### 26. Competitive Talent Mapping
@@ -307,10 +290,6 @@ Diagnose what's going wrong. Is it the sourcing strategy, the brief, the
 process, the comp, or something else? Give me 3 specific changes to make.
 ```
 
----
-
-&nbsp;
-
 ## 🎯 Ready to Go Deeper?
 
 These prompts are the foundation. On **April 2nd**, we go live — and I'll show you how to chain them into full recruiting workflows, build real talent pools outside LinkedIn, and use AI to do in hours what used to take days.
@@ -321,7 +300,5 @@ These prompts are the foundation. On **April 2nd**, we go live — and I'll show
 👥 Limited spots · Basic (€79) & Pro + Toolkit (€129)
 
 🔗 **[Grab your seat → aiwithmichal.com](https://aiwithmichal.com/)**
-
----
 
 *Created by Michal Juhas · [aiwithmichal.com](https://aiwithmichal.com)*
