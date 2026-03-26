@@ -44,6 +44,15 @@ export type Registration = {
   clerk_user_id: string;
   email: string;
   created_at: string;
+  // Attribution (added in migration 002)
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
+  utm_content?: string | null;
+  utm_term?: string | null;
+  ref?: string | null;
+  source_type?: "Paid" | "Referral" | "Organic" | null;
+  source_detail?: string | null;
 };
 
 export type Order = {

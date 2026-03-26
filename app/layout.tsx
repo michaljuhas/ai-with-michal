@@ -4,6 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import StickyCountdown from "@/components/StickyCountdown";
+import TrackingCapture from "@/app/TrackingCapture";
 import { WORKSHOP } from "@/lib/workshop";
 import "./globals.css";
 
@@ -86,6 +87,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
               />
             </noscript>
           )}
+          <TrackingCapture />
           <Header />
           <div className="pt-16">{children}</div>
           <Footer />

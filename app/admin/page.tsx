@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { createServiceClient } from "@/lib/supabase";
 import type { Order, Registration } from "@/lib/supabase";
+import RegistrationsTable from "./RegistrationsTable";
 
 const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
@@ -97,46 +98,8 @@ export default async function AdminPage() {
           </div>
         </section>
 
-        {/* Registrations table */}
-        <section className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-100">
-            <h2 className="font-semibold text-slate-900">All Registrations ({allRegs.length})</h2>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
-                <tr>
-                  <th className="px-6 py-3 text-left">Email</th>
-                  <th className="px-6 py-3 text-left">Paid</th>
-                  <th className="px-6 py-3 text-left">Signed Up</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {allRegs.map((r) => {
-                  const paid = allOrders.some((o) => o.clerk_user_id === r.clerk_user_id && o.status === "paid");
-                  return (
-                    <tr key={r.id} className="hover:bg-slate-50">
-                      <td className="px-6 py-3 text-slate-700">{r.email}</td>
-                      <td className="px-6 py-3">
-                        {paid ? (
-                          <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-emerald-100 text-emerald-700">✓ Paid</span>
-                        ) : (
-                          <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-500">Registered</span>
-                        )}
-                      </td>
-                      <td className="px-6 py-3 text-slate-500">{new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</td>
-                    </tr>
-                  );
-                })}
-                {allRegs.length === 0 && (
-                  <tr>
-                    <td colSpan={3} className="px-6 py-8 text-center text-slate-400">No registrations yet.</td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
+        {/* Registrations table — with expandable attribution accordion */}
+        <RegistrationsTable registrations={allRegs} orders={allOrders} />
       </div>
     </div>
   );

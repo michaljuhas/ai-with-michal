@@ -8,6 +8,7 @@ import CredibilityBadges from "@/components/CredibilityBadges";
 import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
 import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
+import { getStoredTrackingParams } from "@/lib/tracking-params";
 
 const CAPACITY = 50;
 const URGENCY_THRESHOLD = 15;
@@ -70,6 +71,17 @@ export default function TicketsPage() {
       const eventId = `registration_${user.id}`;
       fireMetaEvent("Lead", eventId);
       window.fbq?.("track", "Lead", {}, { eventID: eventId });
+
+      // Send attribution data (UTM + ref from localStorage) to the server.
+      // The API is idempotent — it only writes if source_type is not yet set.
+      const trackingParams = getStoredTrackingParams();
+      if (trackingParams && Object.keys(trackingParams).length > 0) {
+        fetch("/api/registrations/attribution", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(trackingParams),
+        }).catch(() => {});
+      }
     }
   }, [user]);
 
