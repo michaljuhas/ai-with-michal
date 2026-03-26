@@ -111,4 +111,6 @@ Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `
 Meta Ads CLI: `META_SYSTEM_USER_ACCESS_TOKEN` (System User Token from Meta Business Manager), `META_AD_ACCOUNT_ID` (e.g. `act_123456789`).
 Daily report AI analysis: `ANTHROPIC_API_KEY` (get from https://console.anthropic.com/settings/keys — required for AI-written reports; without it the report falls back to raw data).
 Campaign generator: `ANTHROPIC_API_KEY` (copy generation) + `GEMINI_API_KEY` (image generation via Imagen 4) — both required.
+
+> **Note — env loading quirk:** Claude Code sets `ANTHROPIC_API_KEY=""` (empty string) in subprocess environments. Node's `--env-file` silently skips vars already present in `process.env`, even when empty. Scripts that need `ANTHROPIC_API_KEY` (`generate-campaign-assets.mjs`, `daily-report.mjs`) work around this by parsing `.env` manually at startup. If you ever add a new script that uses `ANTHROPIC_API_KEY`, apply the same pattern (see top of `generate-campaign-assets.mjs`). Alternatively, invoke via `set -a && source .env && set +a && node scripts/…` which forces all vars from `.env` regardless of what's already set.
 Todoist CLI: `TODOIST_API_TOKEN` (from Todoist Settings → Integrations → API token), `TODOIST_PROJECT_ID` (default `6gCJVXq7MX73MxFv` — the "AI with Michal" project).

@@ -10,7 +10,7 @@
 
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
-import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { CAMPAIGN_START } from './config.mjs';
@@ -21,6 +21,19 @@ const execFileAsync = promisify(execFile);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
+
+// Claude Code sets ANTHROPIC_API_KEY="" (empty string) in subprocess environments, which
+// prevents node --env-file from loading it (--env-file skips vars already present in
+// process.env, even when empty). Parse .env manually and fill in any empty/missing vars.
+{
+  const envFile = join(ROOT, '.env');
+  if (existsSync(envFile)) {
+    for (const line of readFileSync(envFile, 'utf8').split('\n')) {
+      const m = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^['"]|['"]$/g, '');
+    }
+  }
+}
 
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;

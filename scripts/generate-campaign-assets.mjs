@@ -16,7 +16,7 @@
  *   node --env-file=.env scripts/generate-campaign-assets.mjs --focus "replacing manual sourcing with AI workflows"
  */
 
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, renameSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -24,6 +24,19 @@ import { homedir } from 'node:os';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..');
+
+// Claude Code sets ANTHROPIC_API_KEY="" (empty string) in subprocess environments, which
+// prevents node --env-file from loading it (--env-file skips vars already present in
+// process.env, even when empty). Parse .env manually and fill in any empty/missing vars.
+{
+  const envFile = join(ROOT, '.env');
+  if (existsSync(envFile)) {
+    for (const line of readFileSync(envFile, 'utf8').split('\n')) {
+      const m = line.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+      if (m && !process.env[m[1]]) process.env[m[1]] = m[2].replace(/^['"]|['"]$/g, '');
+    }
+  }
+}
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
@@ -184,8 +197,13 @@ function generateImageWithNB(prompt, aspectRatio, outName, outDir) {
   log(`  nano-banana: ${outName} (${aspectRatio}) …`);
   execFileSync(BUN, args, { stdio: 'inherit', env: process.env });
   const outPath = join(outDir, `${outName}.png`);
+  const outPathJpeg = join(outDir, `${outName}.jpeg`);
   if (!existsSync(outPath)) {
-    throw new Error(`Expected output not found after generation: ${outPath}`);
+    if (existsSync(outPathJpeg)) {
+      renameSync(outPathJpeg, outPath);
+    } else {
+      throw new Error(`Expected output not found after generation: ${outPath}`);
+    }
   }
 }
 
