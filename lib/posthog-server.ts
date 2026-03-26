@@ -30,4 +30,7 @@ export async function captureEvent(
   if (!client) return;
   client.capture({ distinctId, event, properties });
   await client.shutdown();
+  // Reset so the next call creates a fresh, functional client.
+  // Without this, the dead singleton is reused and events are silently dropped.
+  posthogClient = null;
 }

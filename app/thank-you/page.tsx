@@ -121,6 +121,16 @@ function ThankYouContent() {
       .then((r) => r.json())
       .then((d) => setMeetingUrl(d.url ?? null))
       .catch(() => {});
+
+    // Client-side payment tracking: fires when the user lands on this page.
+    // Uses the same $insert_id as the server-side webhook event so PostHog
+    // deduplicates if both paths succeed.
+    if (sessionId) {
+      posthog.capture("payment_completed", {
+        $insert_id: `purchase_${sessionId}`,
+        stripe_session_id: sessionId,
+      });
+    }
   }, [sessionId]);
 
   return (
