@@ -5,6 +5,10 @@ Claude reads the last 14 days during the daily report.
 
 ---
 
+## 2026-03-27
+
+- Added testimonial video
+
 ## 2026-03-26 
 
 - Fixed analytics and tracking with PostHog.

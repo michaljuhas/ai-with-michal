@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { CheckCircle, Star, ArrowRight, Loader2, AlertCircle, ShieldCheck, Clock } from "lucide-react";
 import { TICKET_OPTIONS, PriceTier } from "@/lib/stripe";
 import CredibilityBadges from "@/components/CredibilityBadges";
+import VideoTestimonialSection from "@/components/VideoTestimonialSection";
 import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
 import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
@@ -320,6 +321,15 @@ export default function TicketsPage() {
           transition={{ duration: 0.5, delay: 0.45 }}
         >
           <CredibilityBadges />
+        </motion.div>
+
+        <motion.div
+          className="mt-12"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.55 }}
+        >
+          <VideoTestimonialSection />
         </motion.div>
 
         <motion.p

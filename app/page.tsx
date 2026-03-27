@@ -12,6 +12,7 @@ import PricingSection from "@/components/home/PricingSection";
 import GuaranteeSection from "@/components/home/GuaranteeSection";
 import AboutSection from "@/components/home/AboutSection";
 import FinalCTA from "@/components/home/FinalCTA";
+import VideoTestimonialSection from "@/components/VideoTestimonialSection";
 
 export default function HomePage() {
   return (
@@ -26,6 +27,7 @@ export default function HomePage() {
       <WhoItsForSection />
       <AgendaSection />
       <WhatYouGetSection />
+      <VideoTestimonialSection />
       <PricingSection />
       <GuaranteeSection />
       <AboutSection />
