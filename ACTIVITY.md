@@ -5,6 +5,11 @@ Claude reads the last 14 days during the daily report.
 
 ---
 
+## 2026-03-26 
+
+- Fixed analytics and tracking with PostHog.
+- Added new sources tracking (UTM, referrals)
+
 ## 2026-03-23
 - Added screenshots of ratings from TrustPilot and Udemy
 
