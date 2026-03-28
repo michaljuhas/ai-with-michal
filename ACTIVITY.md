@@ -5,6 +5,12 @@ Claude reads the last 14 days during the daily report.
 
 ---
 
+## 2026-03-28
+
+- Sent workshop announcement newsletter to 3,192 Tech Recruitment Academy subscribers via SendGrid (from: michal@techrecruitmentacademy.com)
+- Script: `scripts/send-newsletter-tra-workshop.mjs` — batches of 100, progress saved to `scripts/send-newsletter-tra-workshop.progress.json`
+- UTM params on CTA link: `utm_source=tra-newsletter&utm_medium=email&utm_campaign=workshop-apr2` → use these in PostHog to identify visitors/registrations from this newsletter
+
 ## 2026-03-27
 
 - Added testimonial video

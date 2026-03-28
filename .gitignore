@@ -2,6 +2,7 @@
 
 # Data
 /data/*
+/scripts/*.json
 
 # dependencies
 /node_modules
