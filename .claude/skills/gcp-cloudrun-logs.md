@@ -126,6 +126,27 @@ for msg, count in Counter(msgs).most_common(20):
 "
 ```
 
+## Gotcha: empty `{}` payloads in error entries
+
+Cloud Run writes two separate log streams:
+- `run.googleapis.com/requests` — HTTP request logs (status, latency, IP). These get `severity=ERROR` for 5xx responses but have **no text payload** — the message body is `{}`.
+- `run.googleapis.com/stderr` (or stdout) — application logs from `console.error` / `console.log`. These carry the actual error message.
+
+When you see `5x {}` errors, fetch the stderr stream for the same time window to get the real message:
+
+```bash
+gcloud logging read \
+  'resource.type="cloud_run_revision" logName="projects/ai-with-michal/logs/run.googleapis.com%2Fstderr" timestamp>="2026-03-27T07:40:00Z" timestamp<="2026-03-27T09:30:00Z"' \
+  --format=json --limit=200 --project=ai-with-michal \
+| python3 -c "
+import json,sys
+for e in json.load(sys.stdin):
+    p = e.get('textPayload','') or str(e.get('jsonPayload',''))
+    if p:
+        print(e['timestamp'][:19], p[:300])
+"
+```
+
 ## Common error patterns and what to do
 
 | Error pattern | Likely cause | Fix |
