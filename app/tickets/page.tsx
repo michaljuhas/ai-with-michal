@@ -183,7 +183,7 @@ export default function TicketsPage() {
               🔥 Only {spotsLeft} spots left
             </motion.div>
           )}
-          {soldCount !== null && soldCount > 0 && !isSoldOut && !showUrgency && (
+          {soldCount !== null && soldCount >= 10 && !isSoldOut && !showUrgency && (
             <motion.p
               className="mt-4 text-slate-400 text-sm"
               initial={{ opacity: 0 }}
