@@ -1,0 +1,105 @@
+import { auth, currentUser } from "@clerk/nextjs/server";
+import { createServiceClient } from "@/lib/supabase";
+import type { WorkgroupPost, WorkgroupReply, WorkgroupPostWithReplies } from "@/lib/supabase";
+import { getWorkshopBySlug } from "@/lib/workshops";
+import type { NextRequest } from "next/server";
+
+export async function GET(
+  _request: NextRequest,
+  { params }: { params: Promise<{ workshopSlug: string }> }
+) {
+  const { workshopSlug } = await params;
+
+  const workshop = getWorkshopBySlug(workshopSlug);
+  if (!workshop) {
+    return Response.json({ error: "Workshop not found" }, { status: 404 });
+  }
+
+  const supabase = createServiceClient();
+
+  const [{ data: posts, error: postsError }, { data: replies, error: repliesError }] =
+    await Promise.all([
+      supabase
+        .from("workgroup_posts")
+        .select("*")
+        .eq("workshop_slug", workshopSlug)
+        .order("created_at", { ascending: false }),
+      supabase.from("workgroup_replies").select("*").order("created_at", { ascending: true }),
+    ]);
+
+  if (postsError || repliesError) {
+    return Response.json({ error: "Failed to fetch posts" }, { status: 500 });
+  }
+
+  const repliesMap = new Map<string, WorkgroupReply[]>();
+  for (const reply of (replies as WorkgroupReply[]) ?? []) {
+    if (!repliesMap.has(reply.post_id)) {
+      repliesMap.set(reply.post_id, []);
+    }
+    repliesMap.get(reply.post_id)!.push(reply);
+  }
+
+  const postsWithReplies: WorkgroupPostWithReplies[] = (
+    (posts as WorkgroupPost[]) ?? []
+  ).map((post) => ({
+    ...post,
+    replies: repliesMap.get(post.id) ?? [],
+  }));
+
+  return Response.json({ posts: postsWithReplies });
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ workshopSlug: string }> }
+) {
+  const { userId } = await auth();
+  if (!userId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const { workshopSlug } = await params;
+  const workshop = getWorkshopBySlug(workshopSlug);
+  if (!workshop) {
+    return Response.json({ error: "Workshop not found" }, { status: 404 });
+  }
+
+  const user = await currentUser();
+  const authorEmail = user?.primaryEmailAddress?.emailAddress ?? "";
+  const authorName = user?.firstName
+    ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`.trim()
+    : null;
+
+  let body: { headline?: string; body?: string };
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const { headline, body: postBody } = body;
+
+  if (!headline?.trim() || !postBody?.trim()) {
+    return Response.json({ error: "Headline and body are required" }, { status: 400 });
+  }
+
+  const supabase = createServiceClient();
+  const { data, error } = await supabase
+    .from("workgroup_posts")
+    .insert({
+      workshop_slug: workshopSlug,
+      clerk_user_id: userId,
+      author_email: authorEmail,
+      author_name: authorName,
+      headline: headline.trim(),
+      body: postBody.trim(),
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return Response.json({ error: "Failed to create post" }, { status: 500 });
+  }
+
+  return Response.json({ post: data }, { status: 201 });
+}

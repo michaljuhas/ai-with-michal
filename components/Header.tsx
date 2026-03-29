@@ -128,10 +128,10 @@ export default function Header() {
           )}
           {isSignedIn && (
             <Link
-              href="/training"
+              href="/members"
               className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
             >
-              Training
+              Members
             </Link>
           )}
           {isSignedIn && <UserMenu />}

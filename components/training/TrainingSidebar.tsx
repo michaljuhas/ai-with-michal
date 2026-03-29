@@ -6,31 +6,42 @@ import type { TrainingSection } from "@/lib/training";
 
 type TrainingSidebarProps = {
   sections: TrainingSection[];
+  sidebarTitle?: string;
+  sidebarDescription?: string;
+  backHref?: string;
+  workgroupHref?: string;
 };
 
-export default function TrainingSidebar({ sections }: TrainingSidebarProps) {
+export default function TrainingSidebar({
+  sections,
+  backHref,
+  workgroupHref,
+}: TrainingSidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
   const allLessons = sections.flatMap((section) => section.lessons);
 
   return (
-    <div className="space-y-4">
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-blue-600">
-          Training Access
-        </p>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
-          Work through the pre-training before the live session so everyone starts
-          with the same foundation.
-        </p>
-      </div>
+    <div className="space-y-2">
+      {backHref && (
+        <Link
+          href={backHref}
+          className="flex items-center gap-1.5 px-1 pb-1 text-xs font-medium text-slate-500 hover:text-blue-600 transition-colors"
+        >
+          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+          </svg>
+          Workshop overview
+        </Link>
+      )}
 
+      {/* Mobile: single select */}
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm lg:hidden">
         <label
           htmlFor="training-lesson-select"
           className="mb-2 block text-xs font-semibold uppercase tracking-[0.2em] text-slate-500"
         >
-          Jump to lesson
+          Jump to
         </label>
         <select
           id="training-lesson-select"
@@ -43,26 +54,43 @@ export default function TrainingSidebar({ sections }: TrainingSidebarProps) {
               {lesson.title}
             </option>
           ))}
+          {workgroupHref && (
+            <option value={workgroupHref}>💬 Workgroup discussion</option>
+          )}
         </select>
+        {workgroupHref && (
+          <Link
+            href={workgroupHref}
+            className="mt-3 flex items-center gap-1.5 text-xs font-medium text-blue-600 hover:text-blue-800 transition-colors"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+            </svg>
+            Go to workgroup
+          </Link>
+        )}
       </div>
 
-      <nav className="hidden rounded-2xl border border-slate-200 bg-white p-3 shadow-sm lg:block">
+      {/* Desktop: one card per section */}
+      <nav className="hidden space-y-2 lg:block">
         {sections.map((section) => (
-          <div key={section.key} className="mb-6 last:mb-0">
-            <p className="px-3 pb-3 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-700">
+          <div
+            key={section.key}
+            className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
+          >
+            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
               {section.title}
             </p>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {section.lessons.map((lesson) => {
                 const isActive = pathname === lesson.path;
-
                 return (
                   <Link
                     key={lesson.path}
                     href={lesson.path}
                     className={`block rounded-xl px-3 py-2 text-sm transition ${
                       isActive
-                        ? "bg-blue-50 text-blue-700"
+                        ? "bg-blue-50 text-blue-700 font-medium"
                         : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                     }`}
                   >
@@ -73,6 +101,27 @@ export default function TrainingSidebar({ sections }: TrainingSidebarProps) {
             </div>
           </div>
         ))}
+
+        {workgroupHref && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Discussion
+            </p>
+            <Link
+              href={workgroupHref}
+              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
+                pathname === workgroupHref
+                  ? "bg-blue-50 text-blue-700 font-medium"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+            >
+              <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+              Workgroup
+            </Link>
+          </div>
+        )}
       </nav>
     </div>
   );

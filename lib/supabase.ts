@@ -65,3 +65,29 @@ export type Order = {
   status: "pending" | "paid";
   created_at: string;
 };
+
+export type WorkgroupPost = {
+  id: string;
+  workshop_slug: string;
+  clerk_user_id: string;
+  author_email: string;
+  author_name: string | null;
+  headline: string;
+  body: string;
+  created_at: string;
+};
+
+export type WorkgroupReply = {
+  id: string;
+  post_id: string;
+  clerk_user_id: string;
+  author_email: string;
+  author_name: string | null;
+  is_admin: boolean;
+  body: string;
+  created_at: string;
+};
+
+export type WorkgroupPostWithReplies = WorkgroupPost & {
+  replies: WorkgroupReply[];
+};
