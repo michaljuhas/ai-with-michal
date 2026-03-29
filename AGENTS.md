@@ -80,6 +80,14 @@ node --env-file=.env scripts/todoist/index.mjs tasks close <id>
 node --env-file=.env scripts/todoist/index.mjs projects list --pretty
 # Full usage: see .claude/skills/todoist-cli.md
 
+# Threads CLI — post, reply, insights, profile via Threads Graph API
+node --env-file=.env scripts/threads/index.mjs profile me --pretty
+node --env-file=.env scripts/threads/index.mjs posts list --limit 10 --pretty
+node --env-file=.env scripts/threads/index.mjs posts container --media-type TEXT --text "Hello!" --auto-publish-text
+node --env-file=.env scripts/threads/index.mjs insights account --metric views,likes,followers_count --pretty
+node --env-file=.env scripts/threads/index.mjs profile publishing-limit --pretty
+# Full usage: node --env-file=.env scripts/threads/index.mjs --help (or see .claude/skills/threads-cli/SKILL.md)
+
 # Deploy: git add + commit + push to main
 ./scripts/deploy.sh "your commit message"
 ```
@@ -114,3 +122,4 @@ Campaign generator: `ANTHROPIC_API_KEY` (copy generation) + `GEMINI_API_KEY` (im
 
 > **Note — env loading quirk:** Claude Code sets `ANTHROPIC_API_KEY=""` (empty string) in subprocess environments. Node's `--env-file` silently skips vars already present in `process.env`, even when empty. Scripts that need `ANTHROPIC_API_KEY` (`generate-campaign-assets.mjs`, `daily-report.mjs`) work around this by parsing `.env` manually at startup. If you ever add a new script that uses `ANTHROPIC_API_KEY`, apply the same pattern (see top of `generate-campaign-assets.mjs`). Alternatively, invoke via `set -a && source .env && set +a && node scripts/…` which forces all vars from `.env` regardless of what's already set.
 Todoist CLI: `TODOIST_API_TOKEN` (from Todoist Settings → Integrations → API token), `TODOIST_PROJECT_ID` (default `6gCJVXq7MX73MxFv` — the "AI with Michal" project).
+Threads CLI: `THREADS_ACCESS_TOKEN` (long-lived OAuth 2.0 bearer token; 60-day expiry, refresh with `auth refresh`), `THREADS_USER_ID` (your Threads user ID for user-scoped endpoints).
