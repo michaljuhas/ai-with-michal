@@ -53,6 +53,11 @@ export type Registration = {
   ref?: string | null;
   source_type?: "Paid" | "Referral" | "Organic" | null;
   source_detail?: string | null;
+  // User profile preferences (added in migration 004)
+  ai_level?: "offline" | "chatting" | "systemizing" | "automating" | "ai_native" | null;
+  function?: "recruiting_ta_hr" | "gtm" | "business_ops" | "builder_founder" | null;
+  country?: string | null;
+  linkedin_url?: string | null;
 };
 
 export type Order = {

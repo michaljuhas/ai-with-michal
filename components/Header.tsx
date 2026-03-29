@@ -57,7 +57,7 @@ function UserMenu() {
 
       {open && (
         <div
-          className="absolute right-0 mt-1 w-40 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[60]"
+          className="absolute right-0 mt-1 w-44 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[60]"
           onMouseDown={(e) => e.stopPropagation()}
         >
           {isAdmin && (
@@ -69,6 +69,13 @@ function UserMenu() {
               Admin
             </Link>
           )}
+          <Link
+            href="/profile"
+            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Profile
+          </Link>
           <button
             type="button"
             onClick={handleSignOut}
