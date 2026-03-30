@@ -45,6 +45,23 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Resources nav */}
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3">
+              Resources
+            </p>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/resources"
+                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  Free Guides
+                </Link>
+              </li>
+            </ul>
+          </div>
+
           {/* Contact */}
           <a
             href="mailto:michal@michaljuhas.com"
