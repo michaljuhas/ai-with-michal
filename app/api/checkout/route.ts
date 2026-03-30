@@ -62,6 +62,16 @@ export async function POST(req: NextRequest) {
     success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/tickets`,
     customer_creation: "always",
+    billing_address_collection: "required",
+    tax_id_collection: { enabled: true },
+    custom_fields: [
+      {
+        key: "company_name",
+        label: { type: "custom", custom: "Company name (optional, for invoice)" },
+        type: "text",
+        optional: true,
+      },
+    ],
     allow_promotion_codes: true,
     automatic_tax: { enabled: true },
     invoice_creation: {
