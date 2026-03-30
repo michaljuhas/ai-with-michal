@@ -274,7 +274,7 @@ export default function TicketsPage() {
               <button
                 onClick={() => handleCheckout(option.id)}
                 disabled={loading !== null || isSoldOut}
-                className={`flex items-center justify-center gap-2 w-full py-4 rounded-xl font-semibold transition-all group disabled:opacity-70 disabled:cursor-not-allowed ${
+                className={`flex items-center justify-center gap-2 w-full py-4 rounded-xl font-semibold transition-all group cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed ${
                   option.recommended
                     ? "bg-white text-blue-600 hover:bg-blue-50"
                     : "bg-slate-900 hover:bg-slate-800 text-white"
