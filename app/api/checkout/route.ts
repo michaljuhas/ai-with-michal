@@ -62,6 +62,20 @@ export async function POST(req: NextRequest) {
     success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/tickets`,
     allow_promotion_codes: true,
+    automatic_tax: { enabled: true },
+    invoice_creation: {
+      enabled: true,
+      invoice_data: {
+        description:
+          tier === "pro"
+            ? "AI with Michal Workshop + Toolkit — live 90-min workshop, full recording, private work group access, bonus workflow examples and notes, extra recruiting automation resources."
+            : "AI with Michal Workshop Ticket — members-area pre-training, live 90-min workshop, live Q&A with Michal.",
+        footer:
+          "Juhas Digital Services s.r.o., Sukennicka 1, Bratislava 82109, Slovakia – AI with Michal – https://aiwithmichal.com – michal@michaljuhas.com",
+        custom_fields: [{ name: "TAX ID", value: "SK2120815323" }],
+        rendering_options: { amount_tax_display: "include_inclusive_tax" },
+      },
+    },
   });
 
   const ref = req.cookies.get("ref")?.value;

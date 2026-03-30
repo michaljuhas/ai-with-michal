@@ -120,6 +120,45 @@ export async function POST(req: NextRequest) {
         console.error("Failed to send confirmation email:", emailErr);
       }
     }
+
+    try {
+      // Reuse the Stripe Customer created by Checkout, or create one now
+      let customerId = session.customer as string | undefined;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: toEmail || undefined,
+          name: toName || undefined,
+          metadata: { clerk_user_id: clerkUserId },
+        });
+        customerId = customer.id;
+      }
+
+      // Add a line item for the invoice
+      await stripe.invoiceItems.create({
+        customer: customerId,
+        amount: session.amount_total ?? 0,
+        currency: session.currency ?? "eur",
+        description:
+          tier === "pro" ? "AI with Michal Workshop + Toolkit" : "AI with Michal Workshop Ticket",
+      });
+
+      // Create and finalize the invoice
+      const invoice = await stripe.invoices.create({
+        customer: customerId,
+        auto_advance: false,
+        metadata: {
+          stripe_session_id: session.id,
+          clerk_user_id: clerkUserId,
+          tier,
+        },
+      });
+      await stripe.invoices.finalizeInvoice(invoice.id);
+
+      // Mark as paid — Checkout already collected the payment
+      await stripe.invoices.pay(invoice.id, { paid_out_of_band: true });
+    } catch (invoiceErr) {
+      console.error("Failed to create Stripe customer/invoice:", invoiceErr);
+    }
   }
 
   return NextResponse.json({ received: true });
