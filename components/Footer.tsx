@@ -5,9 +5,9 @@ export default function Footer() {
   return (
     <footer className="bg-white border-t border-slate-200">
       <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="flex flex-col md:flex-row items-start justify-between gap-8">
           {/* Logo */}
-          <div>
+          <div className="shrink-0">
             <Link href="/" className="inline-block">
               <span className="text-slate-900 font-bold text-lg tracking-tight">
                 AI{" "}
@@ -18,6 +18,31 @@ export default function Footer() {
             <p className="mt-1.5 text-slate-400 text-sm">
               © {new Date().getFullYear()} Juhas Digital Services s.r.o.
             </p>
+          </div>
+
+          {/* For Teams nav */}
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3">
+              For Teams
+            </p>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/ai-workshops-for-teams"
+                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  AI Workshops for Teams
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/ai-integrations"
+                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  AI Integrations
+                </Link>
+              </li>
+            </ul>
           </div>
 
           {/* Contact */}

@@ -72,6 +72,9 @@ node --env-file=.env scripts/launch-campaign.mjs --budget 2000                  
 # Newsletter / broadcast email — send to all registered users via SendGrid
 # See .claude/skills/send-newsletter.md for full conventions and script template
 
+# B2B analysis — traffic, funnel, leads, pipeline health
+# See .claude/skills/b2b-analysis/SKILL.md (or just ask: "analyze B2B traffic")
+
 # Todoist CLI — manage tasks, projects, labels, comments, reminders
 node --env-file=.env scripts/todoist/index.mjs tasks list --pretty
 node --env-file=.env scripts/todoist/index.mjs tasks add --content "Buy milk" --due-string "tomorrow"
@@ -95,7 +98,7 @@ node --env-file=.env scripts/threads/index.mjs profile publishing-limit --pretty
 ## Key URLs
 
 - Homepage: https://aiwithmichal.com
-- Admin dashboard: https://aiwithmichal.com/admin (requires login as hello@aiwithmichal.com)
+- Admin dashboard: https://aiwithmichal.com/admin (requires login as michal@michaljuhas.com)
 - Referral links: append `?ref=<source>` to any URL — tracked in PostHog
 
 ## Decision playbook

@@ -508,6 +508,119 @@ Clerk user ID: ${clerkUserId}`;
   });
 }
 
+export async function notifyAdminNewB2BLead(params: {
+  name: string;
+  email: string;
+  company?: string | null;
+  role?: string | null;
+  interest_type: "workshop" | "integration";
+  services?: string[] | null;
+  message?: string | null;
+  source_type?: string | null;
+  source_detail?: string | null;
+  referrer?: string | null;
+  landing_page?: string | null;
+}) {
+  const {
+    name,
+    email,
+    company,
+    role,
+    interest_type,
+    services,
+    message,
+    source_type,
+    source_detail,
+    referrer,
+    landing_page,
+  } = params;
+
+  const admin = getAdminEmail();
+  const mail = getSendGrid();
+  const typeLabel = interest_type === "workshop" ? "AI Workshops for Teams" : "AI Integrations";
+  const subject = `[AI with Michal] New B2B lead — ${name} (${interest_type})`;
+
+  const servicesLine = services && services.length > 0 ? services.join(", ") : "—";
+  const sourceLine = source_type
+    ? `${source_type}${source_detail ? ` — ${source_detail}` : ""}`
+    : "—";
+
+  const text = `New B2B lead from ${typeLabel}.
+
+Name:        ${name}
+Email:       ${email}
+Company:     ${company || "—"}
+Role:        ${role || "—"}
+Interested in: ${servicesLine}
+Message:     ${message || "—"}
+
+Attribution: ${sourceLine}
+Referrer:    ${referrer || "—"}
+Landing page: ${landing_page || "—"}
+
+Reply directly to this email to respond to ${name}.`;
+
+  const optionalRow = (label: string, value: string | null | undefined) =>
+    value
+      ? `<tr><td style="padding:4px 16px 4px 0;color:#64748b;white-space:nowrap;"><strong>${label}</strong></td><td style="padding:4px 0;color:#334155;">${escapeHtml(value)}</td></tr>`
+      : "";
+
+  const html = `
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;max-width:560px;margin:0 auto;">
+  <div style="background:#1e40af;border-radius:10px 10px 0 0;padding:24px 32px;">
+    <p style="margin:0;font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#93c5fd;">New Lead</p>
+    <h2 style="margin:6px 0 0;font-size:20px;font-weight:700;color:#fff;">${escapeHtml(typeLabel)}</h2>
+  </div>
+  <div style="background:#fff;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 10px 10px;padding:28px 32px;">
+
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;font-size:14px;">
+      <tr><td style="padding:4px 16px 4px 0;color:#64748b;white-space:nowrap;"><strong>Name</strong></td><td style="padding:4px 0;color:#334155;">${escapeHtml(name)}</td></tr>
+      <tr><td style="padding:4px 16px 4px 0;color:#64748b;white-space:nowrap;"><strong>Email</strong></td><td style="padding:4px 0;"><a href="mailto:${escapeHtml(email)}" style="color:#1d4ed8;">${escapeHtml(email)}</a></td></tr>
+      ${optionalRow("Company", company)}
+      ${optionalRow("Role", role)}
+    </table>
+
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;" />
+
+    <p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748b;">Interested in</p>
+    <p style="margin:0 0 16px;font-size:14px;color:#334155;line-height:1.6;">${escapeHtml(servicesLine)}</p>
+
+    ${
+      message
+        ? `<p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748b;">Message</p>
+    <p style="margin:0 0 16px;font-size:14px;color:#334155;line-height:1.6;background:#f8fafc;border-radius:6px;padding:12px 14px;">${escapeHtml(message).replace(/\n/g, "<br/>")}</p>`
+        : ""
+    }
+
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;" />
+
+    <p style="margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#64748b;">Attribution</p>
+    <table cellpadding="0" cellspacing="0" border="0" style="width:100%;font-size:13px;">
+      ${optionalRow("Source", sourceLine)}
+      ${optionalRow("Referrer", referrer)}
+      ${optionalRow("Landing page", landing_page)}
+    </table>
+
+    <hr style="border:none;border-top:1px solid #e2e8f0;margin:20px 0;" />
+
+    <a href="mailto:${escapeHtml(email)}?subject=Re: Your inquiry about ${encodeURIComponent(typeLabel)}"
+      style="display:inline-block;background:#1d4ed8;color:#fff;font-size:14px;font-weight:600;text-decoration:none;padding:11px 24px;border-radius:7px;">
+      Reply to ${escapeHtml(name)} →
+    </a>
+
+  </div>
+</div>`;
+
+  await mail.send({
+    to: admin,
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    replyTo: { email, name },
+    subject,
+    text,
+    html,
+  });
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
