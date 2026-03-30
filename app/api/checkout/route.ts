@@ -61,6 +61,7 @@ export async function POST(req: NextRequest) {
     },
     success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${appUrl}/tickets`,
+    customer_creation: "always",
     allow_promotion_codes: true,
     automatic_tax: { enabled: true },
     invoice_creation: {
