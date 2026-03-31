@@ -32,7 +32,7 @@ export default function ResourcesPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Header */}
-      <section className="py-20 px-6 border-b border-slate-100">
+      <section className="pt-16 pb-10 px-6 border-b border-slate-100">
         <div className="max-w-3xl mx-auto text-center">
           <motion.div
             {...fadeUp}
@@ -60,7 +60,7 @@ export default function ResourcesPage() {
       </section>
 
       {/* Resource cards */}
-      <section className="py-16 px-6">
+      <section className="pt-10 pb-16 px-6">
         <div className="max-w-3xl mx-auto">
           <div className="grid sm:grid-cols-2 gap-6">
             {resources.map((resource, i) => (
