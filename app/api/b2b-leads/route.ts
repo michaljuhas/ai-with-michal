@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { type TrackingParams, deriveAttribution } from "@/lib/tracking-params";
 import { notifyAdminNewB2BLead } from "@/lib/email";
+import { addLeadToCampaign, inboundCampaignId } from "@/lib/lemlist";
 
 type B2BLeadInput = {
   name: string;
@@ -66,6 +67,21 @@ export async function POST(req: NextRequest) {
   if (error) {
     console.error("b2b_leads insert error:", error);
     return NextResponse.json({ error: "Failed to save lead" }, { status: 500 });
+  }
+
+  // Fire-and-forget — LemList sync failure must not break the lead submission
+  const campaignId = inboundCampaignId(interest_type);
+  if (campaignId) {
+    const [firstName, ...rest] = name.trim().split(" ");
+    addLeadToCampaign(campaignId, {
+      email: email.trim().toLowerCase(),
+      firstName,
+      lastName: rest.join(" ") || undefined,
+      companyName: company?.trim() || undefined,
+      jobTitle: role?.trim() || undefined,
+      interestType: interest_type,
+      services: services && services.length > 0 ? services.join(", ") : undefined,
+    }).catch((err) => console.error("LemList sync error:", err));
   }
 
   // Fire-and-forget — email failure must not break the lead submission
