@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { getStripe, MENTORING_PRICE_IDS, MentoringTier } from "@/lib/stripe";
+import {
+  getStripe,
+  findOrCreateCustomer,
+  MENTORING_PRICE_IDS,
+  MentoringTier,
+} from "@/lib/stripe";
 import { captureEvent } from "@/lib/posthog-server";
 import { sendMetaEvent } from "@/lib/meta-capi";
 
@@ -32,82 +37,99 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
   }
 
-  const stripe = getStripe();
-  const origin =
-    req.headers.get("origin") ??
-    (req.headers.get("host")
-      ? `https://${req.headers.get("host")}`
-      : null) ??
-    process.env.NEXT_PUBLIC_APP_URL ??
-    "https://aiwithmichal.com";
-  const appUrl = origin;
+  try {
+    const stripe = getStripe();
+    const origin =
+      req.headers.get("origin") ??
+      (req.headers.get("host")
+        ? `https://${req.headers.get("host")}`
+        : null) ??
+      process.env.NEXT_PUBLIC_APP_URL ??
+      "https://aiwithmichal.com";
+    const appUrl = origin;
 
-  const session = await stripe.checkout.sessions.create({
-    mode: "subscription",
-    currency: "eur",
-    line_items: [
-      {
-        price: MENTORING_PRICE_IDS[tier],
-        quantity: 1,
+    const customerId = await findOrCreateCustomer(
+      customerEmail!,
+      customerName,
+      { clerk_user_id: userId },
+    );
+
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      currency: "eur",
+      line_items: [
+        {
+          price: MENTORING_PRICE_IDS[tier],
+          quantity: 1,
+        },
+      ],
+      customer: customerId,
+      customer_update: {
+        address: "auto",
+        name: "auto",
       },
-    ],
-    customer_email: customerEmail,
-    client_reference_id: userId,
-    metadata: {
-      clerk_user_id: userId,
-      tier,
-      product: "mentoring",
-      customer_name: customerName,
-    },
-    subscription_data: {
+      client_reference_id: userId,
       metadata: {
         clerk_user_id: userId,
         tier,
         product: "mentoring",
+        customer_name: customerName,
       },
-      description: INVOICE_DESCRIPTIONS[tier],
-    },
-    success_url: `${appUrl}/ai-mentoring/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${appUrl}${cancelUrl || "/ai-mentoring/join"}`,
-    billing_address_collection: "required",
-    tax_id_collection: { enabled: true },
-    custom_fields: [
-      {
-        key: "company_name",
-        label: {
-          type: "custom",
-          custom: "Company name (optional, for invoice)",
+      subscription_data: {
+        metadata: {
+          clerk_user_id: userId,
+          tier,
+          product: "mentoring",
         },
-        type: "text",
-        optional: true,
+        description: INVOICE_DESCRIPTIONS[tier],
       },
-    ],
-    allow_promotion_codes: true,
-    automatic_tax: { enabled: true },
-  });
+      success_url: `${appUrl}/ai-mentoring/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${appUrl}${cancelUrl || "/ai-mentoring/join"}`,
+      billing_address_collection: "required",
+      tax_id_collection: { enabled: true },
+      custom_fields: [
+        {
+          key: "company_name",
+          label: {
+            type: "custom",
+            custom: "Company name (optional, for invoice)",
+          },
+          type: "text",
+          optional: true,
+        },
+      ],
+      allow_promotion_codes: true,
+      automatic_tax: { enabled: true },
+    });
 
-  const ref = req.cookies.get("ref")?.value;
+    const ref = req.cookies.get("ref")?.value;
 
-  await captureEvent(userId, "mentoring_checkout_session_created", {
-    tier,
-    stripe_session_id: session.id,
-    email: customerEmail,
-    ...(ref ? { ref } : {}),
-  });
+    await captureEvent(userId, "mentoring_checkout_session_created", {
+      tier,
+      stripe_session_id: session.id,
+      email: customerEmail,
+      ...(ref ? { ref } : {}),
+    });
 
-  const clientIp =
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    req.headers.get("x-real-ip") ??
-    undefined;
+    const clientIp =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+      req.headers.get("x-real-ip") ??
+      undefined;
 
-  sendMetaEvent({
-    event_name: "InitiateCheckout",
-    event_source_url: `${appUrl}/ai-mentoring/join`,
-    user_data: {
-      client_user_agent: req.headers.get("user-agent") ?? undefined,
-      client_ip_address: clientIp,
-    },
-  });
+    sendMetaEvent({
+      event_name: "InitiateCheckout",
+      event_source_url: `${appUrl}/ai-mentoring/join`,
+      user_data: {
+        client_user_agent: req.headers.get("user-agent") ?? undefined,
+        client_ip_address: clientIp,
+      },
+    });
 
-  return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.url });
+  } catch (err: unknown) {
+    const message =
+      err instanceof Error ? err.message : "Stripe checkout failed";
+    console.error("mentoring-checkout error:", err);
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
 }

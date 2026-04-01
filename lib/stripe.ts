@@ -20,6 +20,29 @@ export const stripe = {
   get webhooks() { return getStripe().webhooks; },
 };
 
+/**
+ * Find an existing Stripe customer by email or create a new one.
+ * Returns the customer ID to use in checkout sessions (required by
+ * Stripe API 2026-02-25.clover when tax_id_collection is enabled).
+ */
+export async function findOrCreateCustomer(
+  email: string,
+  name?: string,
+  metadata?: Record<string, string>,
+): Promise<string> {
+  const s = getStripe();
+  const existing = await s.customers.list({ email, limit: 1 });
+  if (existing.data.length > 0) {
+    return existing.data[0].id;
+  }
+  const customer = await s.customers.create({
+    email,
+    ...(name ? { name } : {}),
+    ...(metadata ? { metadata } : {}),
+  });
+  return customer.id;
+}
+
 export const PRICE_IDS = {
   basic: process.env.STRIPE_PRICE_BASIC!,
   pro: process.env.STRIPE_PRICE_PRO!,
