@@ -37,7 +37,7 @@ const recipients = (allRegs ?? [])
   .map(r => ({ email: r.email, name: r.email.split('@')[0] }));
 
 // --- Email content ---
-const SUBJECT = '⏰ 2 days left — your spot at the AI Recruiting workshop';
+const SUBJECT = '⏰ Starting Tomorrow — your spot at the AI Recruiting workshop';
 
 function buildHtml(firstName) {
   return `<!DOCTYPE html>
@@ -53,7 +53,7 @@ function buildHtml(firstName) {
           <tr>
             <td style="background:#1e40af;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
               <p style="margin:0 0 12px 0;color:#bfdbfe;font-size:13px;letter-spacing:1px;text-transform:uppercase;">AI with Michal · April 2, 2026 · 3 PM UTC</p>
-              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;line-height:1.3;">Only 2 days left to join</h1>
+              <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;line-height:1.3;">Starting Tomorrow — Join Now</h1>
               <p style="margin:12px 0 0 0;color:#bfdbfe;font-size:15px;">AI in Recruiting & Sourcing — live workshop</p>
             </td>
           </tr>
@@ -62,7 +62,7 @@ function buildHtml(firstName) {
           <tr>
             <td style="background:#dc2626;padding:14px 40px;text-align:center;">
               <p style="margin:0;color:#ffffff;font-size:14px;font-weight:600;letter-spacing:0.3px;">
-                🚨 Workshop closes Thursday, April 2nd at 3 PM UTC — this is your last chance
+                🚨 Workshop starts tomorrow, April 2nd at 3 PM UTC — this is your last chance
               </p>
             </td>
           </tr>
@@ -75,7 +75,7 @@ function buildHtml(firstName) {
 
               <p style="margin:0 0 20px 0;color:#334155;font-size:15px;line-height:1.7;">
                 You registered for the <strong>AI with Michal live workshop</strong> — and it's happening
-                in <strong>just 2 days</strong>, on Thursday April 2nd at 3 PM UTC.
+                <strong>tomorrow</strong>, Thursday April 2nd at 3 PM UTC.
               </p>
 
               <p style="margin:0 0 20px 0;color:#334155;font-size:15px;line-height:1.7;">
@@ -147,7 +147,7 @@ function buildHtml(firstName) {
                   <td align="center">
                     <a href="https://aiwithmichal.com/tickets"
                        style="display:inline-block;background:#dc2626;color:#ffffff;text-decoration:none;font-size:17px;font-weight:700;padding:16px 44px;border-radius:8px;letter-spacing:0.3px;">
-                      Secure My Spot — 2 Days Left →
+                      Secure My Spot — Starting Tomorrow →
                     </a>
                   </td>
                 </tr>
@@ -207,7 +207,7 @@ function buildHtml(firstName) {
 function buildText(firstName) {
   return `Hi ${firstName},
 
-You registered for the AI with Michal live workshop — and it's happening in just 2 days, on Thursday April 2nd at 3 PM UTC.
+You registered for the AI with Michal live workshop — and it's happening tomorrow, Thursday April 2nd at 3 PM UTC.
 
 I don't want you to miss it. Here's exactly what you'll get:
 

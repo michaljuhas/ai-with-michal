@@ -218,7 +218,7 @@ https://aiwithmichal.com
 ## Segment 4 — Nordics + Benelux · Marketing & GTM · VP / Head of Marketing
 
 **Campaign ID:** cam_D6KkqECWSNW7jnxmy
-**Target:** VP Marketing, Head of Marketing, Head of Growth at companies in Sweden, Denmark, Netherlands, Belgium, 20+ employees
+**Target:** VP Marketing, Head of Marketing, Marketing Director, Head of Growth at companies in Sweden, Denmark, Netherlands, Belgium, 20+ employees
 **Workshop:** AI in Marketing & Sales
 **Angle:** Content, pipeline, and research at scale without growing the team
 

@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const tier = body.tier as PriceTier;
+  const cancelUrl = body.cancelUrl as string | undefined;
 
   if (!tier || !PRICE_IDS[tier]) {
     return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
@@ -60,7 +61,7 @@ export async function POST(req: NextRequest) {
       customer_name: customerName,
     },
     success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${appUrl}/tickets`,
+    cancel_url: `${appUrl}${cancelUrl || "/tickets"}`,
     customer_creation: "always",
     billing_address_collection: "required",
     customer_update: { address: "auto" },
@@ -107,7 +108,7 @@ export async function POST(req: NextRequest) {
   // Fire-and-forget — never block the checkout response
   sendMetaEvent({
     event_name: "InitiateCheckout",
-    event_source_url: `${appUrl}/tickets`,
+    event_source_url: `${appUrl}${cancelUrl || "/tickets"}`,
     user_data: {
       client_user_agent: req.headers.get("user-agent") ?? undefined,
       client_ip_address: clientIp,

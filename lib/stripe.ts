@@ -27,6 +27,51 @@ export const PRICE_IDS = {
 
 export type PriceTier = keyof typeof PRICE_IDS;
 
+// ---------------------------------------------------------------------------
+// Mentoring subscriptions
+// ---------------------------------------------------------------------------
+
+export const MENTORING_PRICE_IDS = {
+  group: process.env.STRIPE_PRICE_MENTORING_GROUP!,
+  vip: process.env.STRIPE_PRICE_MENTORING_VIP!,
+} as const;
+
+export type MentoringTier = keyof typeof MENTORING_PRICE_IDS;
+
+export const MENTORING_OPTIONS = [
+  {
+    id: "group" as MentoringTier,
+    name: "Group Mentoring",
+    price: 397,
+    currency: "EUR",
+    interval: "month",
+    includes: [
+      "Access to weekly implementation calls",
+      "Support in a dedicated private group",
+      "Monthly 1-on-1 call with Michal",
+    ],
+    recommended: false,
+  },
+  {
+    id: "vip" as MentoringTier,
+    name: "VIP Mentoring",
+    price: 697,
+    currency: "EUR",
+    interval: "month",
+    includes: [
+      "Access to weekly implementation calls",
+      "Support in a dedicated private group",
+      "Two 1-on-1 calls with Michal every month",
+      "Two 1-on-1 calls with a mentor every month",
+    ],
+    recommended: true,
+  },
+] as const;
+
+// ---------------------------------------------------------------------------
+// Workshop tickets
+// ---------------------------------------------------------------------------
+
 export const TICKET_OPTIONS = [
   {
     id: "basic" as PriceTier,

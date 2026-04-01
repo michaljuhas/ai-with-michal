@@ -1,11 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import { Clock } from "lucide-react";
 import { WORKSHOP, getDaysUntilWorkshop, isRegistrationOpen } from "@/lib/workshop";
 import RegisterButton from "@/components/RegisterButton";
 
+const VISIBLE_PREFIXES = ["/", "/workshops"];
+
+function shouldShowOnRoute(pathname: string): boolean {
+  if (pathname === "/") return true;
+  return VISIBLE_PREFIXES.some((p) => p !== "/" && pathname.startsWith(p));
+}
+
 export default function StickyCountdown() {
+  const pathname = usePathname();
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   const [open, setOpen] = useState(true);
   const [visible, setVisible] = useState(false);
@@ -52,7 +61,7 @@ export default function StickyCountdown() {
     };
   }, []);
 
-  if (daysLeft === null || !open) return null;
+  if (daysLeft === null || !open || !shouldShowOnRoute(pathname)) return null;
 
   return (
     <div

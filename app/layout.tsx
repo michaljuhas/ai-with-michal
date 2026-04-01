@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import StickyCountdown from "@/components/StickyCountdown";
 import TrackingCapture from "@/app/TrackingCapture";
-import { WORKSHOP } from "@/lib/workshop";
 import "./globals.css";
 
 const inter = Inter({
@@ -15,32 +14,23 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: `${WORKSHOP.title} | AI with Michal`,
+  title: "AI with Michal — Workshops, Mentoring & AI Implementation",
   description:
-    "AI in Recruiting and Talent Acquisition: a live 90-minute online workshop for recruiters and talent teams. Learn how high-performing recruiters use AI, Claude Code, and workflow automation to move faster and stay relevant.",
+    "Accelerate your AI adoption with live workshops, 1-on-1 mentoring, and implementation services. Led by Michal Juhas and team — for individuals, solopreneurs, and companies.",
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_APP_URL || "https://aiwithmichal.com"
   ),
   openGraph: {
-    title: WORKSHOP.title,
+    title: "AI with Michal — Workshops, Mentoring & AI Implementation",
     description:
-      "Live 90-minute online workshop for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, and report faster.",
+      "Accelerate your AI adoption with live workshops, 1-on-1 mentoring, and implementation services for individuals and teams.",
     type: "website",
-    images: [
-      {
-        url: "/workshop-og.jpeg",
-        width: 2048,
-        height: 1152,
-        alt: `${WORKSHOP.title} · April 2, 2026`,
-      },
-    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: WORKSHOP.title,
+    title: "AI with Michal — Workshops, Mentoring & AI Implementation",
     description:
-      "Live 90-minute online workshop for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, and report faster.",
-    images: ["/workshop-og.jpeg"],
+      "Accelerate your AI adoption with live workshops, 1-on-1 mentoring, and implementation services for individuals and teams.",
   },
 };
 

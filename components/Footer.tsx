@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
+import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
 
 export default function Footer() {
   return (
@@ -18,6 +19,40 @@ export default function Footer() {
             <p className="mt-1.5 text-slate-400 text-sm">
               © {new Date().getFullYear()} Juhas Digital Services s.r.o.
             </p>
+          </div>
+
+          {/* Workshops nav */}
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3">
+              Workshops
+            </p>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
+                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  Upcoming Workshop
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Mentoring nav */}
+          <div>
+            <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3">
+              Mentoring
+            </p>
+            <ul className="space-y-2">
+              <li>
+                <Link
+                  href="/ai-mentoring"
+                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  AI Mentoring
+                </Link>
+              </li>
+            </ul>
           </div>
 
           {/* For Teams nav */}

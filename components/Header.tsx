@@ -5,6 +5,8 @@ import { usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
+import { ChevronDown } from "lucide-react";
+import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
 
 const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 
@@ -14,7 +16,6 @@ function UserMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   useEffect(() => {
     function handleClick(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -89,16 +90,77 @@ function UserMenu() {
   );
 }
 
+function ForTeamsDropdown() {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="flex items-center gap-1 text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+      >
+        For Teams
+        <ChevronDown
+          size={14}
+          className={`text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div
+          className="absolute right-0 mt-1 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[60]"
+          onMouseDown={(e) => e.stopPropagation()}
+        >
+          <Link
+            href="/for-teams"
+            className="block px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50 transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Overview
+          </Link>
+          <Link
+            href="/ai-workshops-for-teams"
+            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            AI Workshops for Teams
+          </Link>
+          <Link
+            href="/ai-integrations"
+            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            AI Integrations
+          </Link>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function Header() {
   const pathname = usePathname();
-  const isHomepage = pathname === "/";
   const { isSignedIn } = useUser();
 
-  function scrollToPricing() {
-    const pricingSection = document.getElementById("pricing");
-    if (!pricingSection) return;
-    pricingSection.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  const navLinkClass = (href: string) => {
+    const active = pathname === href || pathname.startsWith(href + "/");
+    return `text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
+      active
+        ? "text-blue-600 bg-blue-50"
+        : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+    }`;
+  };
 
   return (
     <motion.header
@@ -116,27 +178,24 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-3">
-          {isHomepage ? (
-            <button
-              type="button"
-              onClick={scrollToPricing}
-              className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              Pricing
-            </button>
-          ) : (
-            <Link
-              href="/#pricing"
-              className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
-            >
-              Pricing
-            </Link>
-          )}
+        <div className="flex items-center gap-1">
+          <Link
+            href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
+            className={navLinkClass("/workshops")}
+          >
+            Workshops
+          </Link>
+          <Link
+            href="/ai-mentoring"
+            className={navLinkClass("/ai-mentoring")}
+          >
+            Mentoring
+          </Link>
+          <ForTeamsDropdown />
           {isSignedIn && (
             <Link
               href="/members"
-              className="text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
+              className={navLinkClass("/members")}
             >
               Members
             </Link>
