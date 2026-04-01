@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
 
 const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
@@ -152,10 +152,26 @@ function ForTeamsDropdown() {
 export default function Header() {
   const pathname = usePathname();
   const { isSignedIn } = useUser();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  const closeMobile = useCallback(() => setMobileOpen(false), []);
+
+  useEffect(() => {
+    closeMobile();
+  }, [pathname, closeMobile]);
 
   const navLinkClass = (href: string) => {
     const active = pathname === href || pathname.startsWith(href + "/");
     return `text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
+      active
+        ? "text-blue-600 bg-blue-50"
+        : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+    }`;
+  };
+
+  const mobileNavLinkClass = (href: string) => {
+    const active = pathname === href || pathname.startsWith(href + "/");
+    return `block text-base font-medium px-4 py-3 rounded-lg transition-colors ${
       active
         ? "text-blue-600 bg-blue-50"
         : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
@@ -178,7 +194,8 @@ export default function Header() {
           </span>
         </Link>
 
-        <div className="flex items-center gap-1">
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-1">
           <Link
             href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
             className={navLinkClass("/workshops")}
@@ -202,7 +219,81 @@ export default function Header() {
           )}
           {isSignedIn && <UserMenu />}
         </div>
+
+        {/* Mobile hamburger */}
+        <button
+          onClick={() => setMobileOpen((o) => !o)}
+          className="md:hidden p-2 -mr-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+          aria-label={mobileOpen ? "Close menu" : "Open menu"}
+        >
+          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+        </button>
       </div>
+
+      {/* Mobile nav drawer */}
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.nav
+            className="md:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-md"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2, ease: "easeInOut" }}
+          >
+            <div className="px-4 py-3 flex flex-col gap-1">
+              <Link
+                href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
+                className={mobileNavLinkClass("/workshops")}
+                onClick={closeMobile}
+              >
+                Workshops
+              </Link>
+              <Link
+                href="/ai-mentoring"
+                className={mobileNavLinkClass("/ai-mentoring")}
+                onClick={closeMobile}
+              >
+                Mentoring
+              </Link>
+              <Link
+                href="/for-teams"
+                className={mobileNavLinkClass("/for-teams")}
+                onClick={closeMobile}
+              >
+                For Teams
+              </Link>
+              <Link
+                href="/ai-workshops-for-teams"
+                className={`${mobileNavLinkClass("/ai-workshops-for-teams")} pl-8 text-sm`}
+                onClick={closeMobile}
+              >
+                AI Workshops for Teams
+              </Link>
+              <Link
+                href="/ai-integrations"
+                className={`${mobileNavLinkClass("/ai-integrations")} pl-8 text-sm`}
+                onClick={closeMobile}
+              >
+                AI Integrations
+              </Link>
+              {isSignedIn && (
+                <Link
+                  href="/members"
+                  className={mobileNavLinkClass("/members")}
+                  onClick={closeMobile}
+                >
+                  Members
+                </Link>
+              )}
+              {isSignedIn && (
+                <div className="border-t border-slate-200 mt-2 pt-2">
+                  <UserMenu />
+                </div>
+              )}
+            </div>
+          </motion.nav>
+        )}
+      </AnimatePresence>
     </motion.header>
   );
 }

@@ -72,6 +72,8 @@ jobs:
             --set-env-vars "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
             --set-env-vars "STRIPE_PRICE_BASIC=${{ vars.STRIPE_PRICE_BASIC }}" \
             --set-env-vars "STRIPE_PRICE_PRO=${{ vars.STRIPE_PRICE_PRO }}" \
+            --set-env-vars "STRIPE_PRICE_MENTORING_GROUP=${{ vars.STRIPE_PRICE_MENTORING_GROUP }}" \
+            --set-env-vars "STRIPE_PRICE_MENTORING_VIP=${{ vars.STRIPE_PRICE_MENTORING_VIP }}" \
             --set-env-vars "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" \
             --set-env-vars "WORKSHOP_MEETING_URL=${{ vars.WORKSHOP_MEETING_URL }}" \
             --set-env-vars "META_ACCESS_TOKEN=${{ secrets.META_ACCESS_TOKEN }}" \
