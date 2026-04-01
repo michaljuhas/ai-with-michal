@@ -63,6 +63,7 @@ export async function POST(req: NextRequest) {
     cancel_url: `${appUrl}/tickets`,
     customer_creation: "always",
     billing_address_collection: "required",
+    customer_update: { address: "auto" },
     tax_id_collection: { enabled: true },
     custom_fields: [
       {

@@ -143,12 +143,14 @@ node stripe-cli/dist/cli.js products search --query "name~'Pro'"
 
 ## Prices (no delete — use deactivate)
 
-```bash
-# Create recurring
-node stripe-cli/dist/cli.js prices create --currency usd --unit-amount 2999 --product prod_xxx --recurring-interval month
+> **Tax rule:** Always set `tax_behavior: "inclusive"` when creating prices. This is required for `automatic_tax` to work correctly on invoices. Without it, Stripe defaults to `"unspecified"` and skips tax calculation entirely.
 
-# Create one-time
-node stripe-cli/dist/cli.js prices create --currency usd --unit-amount 4999 --product prod_xxx
+```bash
+# Create recurring (tax_behavior required)
+node stripe-cli/dist/cli.js prices create --currency eur --unit-amount 2999 --product prod_xxx --recurring-interval month --data '{"tax_behavior":"inclusive"}'
+
+# Create one-time (tax_behavior required)
+node stripe-cli/dist/cli.js prices create --currency eur --unit-amount 4999 --product prod_xxx --data '{"tax_behavior":"inclusive"}'
 
 # Retrieve / List
 node stripe-cli/dist/cli.js prices retrieve price_xxx
