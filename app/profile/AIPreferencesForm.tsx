@@ -16,11 +16,11 @@ type Props = {
 // ── Data ──────────────────────────────────────────────────────────────────────
 
 const AI_LEVELS: { value: AiLevel; label: string; tagline: string; number: number }[] = [
-  { value: "offline",      label: "Offline",      tagline: "Not using AI tools",                                number: 1 },
-  { value: "chatting",     label: "Chatting",     tagline: "Using AI chat, starting fresh every time",          number: 2 },
-  { value: "systemizing",  label: "Systemizing",  tagline: "Custom GPTs, saved prompts, persistent memory",    number: 3 },
-  { value: "automating",   label: "Automating",   tagline: "AI workflows run in the background",               number: 4 },
   { value: "ai_native",    label: "AI-Native",    tagline: "Processes designed around AI from day one",        number: 5 },
+  { value: "automating",   label: "Automating",   tagline: "AI workflows run in the background",               number: 4 },
+  { value: "systemizing",  label: "Systemizing",  tagline: "Custom GPTs, saved prompts, persistent memory",    number: 3 },
+  { value: "chatting",     label: "Chatting",     tagline: "Using AI chat, starting fresh every time",          number: 2 },
+  { value: "offline",      label: "No AI",        tagline: "Not using AI tools",                                number: 1 },
 ];
 
 const FUNCTIONS: { value: UserFunction; label: string }[] = [
@@ -274,13 +274,13 @@ export default function AIPreferencesForm({ aiLevel, userFunction, country }: Pr
           <legend className="text-xs font-medium text-slate-600 mb-3">
             Where are you on the AI adoption ladder?
           </legend>
-          <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
+          <div className="flex flex-col gap-2">
             {AI_LEVELS.map((l) => {
               const selected = level === l.value;
               return (
                 <label
                   key={l.value}
-                  className={`relative flex flex-col cursor-pointer rounded-xl border p-3 transition-all ${
+                  className={`flex items-center gap-3 cursor-pointer rounded-xl border px-4 py-3 transition-all ${
                     selected
                       ? "border-blue-500 bg-blue-50 ring-1 ring-blue-500"
                       : "border-slate-200 bg-slate-50 hover:border-slate-300"
@@ -294,12 +294,10 @@ export default function AIPreferencesForm({ aiLevel, userFunction, country }: Pr
                     onChange={() => setLevel(l.value)}
                     className="sr-only"
                   />
-                  <span
-                    className={`text-xs font-bold mb-1 ${selected ? "text-blue-600" : "text-slate-400"}`}
-                  >
+                  <span className={`text-xs font-bold w-4 shrink-0 ${selected ? "text-blue-600" : "text-slate-400"}`}>
                     {l.number}
                   </span>
-                  <span className={`text-sm font-semibold leading-tight mb-1 ${selected ? "text-blue-700" : "text-slate-700"}`}>
+                  <span className={`text-sm font-semibold ${selected ? "text-blue-700" : "text-slate-700"}`}>
                     {l.label}
                   </span>
                   <span className="text-xs text-slate-500 leading-relaxed">{l.tagline}</span>

@@ -1,8 +1,12 @@
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
+import { createServiceClient } from "@/lib/supabase";
 import TrainingSidebar from "@/components/training/TrainingSidebar";
 import { getWorkshopBySlug, getWorkshopTrainingSections, STREAMS } from "@/lib/workshops";
+
+const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 
 type WorkshopLayoutProps = {
   children: ReactNode;
@@ -19,6 +23,28 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
 
   const sections = getWorkshopTrainingSections(slug);
   const stream = STREAMS[workshop.stream];
+
+  // Check pro access for recording
+  let hasProAccess = false;
+  if (workshop.recordingUrl && workshop.publicSlug) {
+    const { userId } = await auth();
+    if (userId) {
+      if (userId === ADMIN_USER_ID) {
+        hasProAccess = true;
+      } else {
+        const supabase = createServiceClient();
+        const { data } = await supabase
+          .from("orders")
+          .select("id")
+          .eq("clerk_user_id", userId)
+          .eq("workshop_slug", workshop.publicSlug)
+          .eq("tier", "pro")
+          .eq("status", "paid")
+          .maybeSingle();
+        hasProAccess = !!data;
+      }
+    }
+  }
 
   return (
     <main className="min-h-[calc(100dvh-4rem)] bg-slate-50 px-6 py-8">
@@ -56,6 +82,8 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
               sections={sections}
               backHref={`/members/workshops/${slug}`}
               workgroupHref={`/members/workshops/${slug}/workgroup`}
+              recordingUrl={workshop.recordingUrl}
+              hasRecordingAccess={hasProAccess}
             />
           </aside>
           <section>{children}</section>

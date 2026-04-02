@@ -197,7 +197,7 @@ export default function Header() {
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-1">
           <Link
-            href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
+            href="/workshops"
             className={navLinkClass("/workshops")}
           >
             Workshops
@@ -242,7 +242,7 @@ export default function Header() {
           >
             <div className="px-4 py-3 flex flex-col gap-1">
               <Link
-                href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
+                href="/workshops"
                 className={mobileNavLinkClass("/workshops")}
                 onClick={closeMobile}
               >

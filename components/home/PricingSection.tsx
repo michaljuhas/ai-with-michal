@@ -33,15 +33,28 @@ const plans = [
   },
 ];
 
-export default function PricingSection() {
+export default function PricingSection({
+  open,
+  displayDate,
+  displayTime,
+  workshopSlug,
+}: {
+  open?: boolean;
+  displayDate?: string;
+  displayTime?: string;
+  workshopSlug?: string;
+} = {}) {
   const [soldCount, setSoldCount] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch("/api/count")
+    const url = workshopSlug
+      ? `/api/count?slug=${encodeURIComponent(workshopSlug)}`
+      : "/api/count";
+    fetch(url)
       .then((r) => r.json())
       .then((d) => setSoldCount(d.count ?? null))
       .catch(() => {});
-  }, []);
+  }, [workshopSlug]);
 
   return (
     <section id="pricing" className="scroll-mt-16 py-24 px-6 bg-white">
@@ -89,8 +102,8 @@ export default function PricingSection() {
         >
           <Calendar size={20} className="text-blue-600 shrink-0" />
           <div className="text-center">
-            <p className="text-slate-900 font-bold">{WORKSHOP.displayDate}</p>
-            <p className="text-slate-500 text-sm">{WORKSHOP.displayTime}</p>
+            <p className="text-slate-900 font-bold">{displayDate ?? WORKSHOP.displayDate}</p>
+            <p className="text-slate-500 text-sm">{displayTime ?? WORKSHOP.displayTime}</p>
           </div>
         </motion.div>
 
@@ -146,6 +159,8 @@ export default function PricingSection() {
                     : "bg-slate-900 hover:bg-slate-800 text-white"
                 }`}
                 disabledClassName="flex items-center justify-center w-full py-3.5 rounded-xl font-semibold text-sm bg-slate-200 text-slate-400 cursor-not-allowed"
+                open={open}
+                workshopSlug={workshopSlug}
               />
             </motion.div>
           ))}

@@ -50,6 +50,12 @@ export default function MentoringJoinPage() {
       return;
     }
 
+    fetch("/api/registrations/interested-in", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product: `mentoring:${tier}` }),
+    }).catch(() => {});
+
     setLoading(tier);
     setError(null);
     const option = MENTORING_OPTIONS.find((o) => o.id === tier);

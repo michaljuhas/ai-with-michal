@@ -29,8 +29,17 @@ const ACCOUNT_ID = RAW_ACCOUNT_ID.replace(/^act_/, '');
 
 const BASE_URL = 'https://graph.facebook.com/v25.0';
 
-// Landing page — clean URL, no UTM params here
-const WEBSITE_URL = 'https://aiwithmichal.com';
+// Active workshop slug → determines landing page URL and ad-set end time.
+// Override with --workshop-slug when launching for a specific workshop.
+const CURRENT_WORKSHOP_SLUG = '2026-04-16-sourcing-automation';
+
+// Upcoming workshop dates (UTC) — used to set the ad-set end_time per workshop.
+const WORKSHOP_DATES = {
+  '2026-04-16-sourcing-automation':    '2026-04-16T15:00:00Z',
+  '2026-04-23-ai-in-recruiting':       '2026-04-23T15:00:00Z',
+  '2026-05-07-claude-cowork-recruiting': '2026-05-07T15:00:00Z',
+};
+
 // URL parameters field (Tracking section in Ads Manager) — Meta resolves {{...}} at serve time
 const URL_TAGS = 'utm_source=Meta&utm_medium={{placement}}&utm_campaign={{campaign.name}}&utm_content={{adset.name}}&utm_term={{ad.name}}';
 
@@ -46,8 +55,6 @@ const EU_COUNTRIES = [
   'GB', 'CH', 'NO', // UK + Switzerland + Norway
 ];
 
-// Workshop ends Apr 2 2026 15:00 UTC
-const WORKSHOP_END_UNIX = Math.floor(new Date('2026-04-02T15:00:00Z').getTime() / 1000);
 
 // ---------------------------------------------------------------------------
 // CLI args
@@ -69,6 +76,7 @@ function parseArgs() {
     dailyBudget: get('--budget') ? parseInt(get('--budget'), 10) : 1000,
     campaignId: get('--campaign-id'),
     adsetId: get('--adset-id'),
+    workshopSlug: get('--workshop-slug') ?? CURRENT_WORKSHOP_SLUG,
   };
 }
 
@@ -157,7 +165,17 @@ async function main() {
     process.exit(1);
   }
 
-  const { folder, dryRun, dailyBudget, campaignId: existingCampaignId, adsetId: existingAdsetId } = parseArgs();
+  const { folder, dryRun, dailyBudget, campaignId: existingCampaignId, adsetId: existingAdsetId, workshopSlug } = parseArgs();
+
+  const workshopUrl = `https://aiwithmichal.com/workshops/${workshopSlug}`;
+  const workshopEndDate = WORKSHOP_DATES[workshopSlug];
+  if (!workshopEndDate) {
+    console.error(`[launch-campaign] Unknown workshop slug: "${workshopSlug}". Add it to WORKSHOP_DATES.`);
+    process.exit(1);
+  }
+  const workshopEndUnix = Math.floor(new Date(workshopEndDate).getTime() / 1000);
+  log(`Workshop: ${workshopSlug}`);
+  log(`Landing page: ${workshopUrl}`);
 
   // Resolve assets folder
   const campaignDir = folder ? join(ROOT, folder) : findMostRecentFolder();
@@ -183,7 +201,7 @@ async function main() {
     log('--- DRY RUN — nothing will be created ---');
     log(`Campaign:  "Workshop – ${folderName}"  (OUTCOME_SALES, PAUSED)`);
     log(`Ad Set:    daily budget €${(dailyBudget / 100).toFixed(2)}, EU only, age 25–45, ends Apr 2 2026`);
-    log(`Website URL:    ${WEBSITE_URL}`);
+    log(`Website URL:    ${workshopUrl}`);
     log(`URL parameters: ${URL_TAGS}`);
     log(`Instagram/Threads: michal.juhas.life (resolved via page connection)`);
     log(`Images (${imageFiles.length}) × ${copy.headlines.length} copy variations = ${imageFiles.length * copy.headlines.length} ads:`);
@@ -243,7 +261,7 @@ async function main() {
       age_max: 45,
       targeting_automation: { advantage_audience: 0 },
     },
-    end_time: WORKSHOP_END_UNIX,
+    end_time: workshopEndUnix,
     status: 'PAUSED',
   });
   log(`  id: ${adSet.id}`);
@@ -279,12 +297,12 @@ async function main() {
           // from the page's connected Instagram/Threads account for all placements.
           link_data: {
             image_hash: imageHashes[filename],
-            link: WEBSITE_URL,
+            link: workshopUrl,
             message: primaryText,
             name: headline,
             call_to_action: {
               type: 'SIGN_UP',
-              value: { link: WEBSITE_URL },
+              value: { link: workshopUrl },
             },
           },
         },

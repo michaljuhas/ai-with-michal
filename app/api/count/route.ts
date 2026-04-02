@@ -1,16 +1,23 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 
 // Cached for 60s — public endpoint, no auth needed
 export const revalidate = 60;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const slug = req.nextUrl.searchParams.get("slug");
     const supabase = createServiceClient();
-    const { count, error } = await supabase
+    let query = supabase
       .from("orders")
       .select("*", { count: "exact", head: true })
       .eq("status", "paid");
+
+    if (slug) {
+      query = query.eq("workshop_slug", slug);
+    }
+
+    const { count, error } = await query;
 
     if (error) throw error;
 

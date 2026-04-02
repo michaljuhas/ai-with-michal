@@ -141,36 +141,33 @@ node --env-file=.env scripts/generate-campaign-assets.mjs --focus "your angle"
 
 ### Step 2 — Launch campaign
 
+The script uses the workshop slug to set the landing page URL (`/workshops/<slug>`) and the ad-set end time automatically.
+
 ```bash
-# LEADS campaign (default behaviour, optimize for Lead pixel events)
+# Uses CURRENT_WORKSHOP_SLUG (set at the top of launch-campaign.mjs) as the landing page
 node --env-file=.env scripts/launch-campaign.mjs
 
-# SALES campaign (optimize for Purchase pixel events)
-# Before running: in launch-campaign.mjs set objective → OUTCOME_SALES and custom_event_type → PURCHASE
-node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/YYYY-MM-DD-HH-mm
+# Target a specific workshop (landing page = /workshops/<slug>, end time = workshop date)
+node --env-file=.env scripts/launch-campaign.mjs --workshop-slug 2026-04-23-ai-in-recruiting
+
+# Use a specific asset folder
+node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/YYYY-MM-DD-HH-mm --workshop-slug 2026-04-23-ai-in-recruiting
 
 # Resume after a partial failure (skip campaign + ad set creation, go straight to images + creatives)
 node --env-file=.env scripts/launch-campaign.mjs \
   --folder campaigns/YYYY-MM-DD-HH-mm \
+  --workshop-slug 2026-04-23-ai-in-recruiting \
   --campaign-id <existing-campaign-id> \
   --adset-id <existing-adset-id>
 
 # Set a custom daily budget (default €10/day = 1000 cents)
 node --env-file=.env scripts/launch-campaign.mjs --budget 2000   # €20/day
+
+# Dry-run — preview without creating anything
+node --env-file=.env scripts/launch-campaign.mjs --dry-run --workshop-slug 2026-04-16-sourcing-automation
 ```
 
-### Differences: LEADS vs SALES
-
-| Setting | LEADS | SALES |
-|---|---|---|
-| `objective` | `OUTCOME_LEADS` | `OUTCOME_SALES` |
-| `optimization_goal` | `OFFSITE_CONVERSIONS` | `OFFSITE_CONVERSIONS` |
-| `promoted_object.custom_event_type` | `LEAD` | `PURCHASE` |
-| Call-to-action type | `SIGN_UP` | `SIGN_UP` (works for both) |
-
-In `launch-campaign.mjs`, change these two lines to switch between modes:
-- `objective: 'OUTCOME_LEADS'` → `'OUTCOME_SALES'`
-- `custom_event_type: 'LEAD'` → `'PURCHASE'`
+When adding a new workshop, add its slug + date to `WORKSHOP_DATES` in `launch-campaign.mjs` and update `CURRENT_WORKSHOP_SLUG`.
 
 ### Common errors
 

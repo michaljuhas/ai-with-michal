@@ -43,12 +43,7 @@ export async function findOrCreateCustomer(
   return customer.id;
 }
 
-export const PRICE_IDS = {
-  basic: process.env.STRIPE_PRICE_BASIC!,
-  pro: process.env.STRIPE_PRICE_PRO!,
-} as const;
-
-export type PriceTier = keyof typeof PRICE_IDS;
+export type PriceTier = "basic" | "pro";
 
 // ---------------------------------------------------------------------------
 // Mentoring subscriptions

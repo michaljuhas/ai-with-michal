@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPublicWorkshopBySlug } from "@/lib/workshops";
+import { getPublicWorkshopBySlug, isOpen } from "@/lib/workshops";
 import HeroSection from "@/components/home/HeroSection";
 import RecruiterFomoSection from "@/components/home/RecruiterFomoSection";
 import HostIntroSection from "@/components/home/HostIntroSection";
@@ -25,9 +25,11 @@ export default async function WorkshopPage({ params }: Props) {
   const workshop = getPublicWorkshopBySlug(slug);
   if (!workshop) notFound();
 
+  const open = isOpen(workshop);
+
   return (
     <main>
-      <HeroSection />
+      <HeroSection open={open} displayDate={workshop.displayDate} workshopDate={workshop.date} workshopSlug={workshop.slug} />
       <RecruiterFomoSection />
       <HostIntroSection />
       <ProblemSection />
@@ -38,10 +40,10 @@ export default async function WorkshopPage({ params }: Props) {
       <AgendaSection />
       <WhatYouGetSection />
       <VideoTestimonialSection />
-      <PricingSection />
+      <PricingSection open={open} displayDate={workshop.displayDate} displayTime={workshop.displayTime} workshopSlug={workshop.slug} />
       <GuaranteeSection />
       <AboutSection />
-      <FinalCTA />
+      <FinalCTA open={open} workshopSlug={workshop.slug} />
     </main>
   );
 }

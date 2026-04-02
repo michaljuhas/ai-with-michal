@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Clock } from "lucide-react";
-import { WORKSHOP, getDaysUntilWorkshop, isRegistrationOpen } from "@/lib/workshop";
+import { getDaysUntilWorkshop, isRegistrationOpen } from "@/lib/workshop";
+import { getPublicWorkshopBySlug, isOpen } from "@/lib/workshops";
 import RegisterButton from "@/components/RegisterButton";
 
 const VISIBLE_PREFIXES = ["/", "/workshops"];
@@ -15,14 +16,25 @@ function shouldShowOnRoute(pathname: string): boolean {
 
 export default function StickyCountdown() {
   const pathname = usePathname();
+
+  // If on a /workshops/[slug] page, use that workshop's data; else fall back to global
+  const slugMatch = pathname.match(/^\/workshops\/([^/]+)/);
+  const pageWorkshop = slugMatch ? getPublicWorkshopBySlug(slugMatch[1]) : undefined;
+
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
   const [open, setOpen] = useState(true);
   const [visible, setVisible] = useState(false);
   const [viewportBottomOffset, setViewportBottomOffset] = useState(0);
 
   useEffect(() => {
-    setDaysLeft(getDaysUntilWorkshop());
-    setOpen(isRegistrationOpen());
+    if (pageWorkshop) {
+      const diff = pageWorkshop.date.getTime() - Date.now();
+      setDaysLeft(Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24))));
+      setOpen(isOpen(pageWorkshop));
+    } else {
+      setDaysLeft(getDaysUntilWorkshop());
+      setOpen(isRegistrationOpen());
+    }
 
     const handleScroll = () => {
       setVisible(window.scrollY > 600);
@@ -79,7 +91,7 @@ export default function StickyCountdown() {
           <div className="flex items-center gap-4">
             <div className="hidden sm:flex items-center gap-2 text-slate-200 text-sm font-medium">
               <Clock size={14} className="text-blue-400" />
-              <span>{WORKSHOP.displayDateShort}</span>
+              <span>{pageWorkshop?.displayDateShort ?? ""}</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -100,6 +112,8 @@ export default function StickyCountdown() {
           <RegisterButton
             className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm px-5 py-2.5 rounded-lg transition-colors group whitespace-nowrap"
             disabledClassName="inline-flex items-center gap-2 bg-slate-600 text-slate-400 font-semibold text-sm px-5 py-2.5 rounded-lg cursor-not-allowed whitespace-nowrap"
+            workshopSlug={pageWorkshop?.slug}
+            open={open}
           />
         </div>
       </div>

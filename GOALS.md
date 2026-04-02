@@ -1,7 +1,7 @@
 # Workshop Goals
 
-**Event:** Build AI-Powered Talent Pools Outside LinkedIn
-**Date:** April 2, 2026 · 3:00 PM – 4:30 PM UTC
+**Event:** Sourcing Automation for Recruiters
+**Date:** April 16, 2026 · 3:00 PM – 4:30 PM UTC
 **Revenue targets:** €3,000 minimum · €5,000 stretch
 
 ## KPIs
@@ -65,7 +65,7 @@ node --env-file=.env scripts/meta-ads/index.mjs insights <campaign-id> --preset 
 - If Basic:Pro ratio > 60:40: add urgency to Pro tier on /tickets page
 - If registrations high but payments low: email outreach to registered non-payers
 - If <15 spots left: announce urgency on social + email blast
-- 1 week before (Mar 26): send reminder email to all paid attendees
-- 1 day before (Apr 1): send final reminder with meeting link
-- Day of (Apr 2): send day-of email 1 hour before start
+- 1 week before (Apr 9): send reminder email to all paid attendees
+- 1 day before (Apr 15): send final reminder with meeting link
+- Day of (Apr 16): send day-of email 1 hour before start
 - Review Meta Ads: run `meta-ads-stats.mjs` → check spend, CTR, leads; pause campaigns with CTR < 0.5% or no conversions; scale up campaigns with CTR > 3% or confirmed purchases

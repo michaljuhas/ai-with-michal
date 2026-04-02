@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
-import { getStripe, findOrCreateCustomer, PRICE_IDS, PriceTier } from "@/lib/stripe";
+import { getStripe, findOrCreateCustomer, PriceTier } from "@/lib/stripe";
+import { getPublicWorkshopBySlug } from "@/lib/workshops";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
 import { sendMetaEvent } from "@/lib/meta-capi";
@@ -20,18 +21,27 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const tier = body.tier as PriceTier;
+  const workshopSlug = body.workshopSlug as string | undefined;
   const cancelUrl = body.cancelUrl as string | undefined;
 
-  if (!tier || !PRICE_IDS[tier]) {
+  if (!tier || (tier !== "basic" && tier !== "pro")) {
     return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
   }
 
-  // Enforce capacity
+  const workshop = workshopSlug ? getPublicWorkshopBySlug(workshopSlug) : undefined;
+  if (!workshop) {
+    return NextResponse.json({ error: "Invalid workshop" }, { status: 400 });
+  }
+
+  const priceId = workshop.priceIds[tier];
+
+  // Enforce capacity per workshop
   const supabase = createServiceClient();
   const { count } = await supabase
     .from("orders")
     .select("*", { count: "exact", head: true })
-    .eq("status", "paid");
+    .eq("status", "paid")
+    .eq("workshop_slug", workshopSlug);
 
   if ((count ?? 0) >= CAPACITY) {
     return NextResponse.json({ error: "sold_out" }, { status: 409 });
@@ -56,7 +66,7 @@ export async function POST(req: NextRequest) {
       currency: "eur",
       line_items: [
         {
-          price: PRICE_IDS[tier],
+          price: priceId,
           quantity: 1,
         },
       ],
@@ -70,6 +80,8 @@ export async function POST(req: NextRequest) {
         clerk_user_id: userId,
         tier,
         customer_name: customerName,
+        workshop_slug: workshopSlug!,
+        price_id: priceId,
       },
       success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${appUrl}${cancelUrl || "/tickets"}`,

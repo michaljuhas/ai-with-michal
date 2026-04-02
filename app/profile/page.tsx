@@ -21,22 +21,24 @@ export default async function ProfilePage() {
     .maybeSingle<Pick<Registration, "ai_level" | "function" | "country" | "linkedin_url">>();
 
   return (
-    <main className="min-h-screen bg-slate-50 pt-20 pb-16">
-      <div className="max-w-2xl mx-auto px-6 space-y-8">
-        <div>
+    <main className="min-h-screen bg-slate-50 pt-16 pb-16">
+      <div className="max-w-[1400px] mx-auto px-6 sm:px-10 lg:px-16">
+        <div className="mb-8">
           <h1 className="text-2xl font-bold text-slate-900">Profile</h1>
           <p className="mt-1 text-sm text-slate-500">
             Manage your personal details and AI preferences.
           </p>
         </div>
 
-        <PersonalInfoForm linkedinUrl={data?.linkedin_url ?? null} />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <PersonalInfoForm linkedinUrl={data?.linkedin_url ?? null} />
 
-        <AIPreferencesForm
-          aiLevel={data?.ai_level ?? null}
-          userFunction={data?.function ?? null}
-          country={data?.country ?? null}
-        />
+          <AIPreferencesForm
+            aiLevel={data?.ai_level ?? null}
+            userFunction={data?.function ?? null}
+            country={data?.country ?? null}
+          />
+        </div>
       </div>
     </main>
   );

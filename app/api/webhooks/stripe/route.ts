@@ -37,6 +37,7 @@ export async function POST(req: NextRequest) {
     const session = event.data.object as Stripe.Checkout.Session;
     const clerkUserId = session.metadata?.clerk_user_id;
     const tier = session.metadata?.tier as "basic" | "pro" | undefined;
+    const workshopSlug = session.metadata?.workshop_slug;
 
     if (!clerkUserId || !tier) {
       console.error("Missing metadata in checkout session", session.id);
@@ -49,10 +50,11 @@ export async function POST(req: NextRequest) {
       {
         clerk_user_id: clerkUserId,
         stripe_session_id: session.id,
-        price_id: session.line_items?.data[0]?.price?.id ?? "",
+        price_id: session.metadata?.price_id ?? "",
         tier,
         amount_eur: Math.round((session.amount_total ?? 0) / 100),
         status: "paid",
+        ...(workshopSlug ? { workshop_slug: workshopSlug } : {}),
       },
       { onConflict: "stripe_session_id" }
     );

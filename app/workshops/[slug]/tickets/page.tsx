@@ -10,6 +10,7 @@ import VideoTestimonialSection from "@/components/VideoTestimonialSection";
 import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
 import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
+import { getPublicWorkshopBySlug } from "@/lib/workshops";
 import { getStoredTrackingParams } from "@/lib/tracking-params";
 
 const CAPACITY = 50;
@@ -58,11 +59,11 @@ export default function WorkshopTicketsPage() {
   useEffect(() => {
     posthog.capture("ticket_tier_viewed");
     fireMetaEvent("ViewContent");
-    fetch("/api/count")
+    fetch(`/api/count?slug=${encodeURIComponent(params.slug)}`)
       .then((r) => r.json())
       .then((d) => setSoldCount(d.count ?? 0))
       .catch(() => setSoldCount(null));
-  }, []);
+  }, [params.slug]);
 
   useEffect(() => {
     if (user) {
@@ -83,12 +84,20 @@ export default function WorkshopTicketsPage() {
           body: JSON.stringify(trackingParams),
         }).catch(() => {});
       }
-    }
-  }, [user]);
 
+      fetch("/api/registrations/interested-in", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ product: `workshop:${params.slug}` }),
+      }).catch(() => {});
+    }
+  }, [user, params.slug]);
+
+  const workshop = getPublicWorkshopBySlug(params.slug);
+  const isRegistrationOpen = workshop ? new Date() < workshop.date : false;
   const spotsLeft = soldCount !== null ? CAPACITY - soldCount : null;
-  const isSoldOut = spotsLeft !== null && spotsLeft <= 0;
-  const showUrgency = spotsLeft !== null && spotsLeft > 0 && spotsLeft <= URGENCY_THRESHOLD;
+  const isSoldOut = !isRegistrationOpen || (spotsLeft !== null && spotsLeft <= 0);
+  const showUrgency = isRegistrationOpen && spotsLeft !== null && spotsLeft > 0 && spotsLeft <= URGENCY_THRESHOLD;
 
   async function handleCheckout(tier: PriceTier) {
     if (!user) {
@@ -110,7 +119,7 @@ export default function WorkshopTicketsPage() {
       const res = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tier, cancelUrl: ticketsPath }),
+        body: JSON.stringify({ tier, workshopSlug: params.slug, cancelUrl: ticketsPath }),
       });
 
       const data = await res.json();
@@ -170,7 +179,7 @@ export default function WorkshopTicketsPage() {
               animate={{ opacity: 1, scale: 1 }}
             >
               <AlertCircle size={15} />
-              Workshop is sold out — email us to join the waitlist
+              {!isRegistrationOpen ? "Registration is closed for this workshop" : "Workshop is sold out — email us to join the waitlist"}
             </motion.div>
           )}
           {showUrgency && !isSoldOut && (

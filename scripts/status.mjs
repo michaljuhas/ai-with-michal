@@ -10,7 +10,8 @@ import { CAMPAIGN_START } from './config.mjs';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const WORKSHOP_DATE = new Date("2026-04-02T15:00:00Z");
+const WORKSHOP_DATE = new Date("2026-04-16T15:00:00Z");
+const WORKSHOP_SLUG = "2026-04-16-sourcing-automation";
 const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
 
 async function fetchMetaInsights() {
@@ -50,7 +51,7 @@ async function main() {
 
   const [registrations, orders, metaInsights] = await Promise.all([
     supabaseGet("registrations?select=id,created_at"),
-    supabaseGet("orders?select=id,tier,amount_eur,status,created_at&status=eq.paid"),
+    supabaseGet(`orders?select=id,tier,amount_eur,status,created_at&status=eq.paid&workshop_slug=eq.${WORKSHOP_SLUG}`),
     fetchMetaInsights(),
   ]);
 
@@ -71,7 +72,7 @@ async function main() {
   console.log("\n╔══════════════════════════════════════════════════╗");
   console.log("║         WORKSHOP STATUS DASHBOARD                ║");
   console.log("╚══════════════════════════════════════════════════╝");
-  console.log(`  Date:        April 2, 2026 · ${daysLeft} days away`);
+  console.log(`  Date:        April 16, 2026 · ${daysLeft} days away`);
   console.log(`  Capacity:    ${totalPaid}/${CAPACITY} spots filled · ${spotsLeft} remaining`);
   console.log("");
   console.log("  REVENUE");

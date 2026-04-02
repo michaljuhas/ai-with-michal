@@ -1,6 +1,11 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
+import { PUBLIC_WORKSHOPS } from "@/lib/workshops";
+
+const now = new Date();
+const nearestWorkshops = PUBLIC_WORKSHOPS.filter((w) => w.date >= now)
+  .sort((a, b) => a.date.getTime() - b.date.getTime())
+  .slice(0, 3);
 
 export default function Footer() {
   return (
@@ -24,17 +29,21 @@ export default function Footer() {
           {/* Workshops nav */}
           <div>
             <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3">
-              Workshops
+              <Link href="/workshops" className="hover:text-blue-600 transition-colors">
+                Workshops
+              </Link>
             </p>
             <ul className="space-y-2">
-              <li>
-                <Link
-                  href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
-                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
-                >
-                  Upcoming Workshop
-                </Link>
-              </li>
+              {nearestWorkshops.map((w) => (
+                <li key={w.slug}>
+                  <Link
+                    href={`/workshops/${w.slug}`}
+                    className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                  >
+                    {w.displayDateShort} · {w.title.replace(" (90-min online workshop)", "")}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

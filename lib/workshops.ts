@@ -38,6 +38,8 @@ export type WorkshopDef = {
   displayDate: string;
   displayTime?: string;
   description: string;
+  publicSlug?: string;   // slug used in PUBLIC_WORKSHOPS and orders table
+  recordingUrl?: string; // pro-only recording link
 };
 
 export const workshops: WorkshopDef[] = [
@@ -45,11 +47,43 @@ export const workshops: WorkshopDef[] = [
     slug: "recruiting-ai-apr-2026",
     title: "AI in Recruiting and Talent Acquisition",
     stream: "recruiting-ta",
-    date: WORKSHOP.date,
-    displayDate: WORKSHOP.displayDate,
-    displayTime: WORKSHOP.displayTime,
+    date: new Date("2026-04-02T15:00:00Z"),
+    displayDate: "April 2, 2026",
+    displayTime: "3:00 PM – 4:30 PM UTC",
     description:
       "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+    publicSlug: "2026-04-02-ai-in-recruiting",
+    recordingUrl: "https://drive.google.com/file/d/19Qos6UwOELh9SpBsDGbsCXaPP9c2Amas/view?usp=sharing",
+  },
+  {
+    slug: "sourcing-automation-apr-2026",
+    title: "Sourcing Automation for Recruiters",
+    stream: "recruiting-ta",
+    date: new Date("2026-04-16T15:00:00Z"),
+    displayDate: "April 16, 2026",
+    displayTime: "3:00 PM – 4:30 PM UTC",
+    description:
+      "Automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
+  },
+  {
+    slug: "recruiting-ai-apr23-2026",
+    title: "AI in Recruiting and Talent Acquisition",
+    stream: "recruiting-ta",
+    date: new Date("2026-04-23T15:00:00Z"),
+    displayDate: "April 23, 2026",
+    displayTime: "3:00 PM – 4:30 PM UTC",
+    description:
+      "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+  },
+  {
+    slug: "claude-cowork-recruiting-may-2026",
+    title: "Claude Cowork and Code in Recruiting",
+    stream: "recruiting-ta",
+    date: new Date("2026-05-07T15:00:00Z"),
+    displayDate: "May 7, 2026",
+    displayTime: "3:00 PM – 4:30 PM UTC",
+    description:
+      "Build real recruiting automations with Claude Code — no coding experience needed. Leave with working tools you can use immediately.",
   },
 ];
 
@@ -68,6 +102,8 @@ export interface Workshop {
   startDate: string;
   endDate: string;
   location: string;
+  priceIds: { basic: string; pro: string };
+  recordingUrl?: string;
 }
 
 export const PUBLIC_WORKSHOPS: Workshop[] = [
@@ -83,10 +119,66 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     displayDate: "April 2, 2026",
     displayTime: "3:00 PM – 4:30 PM UTC",
     displayDateShort: "Apr 2",
+    priceIds: {
+      basic: "price_1TCatHCDDkiysv3tRCPOeA0S",
+      pro: "price_1TCauFCDDkiysv3tJZoHHx7t",
+    },
+    recordingUrl: "https://drive.google.com/file/d/19Qos6UwOELh9SpBsDGbsCXaPP9c2Amas/view?usp=sharing",
+  },
+  {
+    slug: "2026-04-16-sourcing-automation",
+    title: "Sourcing Automation for Recruiters (90-min online workshop)",
+    description:
+      "Live 90-minute online workshop with Michal Juhas. Learn how to automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
+    location: "Online (Video call link will be emailed to you)",
+    date: new Date("2026-04-16T15:00:00Z"),
+    startDate: "20260416T150000Z",
+    endDate: "20260416T163000Z",
+    displayDate: "April 16, 2026",
+    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayDateShort: "Apr 16",
+    priceIds: {
+      basic: "price_1THrlQCDDkiysv3tHSHBBmeL",
+      pro: "price_1THrlUCDDkiysv3ty4BzAfUZ",
+    },
+  },
+  {
+    slug: "2026-04-23-ai-in-recruiting",
+    title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
+    description:
+      "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+    location: "Online (Video call link will be emailed to you)",
+    date: new Date("2026-04-23T15:00:00Z"),
+    startDate: "20260423T150000Z",
+    endDate: "20260423T163000Z",
+    displayDate: "April 23, 2026",
+    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayDateShort: "Apr 23",
+    priceIds: {
+      basic: "price_1THrlUCDDkiysv3tILt4bKox",
+      pro: "price_1THrlVCDDkiysv3tM6CUBKG3",
+    },
+  },
+  {
+    slug: "2026-05-07-claude-cowork-recruiting",
+    title: "Claude Cowork and Code in Recruiting (90-min online workshop)",
+    description:
+      "Live 90-minute hands-on session with Michal Juhas. Build real recruiting automations with Claude Code — no coding experience needed. Leave with working tools you can use immediately.",
+    location: "Online (Video call link will be emailed to you)",
+    date: new Date("2026-05-07T15:00:00Z"),
+    startDate: "20260507T150000Z",
+    endDate: "20260507T163000Z",
+    displayDate: "May 7, 2026",
+    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayDateShort: "May 7",
+    priceIds: {
+      basic: "price_1THrlVCDDkiysv3tFbelmZay",
+      pro: "price_1THrlWCDDkiysv3tJOQ15Hhg",
+    },
   },
 ];
 
-export const CURRENT_WORKSHOP_SLUG = "2026-04-02-ai-in-recruiting";
+export const CURRENT_WORKSHOP_SLUG = "2026-04-16-sourcing-automation";
 
 export function getPublicWorkshopBySlug(slug: string): Workshop | undefined {
   return PUBLIC_WORKSHOPS.find((w) => w.slug === slug);

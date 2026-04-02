@@ -14,16 +14,31 @@ const highlights = [
   "Handle more roles with less busywork and stronger output",
 ];
 
-export default function HeroSection() {
+export default function HeroSection({
+  open,
+  displayDate,
+  workshopDate,
+  workshopSlug,
+}: {
+  open?: boolean;
+  displayDate?: string;
+  workshopDate?: Date;
+  workshopSlug?: string;
+} = {}) {
   const [daysLeft, setDaysLeft] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
-      setDaysLeft(getDaysUntilWorkshop());
+      if (workshopDate) {
+        const diff = workshopDate.getTime() - Date.now();
+        setDaysLeft(Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24))));
+      } else {
+        setDaysLeft(getDaysUntilWorkshop());
+      }
     }, 0);
 
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [workshopDate]);
 
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden bg-white">
@@ -40,7 +55,7 @@ export default function HeroSection() {
           >
             <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-blue-700 border border-blue-200 rounded-full px-4 py-1.5 bg-blue-50">
               <Calendar size={12} />
-              {WORKSHOP.displayDate} · Live 90-minute workshop
+              {displayDate ?? WORKSHOP.displayDate} · Live 90-minute workshop
             </span>
             <span className="inline-flex items-center gap-2 text-xs font-semibold tracking-widest uppercase text-slate-700 border border-slate-200 rounded-full px-4 py-1.5 bg-white">
               For recruiters and talent teams
@@ -111,7 +126,7 @@ export default function HeroSection() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <RegisterButton label="Get my ticket — from €79" />
+            <RegisterButton label="Get my ticket — from €79" open={open} workshopSlug={workshopSlug} />
             <div className="flex items-center gap-2 text-slate-500 text-sm">
               <Clock size={14} />
               <span>90 minutes · Live online · Full refund if not satisfied</span>

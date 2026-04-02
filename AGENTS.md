@@ -64,10 +64,11 @@ node --env-file=.env scripts/generate-campaign-assets.mjs --focus "building tale
 # Launch a Meta Ads campaign from the most recent campaign assets folder.
 # Creates: campaign (PAUSED) → ad set → uploads 4 images → 4 creatives + 4 ads.
 # Review everything in Meta Ads Manager before activating.
-node --env-file=.env scripts/launch-campaign.mjs                                     # uses most recent campaigns/ folder
-node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/2026-03-19-21-13 # specific folder
-node --env-file=.env scripts/launch-campaign.mjs --dry-run                           # preview without creating
-node --env-file=.env scripts/launch-campaign.mjs --budget 2000                       # €20/day (amount in cents, default €10)
+node --env-file=.env scripts/launch-campaign.mjs                                                           # uses most recent campaigns/ folder + CURRENT_WORKSHOP_SLUG
+node --env-file=.env scripts/launch-campaign.mjs --workshop-slug 2026-04-23-ai-in-recruiting              # target a specific workshop (sets landing page + ad-set end time)
+node --env-file=.env scripts/launch-campaign.mjs --folder campaigns/2026-03-19-21-13                      # specific asset folder
+node --env-file=.env scripts/launch-campaign.mjs --dry-run                                                # preview without creating
+node --env-file=.env scripts/launch-campaign.mjs --budget 2000                                            # €20/day (amount in cents, default €10)
 
 # Newsletter / broadcast email — send to all registered users via SendGrid
 # See .claude/skills/send-newsletter.md for full conventions and script template
