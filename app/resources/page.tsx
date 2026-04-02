@@ -19,6 +19,14 @@ const resources = [
     tag: "Prompts",
   },
   {
+    title: "Complete LLM Prompting Mastery Guide",
+    description:
+      "Step-by-step examples that take you from a basic prompt to an advanced one that performs much better — practical patterns you can reuse in any workflow.",
+    file: "/Complete-LLM-Prompting-Mastery-Guide.pdf",
+    filename: "Complete-LLM-Prompting-Mastery-Guide.pdf",
+    tag: "Prompts",
+  },
+  {
     title: "Sourcing Tools Guide",
     description:
       "An overview of the most effective AI-powered sourcing tools available today, with practical tips on how to integrate them into your existing workflow.",
