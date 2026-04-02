@@ -7,7 +7,13 @@ export const metadata = {
   description: "Create your free account to reserve your seat for the AI in Recruiting and Talent Acquisition workshop.",
 };
 
-export default function RegisterPage() {
+export default async function RegisterPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ product?: string; redirect_url?: string }>;
+}) {
+  const params = await searchParams;
+  const product = params.product ?? null;
   return (
     <div className="relative min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-start px-6 pt-6 pb-14 md:pt-8 bg-slate-50 overflow-x-hidden">
       {/* Background accent */}
@@ -47,6 +53,7 @@ export default function RegisterPage() {
 
         <div className="register-clerk-slot grid w-full min-w-0 [grid-template-columns:minmax(0,1fr)] justify-items-stretch">
           <SignUp
+            {...(product ? { unsafeMetadata: { interested_in_product: product } } : {})}
             appearance={{
               elements: {
                 rootBox:

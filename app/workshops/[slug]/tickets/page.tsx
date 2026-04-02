@@ -102,7 +102,8 @@ export default function WorkshopTicketsPage() {
   async function handleCheckout(tier: PriceTier) {
     if (!user) {
       posthog.capture("checkout_attempted_unauthenticated", { tier });
-      window.location.assign(`/register?redirect_url=${encodeURIComponent(ticketsPath)}`);
+      const product = encodeURIComponent(`workshop:${params.slug}`);
+      window.location.assign(`/register?redirect_url=${encodeURIComponent(ticketsPath)}&product=${product}`);
       return;
     }
 
@@ -122,6 +123,7 @@ export default function WorkshopTicketsPage() {
         body: JSON.stringify({ tier, workshopSlug: params.slug, cancelUrl: ticketsPath }),
       });
 
+
       const data = await res.json();
 
       if (res.status === 409) {
@@ -132,7 +134,8 @@ export default function WorkshopTicketsPage() {
 
       if (res.status === 401) {
         posthog.capture("checkout_error", { tier, reason: "unauthorized" });
-        window.location.assign(`/register?redirect_url=${encodeURIComponent(ticketsPath)}`);
+        const product = encodeURIComponent(`workshop:${params.slug}`);
+        window.location.assign(`/register?redirect_url=${encodeURIComponent(ticketsPath)}&product=${product}`);
         return;
       }
 

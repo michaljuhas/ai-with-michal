@@ -82,6 +82,7 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
               sections={sections}
               backHref={`/members/workshops/${slug}`}
               workgroupHref={`/members/workshops/${slug}/workgroup`}
+              hasWorkgroupAccess={hasProAccess}
               recordingUrl={workshop.recordingUrl}
               hasRecordingAccess={hasProAccess}
             />

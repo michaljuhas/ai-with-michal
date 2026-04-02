@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
+import { clerkClient } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
 import { notifyAdminNewRegistration, sendWelcomeEmail } from "@/lib/email";
@@ -19,6 +20,7 @@ type UserCreatedEvent = {
     primary_email_address_id: string;
     first_name: string | null;
     last_name: string | null;
+    unsafe_metadata?: Record<string, unknown>;
   };
 };
 
@@ -69,6 +71,7 @@ export async function POST(req: NextRequest) {
       primary_email_address_id,
       first_name,
       last_name,
+      unsafe_metadata,
     } = (event as UserCreatedEvent).data;
 
     const primaryEmail = email_addresses.find(
@@ -81,16 +84,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No email found" }, { status: 400 });
     }
 
+    const interestedInProduct =
+      typeof unsafe_metadata?.interested_in_product === "string"
+        ? unsafe_metadata.interested_in_product
+        : null;
+
     const supabase = createServiceClient();
 
+    const registrationRow: Record<string, unknown> = { clerk_user_id: clerkUserId, email };
+    if (interestedInProduct) registrationRow.interested_in_product = interestedInProduct;
+
     const { error } = await supabase.from("registrations").upsert(
-      { clerk_user_id: clerkUserId, email },
+      registrationRow,
       { onConflict: "clerk_user_id" }
     );
 
     if (error) {
       console.error("Supabase upsert error:", error);
       return NextResponse.json({ error: "Database error" }, { status: 500 });
+    }
+
+    // Promote to publicMetadata so it's readable server-side without unsafe risk
+    if (interestedInProduct) {
+      try {
+        const clerk = await clerkClient();
+        await clerk.users.updateUser(clerkUserId, {
+          publicMetadata: { interested_in_product: interestedInProduct },
+        });
+      } catch (clerkErr) {
+        console.error("Failed to set Clerk publicMetadata:", clerkErr);
+      }
     }
 
     await captureEvent(clerkUserId, "user_registered", {

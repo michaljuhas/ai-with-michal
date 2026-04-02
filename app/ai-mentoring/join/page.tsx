@@ -44,8 +44,9 @@ export default function MentoringJoinPage() {
   async function handleCheckout(tier: MentoringTier) {
     if (!user) {
       posthog.capture("mentoring_checkout_attempted_unauthenticated", { tier });
+      const product = encodeURIComponent(`mentoring:${tier}`);
       window.location.assign(
-        `/register?redirect_url=${encodeURIComponent("/ai-mentoring/join")}`
+        `/register?redirect_url=${encodeURIComponent("/ai-mentoring/join")}&product=${product}`
       );
       return;
     }
@@ -80,8 +81,9 @@ export default function MentoringJoinPage() {
           tier,
           reason: "unauthorized",
         });
+        const product = encodeURIComponent(`mentoring:${tier}`);
         window.location.assign(
-          `/register?redirect_url=${encodeURIComponent("/ai-mentoring/join")}`
+          `/register?redirect_url=${encodeURIComponent("/ai-mentoring/join")}&product=${product}`
         );
         return;
       }

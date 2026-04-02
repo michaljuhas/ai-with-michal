@@ -1,4 +1,4 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, clerkClient } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 
@@ -42,6 +42,17 @@ export async function PATCH(req: NextRequest) {
   if (error) {
     console.error("interested_in_product update error:", error);
     return NextResponse.json({ error: "Database error" }, { status: 500 });
+  }
+
+  // Mirror to Clerk publicMetadata so it's available server-side on the user object
+  try {
+    const clerk = await clerkClient();
+    await clerk.users.updateUser(userId, {
+      publicMetadata: { interested_in_product: product },
+    });
+  } catch (clerkErr) {
+    console.error("Failed to update Clerk publicMetadata:", clerkErr);
+    // Non-fatal — Supabase is the source of truth
   }
 
   return NextResponse.json({ ok: true });

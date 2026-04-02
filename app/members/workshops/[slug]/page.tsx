@@ -162,32 +162,54 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
           </span>
         </Link>
 
-        {/* Workgroup */}
-        <Link
-          href={`/members/workshops/${slug}/workgroup`}
-          className="group flex flex-col rounded-2xl border border-violet-100 bg-violet-50 p-5 transition hover:border-violet-300 hover:bg-violet-100/60"
-        >
-          <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
+        {/* Workgroup — Pro only */}
+        {hasProAccess ? (
+          <Link
+            href={`/members/workshops/${slug}/workgroup`}
+            className="group flex flex-col rounded-2xl border border-violet-100 bg-violet-50 p-5 transition hover:border-violet-300 hover:bg-violet-100/60"
+          >
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-sm">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600 mb-1">
+              Any time
+            </p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-slate-900">Workgroup</p>
+              <ProBadge />
+            </div>
+            <p className="mt-1 text-sm text-slate-600 flex-1">
+              Post questions · I reply to every thread
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-violet-600 group-hover:gap-2 transition-all">
+              Open discussion
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </Link>
+        ) : (
+          <div className="flex flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5 opacity-60 cursor-not-allowed select-none">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-300 text-white shadow-sm">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 mb-1">Any time</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-slate-500">Workgroup</p>
+              <ProBadge />
+            </div>
+            <p className="mt-1 text-sm text-slate-400 flex-1">Available for Pro ticket holders</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-slate-400">
+              Pro only
+            </span>
           </div>
-          <p className="text-xs font-semibold uppercase tracking-[0.2em] text-violet-600 mb-1">
-            Any time
-          </p>
-          <p className="font-semibold text-slate-900">Workgroup</p>
-          <p className="mt-1 text-sm text-slate-600 flex-1">
-            Post questions · I reply to every thread
-          </p>
-          <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-violet-600 group-hover:gap-2 transition-all">
-            Open discussion
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-            </svg>
-          </span>
-        </Link>
+        )}
 
-        {/* Recording — pro only */}
+        {/* Recording — Pro only */}
         {workshop.recordingUrl && (
           hasProAccess ? (
             <a
@@ -203,7 +225,10 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
                 </svg>
               </div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600 mb-1">Recording</p>
-              <p className="font-semibold text-slate-900">Watch replay</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-slate-900">Watch replay</p>
+                <ProBadge />
+              </div>
               <p className="mt-1 text-sm text-slate-600 flex-1">Full 90-min session</p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-amber-600 group-hover:gap-2 transition-all">
                 Watch now
@@ -220,7 +245,10 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
                 </svg>
               </div>
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 mb-1">Recording</p>
-              <p className="font-semibold text-slate-500">Watch replay</p>
+              <div className="flex items-center gap-2">
+                <p className="font-semibold text-slate-500">Watch replay</p>
+                <ProBadge />
+              </div>
               <p className="mt-1 text-sm text-slate-400 flex-1">Available for Pro ticket holders</p>
               <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-slate-400">
                 Pro only
@@ -230,5 +258,13 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
         )}
       </div>
     </div>
+  );
+}
+
+function ProBadge() {
+  return (
+    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide bg-blue-100 text-blue-600">
+      Pro
+    </span>
   );
 }
