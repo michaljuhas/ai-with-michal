@@ -7,6 +7,8 @@ type TrainingLessonProps = {
   previousLesson: Pick<TrainingLessonType, "title" | "path"> | null;
   nextLesson: Pick<TrainingLessonType, "title" | "path"> | null;
   children: ReactNode;
+  /** When true, skip the lesson header card and render children directly (e.g. for custom full-bleed components) */
+  hideTitle?: boolean;
 };
 
 export default function TrainingLesson({
@@ -14,9 +16,13 @@ export default function TrainingLesson({
   previousLesson,
   nextLesson,
   children,
+  hideTitle = false,
 }: TrainingLessonProps) {
   return (
     <div className="space-y-6">
+      {hideTitle ? (
+        children
+      ) : (
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
         <div className="mb-8 border-b border-slate-100 pb-6">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">
@@ -46,6 +52,7 @@ export default function TrainingLesson({
           {children}
         </article>
       </div>
+      )}
 
       <div className="grid gap-3 sm:grid-cols-2">
         {previousLesson ? (

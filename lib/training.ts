@@ -14,9 +14,9 @@ import WhatToExpectContent, {
 import JoinContent, {
   lesson as joinLesson,
 } from "@/content/training/live-workshop/join.mdx";
-import RecordingContent, {
-  lesson as recordingLesson,
-} from "@/content/training/live-workshop/recording.mdx";
+import SessionNotesContent, {
+  lesson as sessionNotesLesson,
+} from "@/content/training/live-workshop/session-notes.mdx";
 
 export type TrainingSectionKey = "pre-training" | "live-workshop";
 
@@ -61,7 +61,7 @@ export const trainingLessons: TrainingLesson[] = [
   createLesson(examplesLesson as TrainingLessonMeta, ExamplesContent),
   createLesson(whatToExpectLesson as TrainingLessonMeta, WhatToExpectContent),
   createLesson(joinLesson as TrainingLessonMeta, JoinContent),
-  createLesson(recordingLesson as TrainingLessonMeta, RecordingContent),
+  createLesson(sessionNotesLesson as TrainingLessonMeta, SessionNotesContent),
 ].sort((a, b) => {
   if (a.section === b.section) {
     return a.order - b.order;
