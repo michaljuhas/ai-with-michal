@@ -18,7 +18,7 @@
 
 - Basic (Workshop Ticket): €79
 - Pro (Workshop + Toolkit): €129 — push this tier
-- Capacity: 50 spots (enforced in checkout)
+- Capacity: 20 spots (target in admin dashboard; checkout enforced via WORKSHOP_CAPACITY env var)
 
 ## Levers to pull (in order of impact)
 

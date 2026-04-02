@@ -37,14 +37,14 @@ function AttributionDetail({ reg }: { reg: Registration }) {
 
   if (!hasAny) {
     return (
-      <td colSpan={5} className="px-6 pb-4 pt-0">
+      <td colSpan={6} className="px-6 pb-4 pt-0">
         <p className="text-xs text-slate-400 italic">No attribution data captured.</p>
       </td>
     );
   }
 
   return (
-    <td colSpan={5} className="px-6 pb-4 pt-0">
+    <td colSpan={6} className="px-6 pb-4 pt-0">
       <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2">
         {rows.map(({ label, value }) => (
           <div key={label}>
@@ -83,10 +83,11 @@ export default function RegistrationsTable({ registrations, orders }: Props) {
         <table className="w-full text-sm">
           <thead className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
             <tr>
+              <th className="px-6 py-3 text-left">Date</th>
               <th className="px-6 py-3 text-left">Email</th>
               <th className="px-6 py-3 text-left">Source</th>
               <th className="px-6 py-3 text-left">Paid</th>
-              <th className="px-6 py-3 text-left">Signed Up</th>
+              <th className="px-6 py-3 text-left">Interested in product</th>
               <th className="px-6 py-3 text-left w-8" />
             </tr>
           </thead>
@@ -103,12 +104,15 @@ export default function RegistrationsTable({ registrations, orders }: Props) {
                     className={`hover:bg-slate-50 cursor-pointer select-none ${isOpen ? "bg-slate-50" : ""}`}
                     onClick={() => toggle(r.id)}
                   >
+                    <td className="px-6 py-3 text-slate-500 whitespace-nowrap">
+                      {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                    </td>
                     <td className="px-6 py-3 text-slate-700">{r.email}</td>
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-2">
                         <SourceBadge type={r.source_type} />
                         {r.source_detail && (
-                          <span className="text-xs text-slate-400 truncate max-w-[140px]">{r.source_detail}</span>
+                          <span className="text-xs text-slate-400 truncate max-w-[120px]">{r.source_detail}</span>
                         )}
                       </div>
                     </td>
@@ -119,8 +123,8 @@ export default function RegistrationsTable({ registrations, orders }: Props) {
                         <span className="inline-block px-2 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-500">Registered</span>
                       )}
                     </td>
-                    <td className="px-6 py-3 text-slate-500">
-                      {new Date(r.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+                    <td className="px-6 py-3 text-slate-600 text-xs">
+                      {r.interested_in_product || <span className="text-slate-300">—</span>}
                     </td>
                     <td className="px-6 py-3 text-slate-300">
                       {hasAttribution && (
@@ -141,7 +145,7 @@ export default function RegistrationsTable({ registrations, orders }: Props) {
             })}
             {registrations.length === 0 && (
               <tr>
-                <td colSpan={5} className="px-6 py-8 text-center text-slate-400">No registrations yet.</td>
+                <td colSpan={6} className="px-6 py-8 text-center text-slate-400">No registrations yet.</td>
               </tr>
             )}
           </tbody>

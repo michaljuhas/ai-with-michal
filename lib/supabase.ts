@@ -58,6 +58,8 @@ export type Registration = {
   function?: "recruiting_ta_hr" | "gtm" | "business_ops" | "builder_founder" | null;
   country?: string | null;
   linkedin_url?: string | null;
+  // Product interest (added in migration 008)
+  interested_in_product?: string | null;
 };
 
 export type Order = {
@@ -69,6 +71,8 @@ export type Order = {
   amount_eur: number;
   status: "pending" | "paid";
   created_at: string;
+  // Workshop association (added in migration 007)
+  workshop_slug?: string | null;
 };
 
 export type WorkgroupPost = {
