@@ -64,15 +64,18 @@ See you tomorrow,
 Michal`,
   },
   dayOf: {
-    subject: `Starting in 1 hour — AI Workshop today at 3 PM UTC`,
+    subject: `Starting in ~3 hours — AI Workshop today at 3 PM UTC / 4 PM CET`,
     body: (name) => `Hi ${name},
 
-The workshop starts in about an hour!
+The workshop starts in about 3 hours — today at 3 PM UTC (4 PM CET).
 
 📅 Today · ${WORKSHOP_TIME}
 🔗 Join here: ${MEETING_URL}
 
-See you in a few,
+A quick note: this is a hands-on workshop, not a presentation. We have a workgroup ready and we'll be building together from the start — so please join live so we can get straight to work.
+
+Looking forward to meeting you online!
+
 Michal`,
   },
 };
