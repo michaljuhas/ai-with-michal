@@ -9,6 +9,7 @@ type TrainingSidebarProps = {
   sidebarTitle?: string;
   sidebarDescription?: string;
   backHref?: string;
+  overviewHref?: string;
   workgroupHref?: string;
   hasWorkgroupAccess?: boolean;
   recordingUrl?: string;
@@ -18,6 +19,7 @@ type TrainingSidebarProps = {
 export default function TrainingSidebar({
   sections,
   backHref,
+  overviewHref,
   workgroupHref,
   hasWorkgroupAccess,
   recordingUrl,
@@ -37,7 +39,7 @@ export default function TrainingSidebar({
           <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
           </svg>
-          Workshop overview
+          Back to workshops
         </Link>
       )}
 
@@ -79,6 +81,27 @@ export default function TrainingSidebar({
 
       {/* Desktop: one card per section */}
       <nav className="hidden space-y-2 lg:block">
+        {overviewHref && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+              Overview
+            </p>
+            <Link
+              href={overviewHref}
+              className={`flex items-center gap-2 rounded-xl px-3 py-2 text-sm transition ${
+                pathname === overviewHref
+                  ? "bg-blue-50 text-blue-700 font-medium"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+              }`}
+            >
+              <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+              </svg>
+              Workshop overview
+            </Link>
+          </div>
+        )}
+
         {sections.map((section) => (
           <div
             key={section.key}

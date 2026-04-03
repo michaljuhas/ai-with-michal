@@ -38,13 +38,12 @@ export type WorkshopDef = {
   displayDate: string;
   displayTime?: string;
   description: string;
-  publicSlug?: string;   // slug used in PUBLIC_WORKSHOPS and orders table
   recordingUrl?: string; // pro-only recording link
 };
 
 export const workshops: WorkshopDef[] = [
   {
-    slug: "recruiting-ai-apr-2026",
+    slug: "2026-04-02-ai-in-recruiting",
     title: "AI in Recruiting and Talent Acquisition",
     stream: "recruiting-ta",
     date: new Date("2026-04-02T15:00:00Z"),
@@ -52,11 +51,10 @@ export const workshops: WorkshopDef[] = [
     displayTime: "3:00 PM – 4:30 PM UTC",
     description:
       "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
-    publicSlug: "2026-04-02-ai-in-recruiting",
     recordingUrl: "https://drive.google.com/file/d/19Qos6UwOELh9SpBsDGbsCXaPP9c2Amas/view?usp=sharing",
   },
   {
-    slug: "sourcing-automation-apr-2026",
+    slug: "2026-04-16-sourcing-automation",
     title: "Sourcing Automation for Recruiters",
     stream: "recruiting-ta",
     date: new Date("2026-04-16T15:00:00Z"),
@@ -66,7 +64,7 @@ export const workshops: WorkshopDef[] = [
       "Automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
   },
   {
-    slug: "recruiting-ai-apr23-2026",
+    slug: "2026-04-23-ai-in-recruiting",
     title: "AI in Recruiting and Talent Acquisition",
     stream: "recruiting-ta",
     date: new Date("2026-04-23T15:00:00Z"),
@@ -76,7 +74,7 @@ export const workshops: WorkshopDef[] = [
       "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
   },
   {
-    slug: "claude-cowork-recruiting-may-2026",
+    slug: "2026-05-07-claude-cowork-recruiting",
     title: "Claude Cowork and Code in Recruiting",
     stream: "recruiting-ta",
     date: new Date("2026-05-07T15:00:00Z"),
@@ -207,8 +205,9 @@ export function getWorkshopBySlug(slug: string): WorkshopDef | null {
   return workshops.find((w) => w.slug === slug) ?? null;
 }
 
+/** Alias kept for call-site clarity — slug and publicSlug are now the same. */
 export function getWorkshopDefByPublicSlug(publicSlug: string): WorkshopDef | null {
-  return workshops.find((w) => w.publicSlug === publicSlug) ?? null;
+  return getWorkshopBySlug(publicSlug);
 }
 
 export function getWorkshopsByStream(stream: Stream): WorkshopDef[] {

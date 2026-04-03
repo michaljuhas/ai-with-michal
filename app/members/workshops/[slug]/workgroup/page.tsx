@@ -24,13 +24,13 @@ export default async function WorkgroupPage({ params }: WorkgroupPageProps) {
 
   if (userId === ADMIN_USER_ID) {
     hasAccess = true;
-  } else if (userId && workshop.publicSlug) {
+  } else if (userId) {
     const supabase = createServiceClient();
     const { data } = await supabase
       .from("orders")
       .select("id")
       .eq("clerk_user_id", userId)
-      .eq("workshop_slug", workshop.publicSlug)
+      .eq("workshop_slug", workshop.slug)
       .eq("tier", "pro")
       .eq("status", "paid")
       .maybeSingle();

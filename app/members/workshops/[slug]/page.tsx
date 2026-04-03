@@ -27,7 +27,7 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
 
   // Check pro access for recording
   let hasProAccess = false;
-  if (workshop.recordingUrl && workshop.publicSlug) {
+  if (workshop.recordingUrl) {
     const { userId } = await auth();
     if (userId) {
       if (userId === ADMIN_USER_ID) {
@@ -38,7 +38,7 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
           .from("orders")
           .select("id")
           .eq("clerk_user_id", userId)
-          .eq("workshop_slug", workshop.publicSlug)
+          .eq("workshop_slug", workshop.slug)
           .eq("tier", "pro")
           .eq("status", "paid")
           .maybeSingle();

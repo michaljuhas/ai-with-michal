@@ -26,7 +26,7 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
 
   // Check pro access for recording
   let hasProAccess = false;
-  if (workshop.recordingUrl && workshop.publicSlug) {
+  if (workshop.recordingUrl) {
     const { userId } = await auth();
     if (userId) {
       if (userId === ADMIN_USER_ID) {
@@ -37,7 +37,7 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
           .from("orders")
           .select("id")
           .eq("clerk_user_id", userId)
-          .eq("workshop_slug", workshop.publicSlug)
+          .eq("workshop_slug", workshop.slug)
           .eq("tier", "pro")
           .eq("status", "paid")
           .maybeSingle();
@@ -80,7 +80,8 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
           <aside className="lg:sticky lg:top-24">
             <TrainingSidebar
               sections={sections}
-              backHref={`/members/workshops/${slug}`}
+              backHref="/members"
+              overviewHref={`/members/workshops/${slug}`}
               workgroupHref={`/members/workshops/${slug}/workgroup`}
               hasWorkgroupAccess={hasProAccess}
               recordingUrl={workshop.recordingUrl}
