@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CheckCircle, Star, Calendar, Users } from "lucide-react";
+import { CheckCircle, Star, Calendar, Users, ExternalLink } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 import RegisterButton from "@/components/RegisterButton";
 import { useEffect, useState } from "react";
@@ -38,11 +38,13 @@ export default function PricingSection({
   displayDate,
   displayTime,
   workshopSlug,
+  timezoneConverterUrl,
 }: {
   open?: boolean;
   displayDate?: string;
   displayTime?: string;
   workshopSlug?: string;
+  timezoneConverterUrl?: string;
 } = {}) {
   const [soldCount, setSoldCount] = useState<number | null>(null);
 
@@ -104,6 +106,15 @@ export default function PricingSection({
           <div className="text-center">
             <p className="text-slate-900 font-bold">{displayDate ?? WORKSHOP.displayDate}</p>
             <p className="text-slate-500 text-sm">{displayTime ?? WORKSHOP.displayTime}</p>
+            <a
+              href={timezoneConverterUrl ?? `https://www.worldtimebuddy.com/?qm=1&lid=5391959,5128581,100,2643743,3060972,3067696,703448,1880252&h=3060972&date=2026-4-16&sln=16-17.5&hf=1`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+            >
+              Check your local time
+              <ExternalLink size={10} />
+            </a>
           </div>
         </motion.div>
 

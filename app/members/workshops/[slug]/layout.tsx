@@ -24,25 +24,23 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
   const sections = getWorkshopTrainingSections(slug);
   const stream = STREAMS[workshop.stream];
 
-  // Check pro access for recording
+  // Check pro access (workgroup + recording)
   let hasProAccess = false;
-  if (workshop.recordingUrl) {
-    const { userId } = await auth();
-    if (userId) {
-      if (userId === ADMIN_USER_ID) {
-        hasProAccess = true;
-      } else {
-        const supabase = createServiceClient();
-        const { data } = await supabase
-          .from("orders")
-          .select("id")
-          .eq("clerk_user_id", userId)
-          .eq("workshop_slug", workshop.slug)
-          .eq("tier", "pro")
-          .eq("status", "paid")
-          .maybeSingle();
-        hasProAccess = !!data;
-      }
+  const { userId } = await auth();
+  if (userId) {
+    if (userId === ADMIN_USER_ID) {
+      hasProAccess = true;
+    } else {
+      const supabase = createServiceClient();
+      const { data } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("clerk_user_id", userId)
+        .eq("workshop_slug", workshop.slug)
+        .eq("tier", "pro")
+        .eq("status", "paid")
+        .maybeSingle();
+      hasProAccess = !!data;
     }
   }
 

@@ -25,25 +25,23 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
   const sections = getWorkshopTrainingSections(slug);
   const firstLesson = sections[0]?.lessons[0];
 
-  // Check pro access for recording
+  // Check pro access (workgroup + recording)
   let hasProAccess = false;
-  if (workshop.recordingUrl) {
-    const { userId } = await auth();
-    if (userId) {
-      if (userId === ADMIN_USER_ID) {
-        hasProAccess = true;
-      } else {
-        const supabase = createServiceClient();
-        const { data } = await supabase
-          .from("orders")
-          .select("id")
-          .eq("clerk_user_id", userId)
-          .eq("workshop_slug", workshop.slug)
-          .eq("tier", "pro")
-          .eq("status", "paid")
-          .maybeSingle();
-        hasProAccess = !!data;
-      }
+  const { userId } = await auth();
+  if (userId) {
+    if (userId === ADMIN_USER_ID) {
+      hasProAccess = true;
+    } else {
+      const supabase = createServiceClient();
+      const { data } = await supabase
+        .from("orders")
+        .select("id")
+        .eq("clerk_user_id", userId)
+        .eq("workshop_slug", workshop.slug)
+        .eq("tier", "pro")
+        .eq("status", "paid")
+        .maybeSingle();
+      hasProAccess = !!data;
     }
   }
 
@@ -110,7 +108,7 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
       </div>
 
       {/* Action cards */}
-      <div className={`grid gap-4 ${workshop.recordingUrl ? "sm:grid-cols-2 lg:grid-cols-4" : "sm:grid-cols-3"}`}>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* Pre-training */}
         <Link
           href={firstLesson?.path ?? "#"}
@@ -209,52 +207,52 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
           </div>
         )}
 
-        {/* Recording — Pro only */}
-        {workshop.recordingUrl && (
-          hasProAccess ? (
-            <a
-              href={workshop.recordingUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group flex flex-col rounded-2xl border border-amber-100 bg-amber-50 p-5 transition hover:border-amber-300 hover:bg-amber-100/60"
-            >
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600 mb-1">Recording</p>
-              <div className="flex items-center gap-2">
-                <p className="font-semibold text-slate-900">Watch replay</p>
-                <ProBadge />
-              </div>
-              <p className="mt-1 text-sm text-slate-600 flex-1">Full 90-min session</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-amber-600 group-hover:gap-2 transition-all">
-                Watch now
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </span>
-            </a>
-          ) : (
-            <div className="flex flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5 opacity-60 cursor-not-allowed select-none">
-              <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-300 text-white shadow-sm">
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-              </div>
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 mb-1">Recording</p>
-              <div className="flex items-center gap-2">
-                <p className="font-semibold text-slate-500">Watch replay</p>
-                <ProBadge />
-              </div>
-              <p className="mt-1 text-sm text-slate-400 flex-1">Available for Pro ticket holders</p>
-              <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-slate-400">
-                Pro only
-              </span>
+        {/* Recording — always visible; state depends on URL + access */}
+        {workshop.recordingUrl && hasProAccess ? (
+          <a
+            href={workshop.recordingUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex flex-col rounded-2xl border border-amber-100 bg-amber-50 p-5 transition hover:border-amber-300 hover:bg-amber-100/60"
+          >
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500 text-white shadow-sm">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
             </div>
-          )
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-600 mb-1">Recording</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-slate-900">Watch replay</p>
+              <ProBadge />
+            </div>
+            <p className="mt-1 text-sm text-slate-600 flex-1">Full 90-min session</p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-amber-600 group-hover:gap-2 transition-all">
+              Watch now
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </span>
+          </a>
+        ) : (
+          <div className="flex flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5 opacity-60 cursor-not-allowed select-none">
+            <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-slate-300 text-white shadow-sm">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 mb-1">Recording</p>
+            <div className="flex items-center gap-2">
+              <p className="font-semibold text-slate-500">Watch replay</p>
+              <ProBadge />
+            </div>
+            <p className="mt-1 text-sm text-slate-400 flex-1">
+              {workshop.recordingUrl ? "Available for Pro ticket holders" : "Available after the live session"}
+            </p>
+            <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-slate-400">
+              {workshop.recordingUrl ? "Pro only" : "Coming soon"}
+            </span>
+          </div>
         )}
       </div>
     </div>

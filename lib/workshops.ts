@@ -129,11 +129,11 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     description:
       "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
     location: "Online (Video call link will be emailed to you)",
-    date: new Date("2026-04-16T15:00:00Z"),
-    startDate: "20260416T150000Z",
-    endDate: "20260416T163000Z",
+    date: new Date("2026-04-16T14:00:00Z"),
+    startDate: "20260416T140000Z",
+    endDate: "20260416T153000Z",
     displayDate: "April 16, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     displayDateShort: "Apr 16",
     priceIds: {
       basic: "price_1THrlUCDDkiysv3tILt4bKox",
@@ -146,11 +146,11 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     description:
       "Live 90-minute online workshop with Michal Juhas. Learn how to automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
     location: "Online (Video call link will be emailed to you)",
-    date: new Date("2026-04-23T15:00:00Z"),
-    startDate: "20260423T150000Z",
-    endDate: "20260423T163000Z",
+    date: new Date("2026-04-23T14:00:00Z"),
+    startDate: "20260423T140000Z",
+    endDate: "20260423T153000Z",
     displayDate: "April 23, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     displayDateShort: "Apr 23",
     priceIds: {
       basic: "price_1THrlQCDDkiysv3tHSHBBmeL",
@@ -163,11 +163,11 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     description:
       "Live 90-minute hands-on session with Michal Juhas. Build real recruiting automations with Claude Code — no coding experience needed. Leave with working tools you can use immediately.",
     location: "Online (Video call link will be emailed to you)",
-    date: new Date("2026-05-07T15:00:00Z"),
-    startDate: "20260507T150000Z",
-    endDate: "20260507T163000Z",
+    date: new Date("2026-05-07T14:00:00Z"),
+    startDate: "20260507T140000Z",
+    endDate: "20260507T153000Z",
     displayDate: "May 7, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     displayDateShort: "May 7",
     priceIds: {
       basic: "price_1THrlVCDDkiysv3tFbelmZay",
@@ -177,6 +177,17 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
 ];
 
 export const CURRENT_WORKSHOP_SLUG = "2026-04-16-ai-in-recruiting";
+
+/**
+ * Returns a worldtimebuddy.com URL for a workshop date.
+ * All workshops run 4:00–5:30 PM CET (Bratislava), shown in 8 common timezones.
+ */
+export function getTimezoneConverterUrl(date: Date): string {
+  const y = date.getUTCFullYear();
+  const m = date.getUTCMonth() + 1;
+  const d = date.getUTCDate();
+  return `https://www.worldtimebuddy.com/?qm=1&lid=5391959,5128581,100,2643743,3060972,3067696,703448,1880252&h=3060972&date=${y}-${m}-${d}&sln=16-17.5&hf=1`;
+}
 
 export function getPublicWorkshopBySlug(slug: string): Workshop | undefined {
   return PUBLIC_WORKSHOPS.find((w) => w.slug === slug);

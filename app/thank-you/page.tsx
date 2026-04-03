@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle, Calendar, Download, ExternalLink, Copy, Share2 } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
+import { getTimezoneConverterUrl } from "@/lib/workshops";
 import posthog from "posthog-js";
 
 const WORKSHOP_URL = "https://aiwithmichal.com";
@@ -181,6 +182,15 @@ function ThankYouContent() {
               <div>
                 <p className="text-slate-900 font-medium">{WORKSHOP.displayDate}</p>
                 <p className="text-slate-500 text-sm">{WORKSHOP.displayTime}</p>
+                <a
+                  href={getTimezoneConverterUrl(WORKSHOP.date)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-0.5 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"
+                >
+                  Check your local time
+                  <ExternalLink size={10} />
+                </a>
               </div>
             </div>
             <div className="h-px bg-slate-100" />

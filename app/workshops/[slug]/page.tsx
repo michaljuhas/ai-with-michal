@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPublicWorkshopBySlug, isOpen } from "@/lib/workshops";
+import { getPublicWorkshopBySlug, isOpen, getTimezoneConverterUrl } from "@/lib/workshops";
 import HeroSection from "@/components/home/HeroSection";
 import RecruiterFomoSection from "@/components/home/RecruiterFomoSection";
 import HostIntroSection from "@/components/home/HostIntroSection";
@@ -40,7 +40,7 @@ export default async function WorkshopPage({ params }: Props) {
       <AgendaSection />
       <WhatYouGetSection />
       <VideoTestimonialSection />
-      <PricingSection open={open} displayDate={workshop.displayDate} displayTime={workshop.displayTime} workshopSlug={workshop.slug} />
+      <PricingSection open={open} displayDate={workshop.displayDate} displayTime={workshop.displayTime} workshopSlug={workshop.slug} timezoneConverterUrl={getTimezoneConverterUrl(workshop.date)} />
       <GuaranteeSection />
       <AboutSection />
       <FinalCTA open={open} workshopSlug={workshop.slug} />
