@@ -207,6 +207,10 @@ export function getWorkshopBySlug(slug: string): WorkshopDef | null {
   return workshops.find((w) => w.slug === slug) ?? null;
 }
 
+export function getWorkshopDefByPublicSlug(publicSlug: string): WorkshopDef | null {
+  return workshops.find((w) => w.publicSlug === publicSlug) ?? null;
+}
+
 export function getWorkshopsByStream(stream: Stream): WorkshopDef[] {
   return workshops.filter((w) => w.stream === stream);
 }

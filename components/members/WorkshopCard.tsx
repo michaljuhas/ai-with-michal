@@ -9,9 +9,10 @@ const STREAM_ACCENT: Record<Stream, { dot: string }> = {
 
 type WorkshopCardProps = {
   workshop: WorkshopDef;
+  upcoming?: boolean;
 };
 
-export default function WorkshopCard({ workshop }: WorkshopCardProps) {
+export default function WorkshopCard({ workshop, upcoming = false }: WorkshopCardProps) {
   const { dot } = STREAM_ACCENT[workshop.stream];
   const day = workshop.date.getDate();
   const month = workshop.date.toLocaleString("en-US", { month: "short" });
@@ -29,6 +30,13 @@ export default function WorkshopCard({ workshop }: WorkshopCardProps) {
       </div>
 
       <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          {upcoming && (
+            <span className="inline-flex items-center rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700">
+              Upcoming
+            </span>
+          )}
+        </div>
         <h3 className="font-semibold text-slate-900 group-hover:text-blue-700 transition-colors leading-snug">
           {workshop.title}
         </h3>
