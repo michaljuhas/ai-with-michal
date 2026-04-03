@@ -5,6 +5,7 @@ import { createServiceClient } from "@/lib/supabase";
 import type { Order, Registration } from "@/lib/supabase";
 import RegistrationsTable from "./RegistrationsTable";
 import WorkshopSelector from "./WorkshopSelector";
+import CopyEmailButton from "./CopyEmailButton";
 import { Suspense } from "react";
 
 const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
@@ -179,7 +180,12 @@ export default async function AdminPage({
                       {new Date(o.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
                     </td>
                     <td className="px-6 py-3 text-slate-700">
-                      {nameByUserId[o.clerk_user_id] || emailByUserId[o.clerk_user_id] || "—"}
+                      <span className="inline-flex items-center gap-0.5">
+                        {nameByUserId[o.clerk_user_id] || emailByUserId[o.clerk_user_id] || "—"}
+                        {emailByUserId[o.clerk_user_id] && (
+                          <CopyEmailButton email={emailByUserId[o.clerk_user_id]} />
+                        )}
+                      </span>
                     </td>
                     <td className="px-6 py-3">
                       <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${o.tier === "pro" ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"}`}>
