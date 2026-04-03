@@ -159,7 +159,13 @@ function FilterPill({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function CommunityDirectory({ members }: { members: CommunityMember[] }) {
+export default function CommunityDirectory({
+  members,
+  showFilters = true,
+}: {
+  members: CommunityMember[];
+  showFilters?: boolean;
+}) {
   const [search, setSearch] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [selectedFunction, setSelectedFunction] = useState<string | null>(null);
@@ -211,10 +217,13 @@ export default function CommunityDirectory({ members }: { members: CommunityMemb
     setSelectedAiLevel(null);
   }
 
+  // When filters are hidden render the unfiltered list directly
+  const displayMembers = showFilters ? filtered : members;
+
   return (
     <div>
       {/* Filter bar */}
-      <div className="mb-6 space-y-3">
+      {showFilters && <div className="mb-6 space-y-3">
         {/* Search */}
         <div className="relative max-w-sm">
           <svg
@@ -274,23 +283,25 @@ export default function CommunityDirectory({ members }: { members: CommunityMemb
             </button>
           )}
         </div>
-      </div>
+      </div>}
 
       {/* Result count */}
       <p className="mb-4 text-xs text-slate-400 font-medium tracking-wide uppercase">
-        {filtered.length === members.length
-          ? `${members.length} members`
-          : `${filtered.length} of ${members.length} members`}
+        {showFilters
+          ? filtered.length === members.length
+            ? `${members.length} members`
+            : `${filtered.length} of ${members.length} members`
+          : `${members.length} member${members.length !== 1 ? "s" : ""}`}
       </p>
 
       {/* Grid */}
-      {filtered.length > 0 ? (
+      {displayMembers.length > 0 ? (
         <div className="grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {filtered.map((member) => (
+          {displayMembers.map((member) => (
             <MemberCard key={member.clerkUserId} member={member} />
           ))}
         </div>
-      ) : (
+      ) : showFilters ? (
         <div className="flex flex-col items-center py-20 text-center">
           <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
             <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -301,6 +312,16 @@ export default function CommunityDirectory({ members }: { members: CommunityMemb
           <button onClick={clearAll} className="mt-3 text-xs text-blue-600 hover:underline">
             Clear filters
           </button>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center py-16 text-center">
+          <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-slate-100">
+            <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+            </svg>
+          </div>
+          <p className="text-sm font-medium text-slate-700">No attendees yet</p>
+          <p className="mt-1 text-xs text-slate-400">Members who purchase access will appear here.</p>
         </div>
       )}
     </div>

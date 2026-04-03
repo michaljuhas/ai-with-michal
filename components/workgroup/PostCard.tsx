@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import type { WorkgroupPostWithReplies } from "@/lib/supabase";
 
 function formatDate(iso: string) {
@@ -68,9 +69,19 @@ export default function PostCard({ post, workshopSlug, onUpdate }: PostCardProps
       {/* Post header */}
       <div className="px-5 pt-5 pb-4">
         <div className="flex items-center gap-2.5 mb-3">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-500 flex-shrink-0">
-            {displayAuthor.charAt(0).toUpperCase()}
-          </div>
+          {post.author_image_url ? (
+            <Image
+              src={post.author_image_url}
+              alt={displayAuthor}
+              width={32}
+              height={32}
+              className="rounded-full object-cover ring-1 ring-slate-200 flex-shrink-0"
+            />
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-500 flex-shrink-0">
+              {displayAuthor.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div>
             <p className="text-xs font-semibold text-slate-700">{displayAuthor}</p>
             <p className="text-xs text-slate-400">{formatDate(post.created_at)}</p>
@@ -88,15 +99,25 @@ export default function PostCard({ post, workshopSlug, onUpdate }: PostCardProps
             const replyAuthor = reply.author_name || reply.author_email || "Member";
             return (
               <div key={reply.id} className="flex gap-3">
-                <div
-                  className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
-                    reply.is_admin
-                      ? "bg-blue-100 text-blue-600"
-                      : "bg-slate-200 text-slate-500"
-                  }`}
-                >
-                  {replyAuthor.charAt(0).toUpperCase()}
-                </div>
+                {reply.author_image_url ? (
+                  <Image
+                    src={reply.author_image_url}
+                    alt={replyAuthor}
+                    width={28}
+                    height={28}
+                    className={`rounded-full object-cover flex-shrink-0 ring-1 ${reply.is_admin ? "ring-blue-200" : "ring-slate-200"}`}
+                  />
+                ) : (
+                  <div
+                    className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                      reply.is_admin
+                        ? "bg-blue-100 text-blue-600"
+                        : "bg-slate-200 text-slate-500"
+                    }`}
+                  >
+                    {replyAuthor.charAt(0).toUpperCase()}
+                  </div>
+                )}
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-1.5 mb-1">
                     <span className="text-xs font-semibold text-slate-700">{replyAuthor}</span>

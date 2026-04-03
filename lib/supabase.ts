@@ -81,6 +81,7 @@ export type WorkgroupPost = {
   clerk_user_id: string;
   author_email: string;
   author_name: string | null;
+  author_image_url?: string | null;
   headline: string;
   body: string;
   created_at: string;
@@ -92,6 +93,7 @@ export type WorkgroupReply = {
   clerk_user_id: string;
   author_email: string;
   author_name: string | null;
+  author_image_url?: string | null;
   is_admin: boolean;
   body: string;
   created_at: string;

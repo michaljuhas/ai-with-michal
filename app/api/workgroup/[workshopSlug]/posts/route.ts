@@ -1,4 +1,4 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import type { WorkgroupPost, WorkgroupReply, WorkgroupPostWithReplies } from "@/lib/supabase";
 import { getWorkshopBySlug } from "@/lib/workshops";
@@ -31,18 +31,46 @@ export async function GET(
     return Response.json({ error: "Failed to fetch posts" }, { status: 500 });
   }
 
+  // Collect all unique clerk_user_ids across posts + replies to batch-fetch avatars
+  const allPosts = (posts as WorkgroupPost[]) ?? [];
+  const allReplies = (replies as WorkgroupReply[]) ?? [];
+  const userIds = [
+    ...new Set([
+      ...allPosts.map((p) => p.clerk_user_id),
+      ...allReplies.map((r) => r.clerk_user_id),
+    ]),
+  ].filter(Boolean);
+
+  const imageMap = new Map<string, string | null>();
+  if (userIds.length > 0) {
+    try {
+      const client = await clerkClient();
+      const { data: clerkUsers } = await client.users.getUserList({
+        userId: userIds,
+        limit: 200,
+      });
+      for (const u of clerkUsers) {
+        imageMap.set(u.id, u.imageUrl ?? null);
+      }
+    } catch {
+      // Gracefully degrade — avatars just won't show
+    }
+  }
+
   const repliesMap = new Map<string, WorkgroupReply[]>();
-  for (const reply of (replies as WorkgroupReply[]) ?? []) {
+  for (const reply of allReplies) {
     if (!repliesMap.has(reply.post_id)) {
       repliesMap.set(reply.post_id, []);
     }
-    repliesMap.get(reply.post_id)!.push(reply);
+    repliesMap.get(reply.post_id)!.push({
+      ...reply,
+      author_image_url: imageMap.get(reply.clerk_user_id) ?? null,
+    });
   }
 
-  const postsWithReplies: WorkgroupPostWithReplies[] = (
-    (posts as WorkgroupPost[]) ?? []
-  ).map((post) => ({
+  const postsWithReplies: WorkgroupPostWithReplies[] = allPosts.map((post) => ({
     ...post,
+    author_image_url: imageMap.get(post.clerk_user_id) ?? null,
     replies: repliesMap.get(post.id) ?? [],
   }));
 
