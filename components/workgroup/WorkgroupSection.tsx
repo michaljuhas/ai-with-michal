@@ -7,9 +7,10 @@ import PostCard from "./PostCard";
 
 type WorkgroupSectionProps = {
   workshopSlug: string;
+  isAdmin?: boolean;
 };
 
-export default function WorkgroupSection({ workshopSlug }: WorkgroupSectionProps) {
+export default function WorkgroupSection({ workshopSlug, isAdmin = false }: WorkgroupSectionProps) {
   const [posts, setPosts] = useState<WorkgroupPostWithReplies[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +62,7 @@ export default function WorkgroupSection({ workshopSlug }: WorkgroupSectionProps
       </div>
 
       {/* New post form */}
-      <NewPostForm workshopSlug={workshopSlug} onSuccess={fetchPosts} />
+      <NewPostForm workshopSlug={workshopSlug} onSuccess={fetchPosts} isAdmin={isAdmin} />
 
       {/* Posts list */}
       {loading ? (

@@ -2,6 +2,7 @@ import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import type { WorkgroupPost, WorkgroupReply, WorkgroupPostWithReplies } from "@/lib/supabase";
 import { getWorkshopBySlug } from "@/lib/workshops";
+import { sendWorkgroupBroadcast } from "@/lib/email";
 import type { NextRequest } from "next/server";
 
 export async function GET(
@@ -98,14 +99,14 @@ export async function POST(
     ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`.trim()
     : null;
 
-  let body: { headline?: string; body?: string };
+  let body: { headline?: string; body?: string; broadcast?: boolean };
   try {
     body = await request.json();
   } catch {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { headline, body: postBody } = body;
+  const { headline, body: postBody, broadcast } = body;
 
   if (!headline?.trim() || !postBody?.trim()) {
     return Response.json({ error: "Headline and body are required" }, { status: 400 });
@@ -129,5 +130,46 @@ export async function POST(
     return Response.json({ error: "Failed to create post" }, { status: 500 });
   }
 
-  return Response.json({ post: data }, { status: 201 });
+  // Optional email broadcast to all workshop attendees
+  let broadcastResult: { sent?: number; error?: string } = {};
+  if (broadcast === true) {
+    try {
+      // Fetch all paid orders for this workshop
+      const { data: orders } = await supabase
+        .from("orders")
+        .select("clerk_user_id")
+        .eq("workshop_slug", workshopSlug)
+        .eq("status", "paid");
+
+      const attendeeIds = [...new Set((orders ?? []).map((o: { clerk_user_id: string }) => o.clerk_user_id))];
+
+      // Get email addresses from registrations
+      const { data: registrations } = await supabase
+        .from("registrations")
+        .select("clerk_user_id, email")
+        .in("clerk_user_id", attendeeIds.length > 0 ? attendeeIds : ["__none__"]);
+
+      const recipients = (registrations ?? []).map((r: { clerk_user_id: string; email: string }) => ({
+        email: r.email,
+        name: r.email.split("@")[0],
+      }));
+
+      const displayName = authorName || authorEmail.split("@")[0] || "Michal";
+
+      const result = await sendWorkgroupBroadcast({
+        authorName: displayName,
+        workshopTitle: workshop.title,
+        workshopSlug,
+        headline: headline.trim(),
+        body: postBody.trim(),
+        recipients,
+      });
+      broadcastResult = { sent: result.sent };
+    } catch (err) {
+      console.error("[workgroup broadcast]", err);
+      broadcastResult = { error: "Broadcast failed but post was saved." };
+    }
+  }
+
+  return Response.json({ post: data, broadcast: broadcastResult }, { status: 201 });
 }

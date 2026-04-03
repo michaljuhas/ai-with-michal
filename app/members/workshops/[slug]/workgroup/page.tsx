@@ -53,5 +53,5 @@ export default async function WorkgroupPage({ params }: WorkgroupPageProps) {
     );
   }
 
-  return <WorkgroupSection workshopSlug={slug} />;
+  return <WorkgroupSection workshopSlug={slug} isAdmin={userId === ADMIN_USER_ID} />;
 }

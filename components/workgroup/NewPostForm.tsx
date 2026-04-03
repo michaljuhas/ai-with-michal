@@ -5,11 +5,13 @@ import { useState } from "react";
 type NewPostFormProps = {
   workshopSlug: string;
   onSuccess: () => void;
+  isAdmin?: boolean;
 };
 
-export default function NewPostForm({ workshopSlug, onSuccess }: NewPostFormProps) {
+export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }: NewPostFormProps) {
   const [headline, setHeadline] = useState("");
   const [body, setBody] = useState("");
+  const [broadcast, setBroadcast] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
@@ -28,7 +30,7 @@ export default function NewPostForm({ workshopSlug, onSuccess }: NewPostFormProp
       const res = await fetch(`/api/workgroup/${workshopSlug}/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ headline, body }),
+        body: JSON.stringify({ headline, body, broadcast }),
       });
 
       if (!res.ok) {
@@ -39,6 +41,7 @@ export default function NewPostForm({ workshopSlug, onSuccess }: NewPostFormProp
 
       setHeadline("");
       setBody("");
+      setBroadcast(false);
       setOpen(false);
       onSuccess();
     } catch {
@@ -114,6 +117,34 @@ export default function NewPostForm({ workshopSlug, onSuccess }: NewPostFormProp
         />
       </div>
 
+      {/* Broadcast checkbox — admin only */}
+      {isAdmin && <label className="flex items-start gap-3 cursor-pointer group">
+        <div className="relative mt-0.5 flex-shrink-0">
+          <input
+            type="checkbox"
+            id="broadcast"
+            checked={broadcast}
+            onChange={(e) => setBroadcast(e.target.checked)}
+            className="peer sr-only"
+          />
+          <div className="h-4 w-4 rounded border border-slate-300 bg-white transition peer-checked:border-blue-600 peer-checked:bg-blue-600 group-hover:border-blue-400 flex items-center justify-center">
+            {broadcast && (
+              <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+            )}
+          </div>
+        </div>
+        <div>
+          <span className="block text-sm font-medium text-slate-700 leading-snug">
+            Send email broadcast
+          </span>
+          <span className="block text-xs text-slate-400 mt-0.5 leading-relaxed">
+            Emails all workshop members with the headline and post content.
+          </span>
+        </div>
+      </label>}
+
       {error && (
         <p className="text-sm text-red-600 bg-red-50 rounded-lg px-4 py-2.5">{error}</p>
       )}
@@ -124,7 +155,14 @@ export default function NewPostForm({ workshopSlug, onSuccess }: NewPostFormProp
           disabled={submitting}
           className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {submitting ? "Posting…" : "Post to workgroup"}
+          {submitting
+            ? broadcast
+              ? "Posting & sending…"
+              : "Posting…"
+            : broadcast
+              ? "Post & send email"
+              : "Post to workgroup"
+          }
         </button>
         <button
           type="button"

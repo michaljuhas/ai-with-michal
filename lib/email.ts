@@ -621,6 +621,181 @@ Reply directly to this email to respond to ${name}.`;
   });
 }
 
+// ─── Workgroup broadcast ──────────────────────────────────────────────────────
+
+function buildWorkgroupBroadcastHtml(params: {
+  authorName: string;
+  workshopTitle: string;
+  headline: string;
+  body: string;
+  workgroupUrl: string;
+}) {
+  const { authorName, workshopTitle, headline, body, workgroupUrl } = params;
+  const bodyHtml = escapeHtml(body).replace(/\n/g, "<br/>");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHtml(headline)}</title>
+  <style>
+    @media only screen and (max-width: 600px) {
+      .ow { padding: 16px 8px !important; }
+      .hd { padding: 24px 20px !important; }
+      .bd { padding: 24px 20px 20px 20px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" class="ow" style="background-color:#f8fafc;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;">
+
+        <!-- Header -->
+        <tr>
+          <td class="hd" style="background-color:#1e40af;border-radius:12px 12px 0 0;padding:28px 40px;">
+            <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#93c5fd;">Workgroup Announcement</p>
+            <h1 style="margin:8px 0 0;font-size:21px;font-weight:700;color:#ffffff;line-height:1.35;">${escapeHtml(headline)}</h1>
+          </td>
+        </tr>
+
+        <!-- Body -->
+        <tr>
+          <td class="bd" style="background-color:#ffffff;padding:32px 40px 28px;border-radius:0 0 12px 12px;border:1px solid #e2e8f0;border-top:none;">
+            <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+              <!-- Author chip -->
+              <tr>
+                <td style="padding:0 0 24px 0;">
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="width:36px;height:36px;background-color:#eff6ff;border-radius:50%;text-align:center;vertical-align:middle;font-size:14px;font-weight:700;color:#1d4ed8;">
+                        ${escapeHtml(authorName.charAt(0).toUpperCase())}
+                      </td>
+                      <td style="padding-left:10px;vertical-align:middle;">
+                        <p style="margin:0;font-size:13px;font-weight:600;color:#0f172a;">${escapeHtml(authorName)}</p>
+                        <p style="margin:2px 0 0;font-size:12px;color:#64748b;">posted in the workgroup</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- Divider -->
+              <tr><td style="padding:0 0 24px;border-top:1px solid #f1f5f9;"></td></tr>
+
+              <!-- Post body -->
+              <tr>
+                <td style="padding:0 0 28px;">
+                  <p style="margin:0;font-size:15px;color:#334155;line-height:1.7;">${bodyHtml}</p>
+                </td>
+              </tr>
+
+              <!-- CTA -->
+              <tr>
+                <td style="padding:0 0 32px;text-align:center;">
+                  <a href="${workgroupUrl}"
+                    style="display:inline-block;background-color:#1d4ed8;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:13px 28px;border-radius:8px;">
+                    Open Workgroup →
+                  </a>
+                </td>
+              </tr>
+
+              <!-- Footer -->
+              <tr>
+                <td style="padding:0;border-top:1px solid #e2e8f0;padding-top:20px;">
+                  <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
+                    You received this because you have access to the workgroup for
+                    <em>${escapeHtml(workshopTitle)}</em>. Reply to this email if you have questions.
+                  </p>
+                  <p style="margin:8px 0 0;font-size:12px;color:#cbd5e1;">— Michal Juhas · <a href="https://aiwithmichal.com" style="color:#cbd5e1;">AIwithMichal.com</a></p>
+                </td>
+              </tr>
+
+            </table>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildWorkgroupBroadcastText(params: {
+  authorName: string;
+  workshopTitle: string;
+  headline: string;
+  body: string;
+  workgroupUrl: string;
+}) {
+  const { authorName, workshopTitle, headline, body, workgroupUrl } = params;
+  return `WORKGROUP ANNOUNCEMENT: ${headline}
+
+Posted by: ${authorName}
+
+---
+
+${body}
+
+---
+
+Open Workgroup: ${workgroupUrl}
+
+---
+
+You received this because you have access to the workgroup for "${workshopTitle}".
+Questions? Reply to this email.
+
+— Michal Juhas · AIwithMichal.com
+`;
+}
+
+export async function sendWorkgroupBroadcast(params: {
+  authorName: string;
+  workshopTitle: string;
+  workshopSlug: string;
+  headline: string;
+  body: string;
+  recipients: { email: string; name: string }[];
+}) {
+  const { authorName, workshopTitle, workshopSlug, headline, body, recipients } = params;
+
+  const mail = getSendGrid();
+  const adminEmail = getAdminEmail();
+  const workgroupUrl = `https://aiwithmichal.com/members/workshops/${workshopSlug}/workgroup`;
+  const subject = `[Workgroup] ${headline}`;
+
+  const html = buildWorkgroupBroadcastHtml({ authorName, workshopTitle, headline, body, workgroupUrl });
+  const text = buildWorkgroupBroadcastText({ authorName, workshopTitle, headline, body, workgroupUrl });
+
+  // Collect unique recipient emails, always include admin
+  const emailSet = new Set(recipients.map((r) => r.email.toLowerCase()));
+  emailSet.add(adminEmail.toLowerCase());
+
+  const toList = [
+    ...recipients.filter((r) => r.email.toLowerCase() !== adminEmail.toLowerCase()),
+    { email: adminEmail, name: "Michal (admin)" },
+  ].filter((r, i, arr) => arr.findIndex((x) => x.email.toLowerCase() === r.email.toLowerCase()) === i);
+
+  // Send to all recipients — each receives individually (no visible CC/BCC)
+  const messages = toList.map((recipient) => ({
+    to: { email: recipient.email, name: recipient.name },
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    replyTo: { email: adminEmail, name: FROM_NAME },
+    subject,
+    html,
+    text,
+  }));
+
+  if (messages.length === 0) return { sent: 0 };
+
+  await mail.send(messages as Parameters<typeof mail.send>[0]);
+  return { sent: messages.length };
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
