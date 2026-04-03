@@ -63,7 +63,7 @@ export default async function MembersPage() {
 
   return (
     <main className="min-h-[calc(100dvh-4rem)] bg-slate-50">
-      <div className="mx-auto max-w-4xl px-6 py-10">
+      <div className="mx-auto max-w-7xl px-6 py-10">
         {/* Page header */}
         <div className="mb-8">
           <p className="text-sm font-semibold uppercase tracking-[0.25em] text-blue-600">

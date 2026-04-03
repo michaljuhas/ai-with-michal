@@ -54,24 +54,24 @@ export const workshops: WorkshopDef[] = [
     recordingUrl: "https://drive.google.com/file/d/19Qos6UwOELh9SpBsDGbsCXaPP9c2Amas/view?usp=sharing",
   },
   {
-    slug: "2026-04-16-sourcing-automation",
-    title: "Sourcing Automation for Recruiters",
+    slug: "2026-04-16-ai-in-recruiting",
+    title: "AI in Recruiting and Talent Acquisition",
     stream: "recruiting-ta",
     date: new Date("2026-04-16T15:00:00Z"),
     displayDate: "April 16, 2026",
     displayTime: "3:00 PM – 4:30 PM UTC",
     description:
-      "Automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
+      "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
   },
   {
-    slug: "2026-04-23-ai-in-recruiting",
-    title: "AI in Recruiting and Talent Acquisition",
+    slug: "2026-04-23-sourcing-automation",
+    title: "Sourcing Automation for Recruiters",
     stream: "recruiting-ta",
     date: new Date("2026-04-23T15:00:00Z"),
     displayDate: "April 23, 2026",
     displayTime: "3:00 PM – 4:30 PM UTC",
     description:
-      "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+      "Automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
   },
   {
     slug: "2026-05-07-claude-cowork-recruiting",
@@ -124,10 +124,10 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     recordingUrl: "https://drive.google.com/file/d/19Qos6UwOELh9SpBsDGbsCXaPP9c2Amas/view?usp=sharing",
   },
   {
-    slug: "2026-04-16-sourcing-automation",
-    title: "Sourcing Automation for Recruiters (90-min online workshop)",
+    slug: "2026-04-16-ai-in-recruiting",
+    title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
     description:
-      "Live 90-minute online workshop with Michal Juhas. Learn how to automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
+      "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
     location: "Online (Video call link will be emailed to you)",
     date: new Date("2026-04-16T15:00:00Z"),
     startDate: "20260416T150000Z",
@@ -136,15 +136,15 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     displayTime: "3:00 PM – 4:30 PM UTC",
     displayDateShort: "Apr 16",
     priceIds: {
-      basic: "price_1THrlQCDDkiysv3tHSHBBmeL",
-      pro: "price_1THrlUCDDkiysv3ty4BzAfUZ",
+      basic: "price_1THrlUCDDkiysv3tILt4bKox",
+      pro: "price_1THrlVCDDkiysv3tM6CUBKG3",
     },
   },
   {
-    slug: "2026-04-23-ai-in-recruiting",
-    title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
+    slug: "2026-04-23-sourcing-automation",
+    title: "Sourcing Automation for Recruiters (90-min online workshop)",
     description:
-      "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+      "Live 90-minute online workshop with Michal Juhas. Learn how to automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
     location: "Online (Video call link will be emailed to you)",
     date: new Date("2026-04-23T15:00:00Z"),
     startDate: "20260423T150000Z",
@@ -153,8 +153,8 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     displayTime: "3:00 PM – 4:30 PM UTC",
     displayDateShort: "Apr 23",
     priceIds: {
-      basic: "price_1THrlUCDDkiysv3tILt4bKox",
-      pro: "price_1THrlVCDDkiysv3tM6CUBKG3",
+      basic: "price_1THrlQCDDkiysv3tHSHBBmeL",
+      pro: "price_1THrlUCDDkiysv3ty4BzAfUZ",
     },
   },
   {
@@ -176,7 +176,7 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
   },
 ];
 
-export const CURRENT_WORKSHOP_SLUG = "2026-04-16-sourcing-automation";
+export const CURRENT_WORKSHOP_SLUG = "2026-04-16-ai-in-recruiting";
 
 export function getPublicWorkshopBySlug(slug: string): Workshop | undefined {
   return PUBLIC_WORKSHOPS.find((w) => w.slug === slug);

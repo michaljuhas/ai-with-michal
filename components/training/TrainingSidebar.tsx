@@ -79,11 +79,13 @@ export default function TrainingSidebar({
         )}
       </div>
 
-      {/* Desktop: one card per section */}
-      <nav className="hidden space-y-2 lg:block">
+      {/* Desktop: single unified card */}
+      <nav className="hidden lg:block rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+
+        {/* Overview */}
         {overviewHref && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+          <div className="p-3">
+            <p className="px-3 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
               Overview
             </p>
             <Link
@@ -102,12 +104,10 @@ export default function TrainingSidebar({
           </div>
         )}
 
+        {/* Training sections */}
         {sections.map((section) => (
-          <div
-            key={section.key}
-            className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm"
-          >
-            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
+          <div key={section.key} className="border-t border-slate-100 p-3">
+            <p className="px-3 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">
               {section.title}
             </p>
             <div className="space-y-0.5">
@@ -131,9 +131,10 @@ export default function TrainingSidebar({
           </div>
         ))}
 
+        {/* Discussion */}
         {workgroupHref && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 flex items-center gap-2">
+          <div className="border-t border-slate-100 p-3">
+            <p className="px-3 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400 flex items-center gap-2">
               Discussion
               <span className="text-[9px] font-bold uppercase tracking-wide bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">Pro</span>
             </p>
@@ -162,9 +163,10 @@ export default function TrainingSidebar({
           </div>
         )}
 
+        {/* Recording */}
         {recordingUrl && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
-            <p className="px-3 pb-2 pt-1 text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 flex items-center gap-2">
+          <div className="border-t border-slate-100 p-3">
+            <p className="px-3 pb-1.5 pt-1 text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400 flex items-center gap-2">
               Recording
               <span className="text-[9px] font-bold uppercase tracking-wide bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded">Pro</span>
             </p>
