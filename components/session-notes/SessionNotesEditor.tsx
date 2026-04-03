@@ -3,7 +3,16 @@
 import { useState, useTransition, useRef, useEffect, useCallback } from "react";
 import { marked } from "marked";
 
-marked.setOptions({ gfm: true, breaks: true });
+marked.use({
+  gfm: true,
+  breaks: true,
+  renderer: {
+    link({ href, title, text }) {
+      const titleAttr = title ? ` title="${title}"` : "";
+      return `<a href="${href}"${titleAttr} target="_blank" rel="noopener noreferrer">${text}</a>`;
+    },
+  },
+});
 
 type Props = {
   workshopSlug: string;
