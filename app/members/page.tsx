@@ -8,6 +8,7 @@ import {
 } from "@/lib/workshops";
 import type { WorkshopDef } from "@/lib/workshops";
 import WorkshopCard from "@/components/members/WorkshopCard";
+import MembersNav from "@/components/members/MembersNav";
 
 const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 
@@ -76,6 +77,8 @@ export default async function MembersPage() {
             All the workshops you have access to — past and upcoming.
           </p>
         </div>
+
+        <MembersNav />
 
         {hasWorkshops ? (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
