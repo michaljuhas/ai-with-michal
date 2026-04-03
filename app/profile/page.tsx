@@ -4,6 +4,7 @@ import { createServiceClient } from "@/lib/supabase";
 import type { Registration } from "@/lib/supabase";
 import PersonalInfoForm from "./PersonalInfoForm";
 import AIPreferencesForm from "./AIPreferencesForm";
+import DeleteAccountButton from "@/components/profile/DeleteAccountButton";
 
 export const metadata = { title: "Profile – AI with Michal" };
 
@@ -31,8 +32,15 @@ export default async function ProfilePage() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-          <PersonalInfoForm linkedinUrl={data?.linkedin_url ?? null} />
+          {/* Left column: personal info + danger zone */}
+          <div className="space-y-4">
+            <PersonalInfoForm linkedinUrl={data?.linkedin_url ?? null} />
+            <div className="flex justify-start px-1">
+              <DeleteAccountButton />
+            </div>
+          </div>
 
+          {/* Right column: AI preferences */}
           <AIPreferencesForm
             aiLevel={data?.ai_level ?? null}
             userFunction={data?.function ?? null}
