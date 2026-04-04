@@ -29,6 +29,7 @@ export default defineConfig({
     environment: "node",
     include: ["lib/**/*.test.ts", "app/**/*.test.ts"],
     exclude: ["node_modules", ".next", ".claude/**"],
+    setupFiles: [path.join(root, "test/vitest-setup.ts")],
   },
   resolve: {
     alias: {
