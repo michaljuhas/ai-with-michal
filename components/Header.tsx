@@ -107,6 +107,13 @@ function UserMenu() {
           >
             Profile
           </Link>
+          <Link
+            href="/billing"
+            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
+            onClick={() => setOpen(false)}
+          >
+            Billing
+          </Link>
           <div className="border-t border-slate-100">
             <button
               type="button"

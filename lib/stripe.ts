@@ -21,6 +21,19 @@ export const stripe = {
 };
 
 /**
+ * Find an existing Stripe customer by their Clerk user ID stored in metadata.
+ * More reliable than email lookup — survives email changes.
+ */
+export async function findCustomerByClerkId(clerkUserId: string): Promise<string | null> {
+  const s = getStripe();
+  const result = await s.customers.search({
+    query: `metadata['clerk_user_id']:'${clerkUserId}'`,
+    limit: 1,
+  });
+  return result.data[0]?.id ?? null;
+}
+
+/**
  * Find an existing Stripe customer by email or create a new one.
  * Returns the customer ID to use in checkout sessions (required by
  * Stripe API 2026-02-25.clover when tax_id_collection is enabled).
