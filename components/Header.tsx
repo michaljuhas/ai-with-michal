@@ -273,11 +273,19 @@ function MobileNavBar({
                   Members
                 </Link>
               )}
-              {isSignedIn && (
-                <div className="border-t border-slate-200 mt-2 pt-2">
+              <div className="border-t border-slate-200 mt-2 pt-2">
+                {isSignedIn ? (
                   <UserMenu />
-                </div>
-              )}
+                ) : (
+                  <Link
+                    href="/login"
+                    className="block text-base font-medium px-4 py-3 rounded-lg text-slate-700 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+                    onClick={closeMobile}
+                  >
+                    Log in
+                  </Link>
+                )}
+              </div>
             </div>
           </motion.nav>
         )}
@@ -338,11 +346,16 @@ export default function Header() {
               Members
             </Link>
           )}
-          {isSignedIn && (
-            <>
-              <div className="w-px h-5 bg-slate-200 mx-1" />
-              <UserMenu />
-            </>
+          <div className="w-px h-5 bg-slate-200 mx-1" />
+          {isSignedIn ? (
+            <UserMenu />
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm font-medium px-3.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+            >
+              Log in
+            </Link>
           )}
         </div>
 

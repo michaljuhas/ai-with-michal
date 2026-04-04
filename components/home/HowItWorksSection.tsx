@@ -10,6 +10,7 @@ const steps = [
     icon: BookOpen,
     iconBg: "bg-blue-100",
     iconColor: "text-blue-600",
+    numberColor: "text-blue-200",
     badge: null,
     title: "Prepare with members-only pre-training",
     description:
@@ -23,6 +24,7 @@ const steps = [
     icon: MonitorPlay,
     iconBg: "bg-violet-100",
     iconColor: "text-violet-600",
+    numberColor: "text-violet-200",
     badge: null,
     title: "Join live and build hands-on with Michal",
     description:
@@ -36,6 +38,7 @@ const steps = [
     icon: MessageCircle,
     iconBg: "bg-emerald-100",
     iconColor: "text-emerald-600",
+    numberColor: "text-emerald-200",
     badge: "Pro",
     title: "Get direct feedback in the Workgroup",
     description:
@@ -149,7 +152,7 @@ export default function HowItWorksSection() {
                 </motion.div>
 
                 {/* Step number watermark */}
-                <span className="absolute -top-5 -right-4 text-[80px] font-black text-slate-100 select-none pointer-events-none leading-none">
+                <span className={`absolute -top-5 -right-4 text-[80px] font-black ${step.numberColor} select-none pointer-events-none leading-none`}>
                   {step.number}
                 </span>
               </motion.div>
