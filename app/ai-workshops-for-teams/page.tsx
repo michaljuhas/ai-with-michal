@@ -9,6 +9,8 @@ import {
   TrendingUp,
   ArrowRight,
   ChevronDown,
+  CheckCircle2,
+  Star,
 } from "lucide-react";
 import B2BLeadForm from "@/components/b2b/B2BLeadForm";
 import WhyMichalB2B from "@/components/b2b/WhyMichalB2B";
@@ -53,7 +55,7 @@ const workshops = [
   },
 ];
 
-const AVAILABLE_SERVICES = workshops.map((w) => w.title);
+const AVAILABLE_SERVICES = ["How To Use AI In Your Business", ...workshops.map((w) => w.title)];
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -135,8 +137,61 @@ export default function AIWorkshopsForTeamsPage() {
         </div>
       </section>
 
-      {/* Workshop cards */}
+      {/* Featured Workshop */}
       <section className="py-20 px-6 bg-white">
+        <div className="max-w-4xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-100 rounded-3xl p-8 md:p-12 shadow-sm relative overflow-hidden"
+          >
+            <div className="absolute top-0 right-0 p-8 opacity-10">
+              <Star size={120} className="text-blue-600" />
+            </div>
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 font-semibold px-3 py-1 rounded-full text-sm mb-6">
+                <Star size={16} className="fill-blue-700" />
+                Most Popular
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                How To Use AI In Your Business
+              </h2>
+              <p className="text-lg text-slate-600 mb-8 max-w-2xl">
+                A highly customizable workshop designed to uncover the best AI opportunities specific to your company. We start with your unique context and end with an actionable roadmap.
+              </p>
+
+              <div className="grid md:grid-cols-2 gap-4 mb-10">
+                {[
+                  "Input about your business (questionnaire from management)",
+                  "1 hour preparation for the workshop",
+                  "1 hour workshop to discuss",
+                  "Follow-up and roadmap for AI opportunities",
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <CheckCircle2 size={20} className="text-blue-600 mt-1 shrink-0" />
+                    <span className="text-slate-700 font-medium">{item}</span>
+                  </div>
+                ))}
+              </div>
+
+              <button
+                onClick={() => scrollToForm("card", "How To Use AI In Your Business")}
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 text-base group"
+              >
+                Request this workshop
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Workshop cards */}
+      <section className="py-20 px-6 bg-slate-50">
         <div className="max-w-5xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -146,7 +201,7 @@ export default function AIWorkshopsForTeamsPage() {
             className="text-center mb-14"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              What we can work on together
+              Other Popular Workshops
             </h2>
             <p className="text-slate-500 max-w-xl mx-auto">
               Each session is tailored to your team&apos;s context, tech stack, and skill level.
