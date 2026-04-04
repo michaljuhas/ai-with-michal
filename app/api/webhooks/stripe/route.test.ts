@@ -108,7 +108,11 @@ describe("POST /api/webhooks/stripe", () => {
           amount_total: 12900,
           currency: "eur",
           customer_email: "p@x.com",
-          customer_details: { email: "p@x.com", name: "P Buyer" },
+          customer_details: {
+            email: "p@x.com",
+            name: "P Buyer",
+            address: { country: "de" },
+          },
         },
       },
     };
@@ -141,6 +145,7 @@ describe("POST /api/webhooks/stripe", () => {
         status: "paid",
         amount_eur: 129,
         workshop_slug: "2026-04-23-sourcing-automation",
+        billing_country_code: "DE",
       }),
       { onConflict: "stripe_session_id" }
     );

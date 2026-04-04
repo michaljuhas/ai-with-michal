@@ -168,6 +168,7 @@ export default async function AdminPage({
                 <tr>
                   <th className="px-6 py-3 text-left">Date</th>
                   <th className="px-6 py-3 text-left">Full Name</th>
+                  <th className="px-6 py-3 text-left">Country</th>
                   <th className="px-6 py-3 text-left">Tier</th>
                   <th className="px-6 py-3 text-left">Amount</th>
                   <th className="px-6 py-3 text-left">Product</th>
@@ -187,6 +188,9 @@ export default async function AdminPage({
                         )}
                       </span>
                     </td>
+                    <td className="px-6 py-3 text-slate-600 font-mono text-xs">
+                      {o.billing_country_code ?? "—"}
+                    </td>
                     <td className="px-6 py-3">
                       <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${o.tier === "pro" ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"}`}>
                         {o.tier}
@@ -200,7 +204,7 @@ export default async function AdminPage({
                 ))}
                 {paidOrders.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-6 py-8 text-center text-slate-400">No paid orders yet.</td>
+                    <td colSpan={6} className="px-6 py-8 text-center text-slate-400">No paid orders yet.</td>
                   </tr>
                 )}
               </tbody>

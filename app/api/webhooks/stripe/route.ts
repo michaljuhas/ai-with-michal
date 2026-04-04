@@ -9,6 +9,7 @@ import {
   sendWorkshopConfirmation,
 } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
+import { normalizeBillingCountryCode } from "@/lib/billing-country";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -46,6 +47,10 @@ export async function POST(req: NextRequest) {
 
     const supabase = createServiceClient();
 
+    const billingCountryCode = normalizeBillingCountryCode(
+      session.customer_details?.address?.country
+    );
+
     const { error } = await supabase.from("orders").upsert(
       {
         clerk_user_id: clerkUserId,
@@ -55,6 +60,7 @@ export async function POST(req: NextRequest) {
         amount_eur: Math.round((session.amount_total ?? 0) / 100),
         status: "paid",
         ...(workshopSlug ? { workshop_slug: workshopSlug } : {}),
+        ...(billingCountryCode ? { billing_country_code: billingCountryCode } : {}),
       },
       { onConflict: "stripe_session_id" }
     );

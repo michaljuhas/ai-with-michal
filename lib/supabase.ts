@@ -73,6 +73,8 @@ export type Order = {
   created_at: string;
   // Workshop association (added in migration 007)
   workshop_slug?: string | null;
+  // Stripe Checkout billing address (migration 011)
+  billing_country_code?: string | null;
 };
 
 export type WorkgroupPost = {
