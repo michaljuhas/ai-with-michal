@@ -13,7 +13,7 @@ import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
 import { getPublicWorkshopBySlug } from "@/lib/workshops";
 import { getStoredTrackingParams } from "@/lib/tracking-params";
 
-const CAPACITY = 50;
+const CAPACITY = parseInt(process.env.NEXT_PUBLIC_WORKSHOP_CAPACITY ?? "20", 10);
 const URGENCY_THRESHOLD = 15;
 
 function getCookie(name: string): string | undefined {
@@ -57,7 +57,10 @@ export default function WorkshopTicketsPage() {
   const { user } = useUser();
 
   useEffect(() => {
-    posthog.capture("ticket_tier_viewed");
+    posthog.capture("ticket_tier_viewed", {
+      workshop_slug: params.slug,
+      pathname: ticketsPath,
+    });
     fireMetaEvent("ViewContent");
     fetch(`/api/count?slug=${encodeURIComponent(params.slug)}`)
       .then((r) => r.json())
@@ -114,6 +117,8 @@ export default function WorkshopTicketsPage() {
       tier,
       price: option?.price,
       name: option?.name,
+      workshop_slug: params.slug,
+      pathname: ticketsPath,
     });
     fireMetaEvent("AddToCart");
     try {

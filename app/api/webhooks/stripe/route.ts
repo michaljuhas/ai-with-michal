@@ -10,6 +10,7 @@ import {
 } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
 import { normalizeBillingCountryCode } from "@/lib/billing-country";
+import { orderAmountsFromCheckoutSession } from "@/lib/stripe-order-amounts";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -51,13 +52,16 @@ export async function POST(req: NextRequest) {
       session.customer_details?.address?.country
     );
 
+    const { amount_eur, amount_net_eur } = orderAmountsFromCheckoutSession(session);
+
     const { error } = await supabase.from("orders").upsert(
       {
         clerk_user_id: clerkUserId,
         stripe_session_id: session.id,
         price_id: session.metadata?.price_id ?? "",
         tier,
-        amount_eur: Math.round((session.amount_total ?? 0) / 100),
+        amount_eur,
+        amount_net_eur,
         status: "paid",
         ...(workshopSlug ? { workshop_slug: workshopSlug } : {}),
         ...(billingCountryCode ? { billing_country_code: billingCountryCode } : {}),
@@ -70,7 +74,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Database error" }, { status: 500 });
     }
 
-    const amountEur = Math.round((session.amount_total ?? 0) / 100);
+    const amountEur = amount_eur;
 
     await captureEvent(clerkUserId, "payment_completed", {
       $insert_id: `purchase_${session.id}`,

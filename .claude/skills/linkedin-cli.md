@@ -1,6 +1,6 @@
 ---
 name: linkedin-cli
-description: Use when the user wants to post or share content on LinkedIn from the CLI — authenticate via OAuth, share text posts, articles, or images, or check the currently authenticated member using the local linkedin-cli wrapper.
+description: Use when the user wants to post or share content on LinkedIn from the CLI — authenticate via OAuth, share text posts, articles, or images, fetch an ads-reporting token for status scripts, or check the currently authenticated member using the local linkedin-cli wrapper.
 ---
 
 # LinkedIn Share CLI
@@ -19,9 +19,9 @@ Required environment variables (add to `.env`):
 |---|---|---|---|
 | `LINKEDIN_CLIENT_ID` | Yes | OAuth App Client ID from LinkedIn Developer Portal | — |
 | `LINKEDIN_CLIENT_SECRET` | Yes | OAuth App Client Secret | — |
-| `LINKEDIN_REDIRECT_URI` | No | OAuth callback URI | `http://localhost:3000/callback` |
+| `LINKEDIN_REDIRECT_URI` | No | OAuth callback URI | `http://localhost:3910/callback` (not :3000 — that is Next.js) |
 
-No build step needed — pure `.mjs`. After the first successful `auth`, the access token is stored at `~/.linkedin-token.json` (file mode `0o600`). The token is valid for 60 days.
+No build step needed — pure `.mjs`. Add **`http://localhost:3910/callback`** under Authorized redirect URLs for your LinkedIn app (default callback port avoids clashing with `next dev` on 3000). After the first successful `auth`, the access token is stored at `~/.linkedin-token.json` (file mode `0o600`). The token is valid for 60 days.
 
 ## Authentication
 
@@ -37,6 +37,19 @@ node --env-file=.env scripts/linkedin/index.mjs whoami
 ```
 
 Run `auth` once before using any `share` commands. Re-run it when the token expires (after 60 days).
+
+### Ads reporting token (`LINKEDIN_ADS_ACCESS_TOKEN`)
+
+For Marketing API spend in `scripts/status.mjs`, use a **separate** OAuth flow with scope `r_ads_reporting` (plus `openid`, `profile`). Your LinkedIn app must have the **Marketing Developer Platform** product and those scopes approved.
+
+```bash
+# OAuth — saves ~/.linkedin-ads-token.json and prints LINKEDIN_ADS_ACCESS_TOKEN=... for .env
+node --env-file=.env scripts/linkedin/index.mjs auth-ads
+
+node --env-file=.env scripts/linkedin/index.mjs auth-ads --status
+```
+
+If `LINKEDIN_ADS_ACCESS_TOKEN` is unset, `status.mjs` loads a valid token from `~/.linkedin-ads-token.json` automatically.
 
 ## Sharing
 

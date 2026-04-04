@@ -66,9 +66,9 @@ async function runScript(scriptName) {
 
 function readGoals() {
   try {
-    return readFileSync(join(ROOT, 'GOALS.md'), 'utf8');
+    return readFileSync(join(ROOT, 'sales-plan', 'GOALS.md'), 'utf8');
   } catch {
-    return '(GOALS.md not found)';
+    return '(sales-plan/GOALS.md not found)';
   }
 }
 
@@ -91,12 +91,13 @@ function readRecentActivity() {
   }
 }
 
+// Keep buildPrompt in sync with app/api/admin/report/route.ts buildPrompt.
 function buildPrompt({ goals, status, analytics, stripe, meta, activity }) {
   const date = new Date().toLocaleDateString('en-US', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
   });
 
-  return `You are an AI assistant producing a daily marketing performance report for a live workshop.
+  return `You are an AI assistant producing a daily marketing performance report for a portfolio of workshops (several events may be on sale in parallel).
 
 Today is ${date}. Campaign started on ${CAMPAIGN_START}. All analytics data is filtered from ${CAMPAIGN_START} onwards — earlier data (development/testing) is excluded.
 
@@ -106,7 +107,7 @@ ${goals}
 
 ## Live Performance Data
 
-### Workshop Status (Registrations + Revenue)
+### Portfolio status (registrations + paid per workshop)
 \`\`\`
 ${status.trim()}
 \`\`\`
@@ -140,8 +141,8 @@ Use this exact structure:
 ## Executive Summary
 2–3 bullet points on the most important metrics right now.
 
-## Revenue & Funnel
-Assess revenue progress vs. €3,000 minimum / €5,000 stretch target. Note Pro vs. Basic mix (target 50% Pro). Flag conversion rate vs. 3% target.
+## Revenue & funnel (per workshop + portfolio)
+For **each upcoming workshop** in the status and Stripe blocks: paid ticket count, revenue, progress vs **20 paid** target, Pro vs Basic mix where shown. Call out workshops falling short with the nearest event date first if time is tight. Summarise **portfolio** combined paid tickets/revenue in one line. Note **global** conversion (signups are not split per workshop in the data) vs 3% target if registrations appear in the status section.
 
 ## Meta Ads Analysis
 Assess each campaign individually. Apply these decision rules:
@@ -201,7 +202,7 @@ function buildFallbackReport({ status, analytics, stripe, meta }) {
 
 > ⚠️ AI analysis unavailable (Claude CLI not found on PATH). Raw data below.
 
-## Workshop Status
+## Portfolio status
 \`\`\`
 ${status.trim()}
 \`\`\`

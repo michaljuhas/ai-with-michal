@@ -23,8 +23,8 @@ describe('constants', () => {
     assert.equal(LINKEDIN_AUTH_BASE, 'https://www.linkedin.com/oauth/v2');
   });
 
-  it('DEFAULT_REDIRECT_URI equals http://localhost:3000/callback', () => {
-    assert.equal(DEFAULT_REDIRECT_URI, 'http://localhost:3000/callback');
+  it('DEFAULT_REDIRECT_URI equals http://localhost:3910/callback', () => {
+    assert.equal(DEFAULT_REDIRECT_URI, 'http://localhost:3910/callback');
   });
 
   it('REQUIRED_SCOPES contains w_member_social, openid, profile', () => {

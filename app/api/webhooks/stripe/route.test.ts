@@ -106,6 +106,7 @@ describe("POST /api/webhooks/stripe", () => {
             customer_name: "CN",
           },
           amount_total: 12900,
+          total_details: { amount_tax: 2412 },
           currency: "eur",
           customer_email: "p@x.com",
           customer_details: {
@@ -144,6 +145,7 @@ describe("POST /api/webhooks/stripe", () => {
         tier: "pro",
         status: "paid",
         amount_eur: 129,
+        amount_net_eur: 104,
         workshop_slug: "2026-04-23-sourcing-automation",
         billing_country_code: "DE",
       }),

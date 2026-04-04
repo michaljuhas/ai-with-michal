@@ -45,6 +45,12 @@ function closestSlug(slugs: string[]): string {
   return past[0]?.slug ?? slugs[0];
 }
 
+function paidNetEur(o: Order): number {
+  const n = o.amount_net_eur;
+  if (n != null && Number.isFinite(n)) return n;
+  return o.amount_eur;
+}
+
 export default async function AdminPage({
   searchParams,
 }: {
@@ -113,7 +119,12 @@ export default async function AdminPage({
   const emailByUserId: Record<string, string> = {};
   for (const r of allRegs) emailByUserId[r.clerk_user_id] = r.email;
 
-  const revenue = paidOrders.reduce((sum, o) => sum + (o.amount_eur || 0), 0);
+  const revenueGross = paidOrders.reduce((sum, o) => sum + (o.amount_eur || 0), 0);
+  const revenueNet = paidOrders.reduce((sum, o) => sum + paidNetEur(o), 0);
+  const revenueSub =
+    revenueGross !== revenueNet
+      ? `${paidOrders.length} orders · €${revenueGross} incl. tax`
+      : `${paidOrders.length} paid orders`;
   const basicCount = paidOrders.filter((o) => o.tier === "basic").length;
   const proCount = paidOrders.filter((o) => o.tier === "pro").length;
   const spotsLeft = SPOTS_TARGET - paidOrders.length;
@@ -142,7 +153,7 @@ export default async function AdminPage({
 
         {/* KPI cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-          <KpiCard label="Total Revenue" value={`€${revenue}`} sub={`${paidOrders.length} paid orders`} />
+          <KpiCard label="Revenue (ex-VAT)" value={`€${revenueNet}`} sub={revenueSub} />
           <KpiCard
             label="Spots Filled"
             value={`${paidOrders.length}/${SPOTS_TARGET}`}
@@ -196,7 +207,12 @@ export default async function AdminPage({
                         {o.tier}
                       </span>
                     </td>
-                    <td className="px-6 py-3 text-slate-700">€{o.amount_eur}</td>
+                    <td className="px-6 py-3 text-slate-700">
+                      €{o.amount_eur}
+                      {o.amount_net_eur != null && o.amount_net_eur !== o.amount_eur ? (
+                        <span className="text-slate-400 text-xs block">€{o.amount_net_eur} ex-VAT</span>
+                      ) : null}
+                    </td>
                     <td className="px-6 py-3 text-slate-500">
                       {o.workshop_slug ? slugToLabel(o.workshop_slug) : "—"}
                     </td>

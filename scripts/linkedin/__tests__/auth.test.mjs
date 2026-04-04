@@ -131,7 +131,7 @@ describe('isTokenValid', () => {
 // ---------------------------------------------------------------------------
 
 describe('buildAuthUrl', () => {
-  const opts = { clientId: 'testclient', redirectUri: 'http://localhost:3000/callback' };
+  const opts = { clientId: 'testclient', redirectUri: 'http://localhost:3910/callback' };
 
   it('returns string starting with LinkedIn authorization base URL', () => {
     const url = buildAuthUrl(opts);
@@ -189,7 +189,7 @@ describe('exchangeCode', () => {
     code: 'auth_code_123',
     clientId: 'cid',
     clientSecret: 'csecret',
-    redirectUri: 'http://localhost:3000/callback',
+    redirectUri: 'http://localhost:3910/callback',
   };
 
   it('calls fetch with https://www.linkedin.com/oauth/v2/accessToken', async () => {

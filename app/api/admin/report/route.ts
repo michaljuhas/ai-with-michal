@@ -62,6 +62,7 @@ function readRecentActivity(): string {
   }
 }
 
+// Keep in sync with scripts/daily-report.mjs buildPrompt.
 function buildPrompt(data: {
   goals: string;
   status: string;
@@ -77,7 +78,7 @@ function buildPrompt(data: {
     day: "numeric",
   });
 
-  return `You are an AI assistant producing a daily marketing performance report for a live workshop.
+  return `You are an AI assistant producing a daily marketing performance report for a portfolio of workshops (several events may be on sale in parallel).
 
 Today is ${date}. Campaign started on ${CAMPAIGN_START}. All analytics data is filtered from ${CAMPAIGN_START} onwards — earlier data (development/testing) is excluded.
 
@@ -87,7 +88,7 @@ ${data.goals}
 
 ## Live Performance Data
 
-### Workshop Status (Registrations + Revenue)
+### Portfolio status (registrations + paid per workshop)
 \`\`\`
 ${data.status.trim()}
 \`\`\`
@@ -121,8 +122,8 @@ Use this exact structure:
 ## Executive Summary
 2–3 bullet points on the most important metrics right now.
 
-## Revenue & Funnel
-Assess revenue progress vs. €3,000 minimum / €5,000 stretch target. Note Pro vs. Basic mix (target 50% Pro). Flag conversion rate vs. 3% target.
+## Revenue & funnel (per workshop + portfolio)
+For **each upcoming workshop** in the status and Stripe blocks: paid ticket count, revenue, progress vs **20 paid** target, Pro vs Basic mix where shown. Call out workshops falling short with the nearest event date first if time is tight. Summarise **portfolio** combined paid tickets/revenue in one line. Note **global** conversion (signups are not split per workshop in the data) vs 3% target if registrations appear in the status section.
 
 ## Meta Ads Analysis
 Assess each campaign individually. Apply these decision rules:
@@ -183,7 +184,7 @@ function buildFallbackReport(data: {
 
 > ⚠️ AI analysis unavailable. Raw data below.
 
-## Workshop Status
+## Portfolio status
 \`\`\`
 ${data.status.trim()}
 \`\`\`
@@ -218,7 +219,7 @@ export async function GET() {
     runScript("meta-ads-stats.mjs"),
   ]);
 
-  const goals = readFile("GOALS.md");
+  const goals = readFile("sales-plan/GOALS.md");
   const activity = readRecentActivity();
 
   const prompt = buildPrompt({ goals, status, analytics, stripe, meta, activity });

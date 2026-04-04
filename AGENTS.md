@@ -8,7 +8,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 
 ## Goal
 
-Sell workshop tickets profitably before April 2, 2026. Full KPIs and strategy in `GOALS.md`.
+Sell upcoming workshop tickets profitably (often several workshops on sale in parallel). Full KPIs, playbooks, and commands are in [`sales-plan/GOALS.md`](sales-plan/GOALS.md).
 
 ## Always start here
 
@@ -118,9 +118,10 @@ node --env-file=.env scripts/threads/index.mjs profile publishing-limit --pretty
 
 See `.env.example` for all variables.
 Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`,
-`SENDGRID_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `WORKSHOP_CAPACITY` (default 50),
+`SENDGRID_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `WORKSHOP_CAPACITY` / `NEXT_PUBLIC_WORKSHOP_CAPACITY` (default 20; keep both aligned),
 `ADMIN_EMAIL` (default michal@michaljuhas.com), `WORKSHOP_MEETING_URL`.
 Meta Ads CLI: `META_SYSTEM_USER_ACCESS_TOKEN` (System User Token from Meta Business Manager), `META_AD_ACCOUNT_ID` (e.g. `act_123456789`).
+LinkedIn Ads in `status.mjs` (optional): run `node --env-file=.env scripts/linkedin/index.mjs auth-ads` (OAuth with `r_ads_reporting` → `~/.linkedin-ads-token.json`), or set `LINKEDIN_ADS_ACCESS_TOKEN`, plus `LINKEDIN_ADS_ACCOUNT_URN` or `LINKEDIN_ADS_ACCOUNT_ID`, or manual `LINKEDIN_ADS_SPEND_EUR` — see `.env.example`.
 Daily report AI analysis: `ANTHROPIC_API_KEY` (get from https://console.anthropic.com/settings/keys — required for AI-written reports; without it the report falls back to raw data).
 Campaign generator: `ANTHROPIC_API_KEY` (copy generation) + `GEMINI_API_KEY` (image generation via Imagen 4) — both required.
 

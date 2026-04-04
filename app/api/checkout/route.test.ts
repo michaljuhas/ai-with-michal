@@ -87,12 +87,12 @@ describe("POST /api/checkout", () => {
       lastName: "B",
     } as never);
 
-    // CAPACITY is fixed at module load from WORKSHOP_CAPACITY (default 50 in route.ts)
+    // CAPACITY is fixed at module load from WORKSHOP_CAPACITY (default 20 in route.ts)
     vi.mocked(createServiceClient).mockReturnValue({
       from: vi.fn(() => ({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
-            eq: vi.fn(async () => ({ count: 50, error: null })),
+            eq: vi.fn(async () => ({ count: 20, error: null })),
           })),
         })),
       })),

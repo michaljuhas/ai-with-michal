@@ -6,7 +6,10 @@ import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
 import { sendMetaEvent } from "@/lib/meta-capi";
 
-const CAPACITY = parseInt(process.env.WORKSHOP_CAPACITY || "50", 10);
+const CAPACITY = parseInt(
+  process.env.WORKSHOP_CAPACITY || process.env.NEXT_PUBLIC_WORKSHOP_CAPACITY || "20",
+  10,
+);
 
 export async function POST(req: NextRequest) {
   const { userId } = await auth();

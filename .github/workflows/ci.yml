@@ -30,6 +30,8 @@ jobs:
       STRIPE_PRICE_PRO: price_ci_pro
       STRIPE_PRICE_MENTORING_GROUP: price_ci_mentoring_group
       STRIPE_PRICE_MENTORING_VIP: price_ci_mentoring_vip
+      WORKSHOP_CAPACITY: "20"
+      NEXT_PUBLIC_WORKSHOP_CAPACITY: "20"
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -101,6 +103,7 @@ jobs:
             --build-arg NEXT_PUBLIC_GTM_ID=${{ vars.NEXT_PUBLIC_GTM_ID }} \
             --build-arg NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=${{ vars.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN }} \
             --build-arg NEXT_PUBLIC_POSTHOG_HOST=${{ vars.NEXT_PUBLIC_POSTHOG_HOST }} \
+            --build-arg NEXT_PUBLIC_WORKSHOP_CAPACITY=${{ vars.NEXT_PUBLIC_WORKSHOP_CAPACITY || '20' }} \
             -t ${{ env.IMAGE }}:${{ github.sha }} \
             -t ${{ env.IMAGE }}:latest .
           docker push ${{ env.IMAGE }}:${{ github.sha }}
@@ -131,7 +134,9 @@ jobs:
             --set-env-vars "POSTHOG_PERSONAL_API_KEY=${{ secrets.POSTHOG_PERSONAL_API_KEY }}" \
             --set-env-vars "POSTHOG_PROJECT_ID=${{ vars.POSTHOG_PROJECT_ID }}" \
             --set-env-vars "META_SYSTEM_USER_ACCESS_TOKEN=${{ secrets.META_SYSTEM_USER_ACCESS_TOKEN }}" \
-            --set-env-vars "META_AD_ACCOUNT_ID=${{ vars.META_AD_ACCOUNT_ID }}"
+            --set-env-vars "META_AD_ACCOUNT_ID=${{ vars.META_AD_ACCOUNT_ID }}" \
+            --set-env-vars "WORKSHOP_CAPACITY=${{ vars.WORKSHOP_CAPACITY || '20' }}" \
+            --set-env-vars "NEXT_PUBLIC_WORKSHOP_CAPACITY=${{ vars.NEXT_PUBLIC_WORKSHOP_CAPACITY || '20' }}"
 
       - name: Show service URL
         run: |

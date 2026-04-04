@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url';
-import { getConfig, getTokenFilePath } from './config.mjs';
+import { getConfig, getTokenFilePath, getAdsTokenFilePath, LINKEDIN_ADS_SCOPES } from './config.mjs';
 import { loadToken, saveToken, isTokenValid, runOAuthFlow, formatTokenStatus } from './auth.mjs';
 import { getUserInfo } from './api.mjs';
 import { shareText, shareArticle, shareImage } from './share.mjs';
@@ -66,6 +66,43 @@ export async function run(argv = process.argv.slice(2), fetchFn = globalThis.fet
     const expiresAt = Date.now() + (tokenData.expires_in * 1000);
     saveToken({ accessToken: tokenData.access_token, expiresAt, memberId: userInfo.sub, memberName: userInfo.name });
     console.log(`Authenticated as ${userInfo.name} (${userInfo.sub}). Token saved.`);
+    return;
+  }
+
+  if (command === 'auth-ads') {
+    const adsPath = getAdsTokenFilePath();
+    if (subcommand === '--status' || flags.status === true) {
+      const token = loadToken(adsPath);
+      console.log(
+        formatTokenStatus(token, {
+          renewCommand: 'node --env-file=.env scripts/linkedin/index.mjs auth-ads',
+        }),
+      );
+      return;
+    }
+    const config = getConfig();
+    const tokenData = await runOAuthFlow({ ...config, scopes: LINKEDIN_ADS_SCOPES }, fetchFn);
+    const userInfo = await getUserInfo(tokenData.access_token, fetchFn);
+    const expiresAt = Date.now() + (tokenData.expires_in * 1000);
+    saveToken(
+      {
+        accessToken: tokenData.access_token,
+        expiresAt,
+        memberId: userInfo.sub,
+        memberName: userInfo.name,
+      },
+      adsPath,
+    );
+    console.log(`LinkedIn Ads API token saved for ${userInfo.name} (${userInfo.sub}).`);
+    console.log(`  File: ${adsPath}`);
+    console.log('');
+    console.log('Optional: copy into .env for other tools:');
+    console.log(`  LINKEDIN_ADS_ACCESS_TOKEN=${tokenData.access_token}`);
+    console.log('');
+    console.log(
+      'scripts/status.mjs reads LINKEDIN_ADS_ACCESS_TOKEN or this file automatically (if not expired).',
+    );
+    console.log('Requires Marketing Developer Platform + r_ads_reporting on your LinkedIn app.');
     return;
   }
 

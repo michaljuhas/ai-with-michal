@@ -69,6 +69,8 @@ export type Order = {
   price_id: string;
   tier: "basic" | "pro";
   amount_eur: number;
+  /** Ex-VAT net (Stripe amount_total − amount_tax); null on legacy rows until backfill */
+  amount_net_eur?: number | null;
   status: "pending" | "paid";
   created_at: string;
   // Workshop association (added in migration 007)

@@ -110,15 +110,20 @@ export async function exchangeCode(
  * @returns {Promise<object>} Raw token response from LinkedIn.
  */
 export async function runOAuthFlow(
-  { clientId, clientSecret, redirectUri },
+  { clientId, clientSecret, redirectUri, scopes = ['w_member_social', 'openid', 'profile'] },
   fetchFn = globalThis.fetch,
 ) {
-  const url = buildAuthUrl({ clientId, redirectUri });
+  const url = buildAuthUrl({ clientId, redirectUri, scopes });
+  if (/localhost:3000\b/.test(redirectUri)) {
+    process.stderr.write(
+      '[LINKEDIN] Redirect URI uses port 3000 (usually Next.js). You will get 404 unless you stop `next dev` or set LINKEDIN_REDIRECT_URI to http://localhost:3910/callback (and add it in the LinkedIn app).\n\n',
+    );
+  }
   process.stdout.write(
     `\nOpen this URL to authenticate:\n${url}\n\nWaiting for callback on ${redirectUri}...\n`,
   );
 
-  const port = parseInt(new URL(redirectUri).port) || 3000;
+  const port = parseInt(new URL(redirectUri).port, 10) || 3910;
 
   const code = await new Promise((resolve, reject) => {
     const server = createServer((req, res) => {
@@ -144,13 +149,15 @@ export async function runOAuthFlow(
  * @param {object | null} token
  * @returns {string}
  */
-export function formatTokenStatus(token) {
+export function formatTokenStatus(token, { renewCommand } = {}) {
+  const renew =
+    renewCommand ?? 'node --env-file=.env scripts/linkedin/index.mjs auth';
   if (!token || !token.accessToken) {
-    return 'No token found. Run: node --env-file=.env scripts/linkedin/index.mjs auth';
+    return `No token found. Run: ${renew}`;
   }
   if (token.expiresAt <= Date.now()) {
     const d = new Date(token.expiresAt).toISOString().split('T')[0];
-    return `Token EXPIRED on ${d}. Run: node --env-file=.env scripts/linkedin/index.mjs auth`;
+    return `Token EXPIRED on ${d}. Run: ${renew}`;
   }
   const daysLeft = Math.floor((token.expiresAt - Date.now()) / 86400000);
   const expiryDate = new Date(token.expiresAt).toISOString().split('T')[0];
