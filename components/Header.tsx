@@ -3,11 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useRef, useState, useEffect, useCallback } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { ChevronDown, Menu, X } from "lucide-react";
-import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
 import { isAdminUser } from "@/lib/config";
 
 function UserMenu() {
@@ -182,25 +181,16 @@ function ForTeamsDropdown() {
   );
 }
 
-export default function Header() {
-  const pathname = usePathname();
-  const { isSignedIn } = useUser();
+/** Remount on `pathname` so the drawer closes on navigation without an effect. */
+function MobileNavBar({
+  pathname,
+  isSignedIn,
+}: {
+  pathname: string;
+  isSignedIn: boolean;
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const closeMobile = useCallback(() => setMobileOpen(false), []);
-
-  useEffect(() => {
-    closeMobile();
-  }, [pathname, closeMobile]);
-
-  const navLinkClass = (href: string) => {
-    const active = pathname === href || pathname.startsWith(href + "/");
-    return `text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
-      active
-        ? "text-blue-600 bg-blue-50"
-        : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
-    }`;
-  };
+  const closeMobile = () => setMobileOpen(false);
 
   const mobileNavLinkClass = (href: string) => {
     const active = pathname === href || pathname.startsWith(href + "/");
@@ -212,67 +202,20 @@ export default function Header() {
   };
 
   return (
-    <motion.header
-      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <Link href="/" className="group">
-          <span className="text-slate-900 font-bold text-lg tracking-tight">
-            AI{" "}
-            <span className="text-blue-600">with</span>{" "}
-            Michal
-          </span>
-        </Link>
+    <>
+      <button
+        type="button"
+        onClick={() => setMobileOpen((o) => !o)}
+        className="md:hidden shrink-0 p-2 -mr-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+        aria-label={mobileOpen ? "Close menu" : "Open menu"}
+      >
+        {mobileOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-1">
-          <Link
-            href="/workshops"
-            className={navLinkClass("/workshops")}
-          >
-            Workshops
-          </Link>
-          <Link
-            href="/ai-mentoring"
-            className={navLinkClass("/ai-mentoring")}
-          >
-            Mentoring
-          </Link>
-          <ForTeamsDropdown />
-          {isSignedIn && (
-            <Link
-              href="/members"
-              className={navLinkClass("/members")}
-            >
-              Members
-            </Link>
-          )}
-          {isSignedIn && (
-            <>
-              <div className="w-px h-5 bg-slate-200 mx-1" />
-              <UserMenu />
-            </>
-          )}
-        </div>
-
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMobileOpen((o) => !o)}
-          className="md:hidden p-2 -mr-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-        >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-      </div>
-
-      {/* Mobile nav drawer */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.nav
-            className="md:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-md"
+            className="w-full basis-full md:hidden border-t border-slate-200/80 bg-white/95 backdrop-blur-md"
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
@@ -332,6 +275,72 @@ export default function Header() {
           </motion.nav>
         )}
       </AnimatePresence>
+    </>
+  );
+}
+
+export default function Header() {
+  const pathname = usePathname();
+  const { isSignedIn } = useUser();
+
+  const navLinkClass = (href: string) => {
+    const active = pathname === href || pathname.startsWith(href + "/");
+    return `text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
+      active
+        ? "text-blue-600 bg-blue-50"
+        : "text-slate-700 hover:text-slate-900 hover:bg-slate-100"
+    }`;
+  };
+
+  return (
+    <motion.header
+      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
+      <div className="max-w-7xl mx-auto px-6 min-h-16 flex flex-wrap items-center justify-between">
+        <Link href="/" className="group">
+          <span className="text-slate-900 font-bold text-lg tracking-tight">
+            AI{" "}
+            <span className="text-blue-600">with</span>{" "}
+            Michal
+          </span>
+        </Link>
+
+        {/* Desktop nav */}
+        <div className="hidden md:flex items-center gap-1">
+          <Link
+            href="/workshops"
+            className={navLinkClass("/workshops")}
+          >
+            Workshops
+          </Link>
+          <Link
+            href="/ai-mentoring"
+            className={navLinkClass("/ai-mentoring")}
+          >
+            Mentoring
+          </Link>
+          <ForTeamsDropdown />
+          {isSignedIn && (
+            <Link
+              href="/members"
+              className={navLinkClass("/members")}
+            >
+              Members
+            </Link>
+          )}
+          {isSignedIn && (
+            <>
+              <div className="w-px h-5 bg-slate-200 mx-1" />
+              <UserMenu />
+            </>
+          )}
+        </div>
+
+        <MobileNavBar key={pathname} pathname={pathname} isSignedIn={!!isSignedIn} />
+      </div>
     </motion.header>
   );
 }

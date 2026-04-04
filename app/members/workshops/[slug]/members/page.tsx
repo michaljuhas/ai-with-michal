@@ -43,7 +43,7 @@ export default async function WorkshopMembersPage({ params }: Props) {
 
   // 3. Batch-fetch Clerk users for name + avatar (attendees + admin)
   const client = await clerkClient();
-  let nameMap: Record<string, { name: string; imageUrl: string | null }> = {};
+  const nameMap: Record<string, { name: string; imageUrl: string | null }> = {};
   try {
     const { data: clerkUsers } = await client.users.getUserList({
       userId: allClerkIds,

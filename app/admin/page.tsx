@@ -96,7 +96,7 @@ export default async function AdminPage({
 
   // Fetch Clerk user profiles for Full Name display
   const clerkUserIds = [...new Set(paidOrders.map((o) => o.clerk_user_id))];
-  let nameByUserId: Record<string, string> = {};
+  const nameByUserId: Record<string, string> = {};
   if (clerkUserIds.length > 0) {
     try {
       const clerk = await clerkClient();

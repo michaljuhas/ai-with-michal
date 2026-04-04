@@ -1,36 +1,52 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI with Michal
 
-## Getting Started
+Next.js (App Router) site for workshops, tickets, and members — deployed to **Google Cloud Run**.
 
-First, run the development server:
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). The app uses `next/font` for optimized web fonts.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Operational scripts, env vars, and deploy helpers are documented in [`AGENTS.md`](AGENTS.md).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Testing
 
-## Learn More
+### How it works
 
-To learn more about Next.js, take a look at the following resources:
+- **Vitest** (Node, no browser): unit and integration-style tests for API routes and `lib/` helpers. Test files are `*.test.ts` next to the code under `app/` and `lib/` (see [`vitest.config.ts`](vitest.config.ts)).
+- **Playwright**: a small **E2E smoke** suite in [`e2e/`](e2e/) that drives a real Chromium session against a running app (home, key pages, safe public API checks). Config: [`playwright.config.ts`](playwright.config.ts).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Running tests on your machine
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+# Lint (same as CI)
+npm run lint
 
-## Deploy on Vercel
+# Unit / API tests
+npm test
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Watch mode while developing
+npm run test:watch
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**E2E (Playwright)**
+
+1. Start the app in one terminal: `npm run dev`
+2. First time only, install the browser: `npx playwright install chromium`
+3. In another terminal: `npm run test:e2e`  
+   Tests default to `http://127.0.0.1:3000`. To hit another environment:  
+   `PLAYWRIGHT_BASE_URL=https://your-host.example npm run test:e2e`
+
+### CI and deployment
+
+- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every **pull request** and **push to `main`**: `npm ci` → `npm run lint` → `npm test` → `npm run build`, using placeholder public env vars so the build does not need real secrets.
+- **Deploy** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) runs on **push to `main`**: builds a Docker image, pushes to Artifact Registry, and deploys the service to **Cloud Run**. That job focuses on build and release; it does not re-run the test suite — rely on **CI passing on the same commit** before merging.
+- **Playwright is not run in CI** right now (the suite expects a live server or a chosen `PLAYWRIGHT_BASE_URL`; keeping it local avoids flakiness with how this app is started in automation).
+
+## Learn more
+
+- [Next.js documentation](https://nextjs.org/docs)

@@ -1,7 +1,5 @@
 import type { TrainingSection } from "./training";
 import { trainingLessons, trainingSections } from "./training";
-import { WORKSHOP } from "./workshop";
-
 // ---------------------------------------------------------------------------
 // Streams (members area categorisation)
 // ---------------------------------------------------------------------------

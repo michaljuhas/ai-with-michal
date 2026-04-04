@@ -25,7 +25,7 @@ export default async function CommunityPage() {
   const client = await clerkClient();
   const clerkUserIds = rows.map((r) => r.clerk_user_id).filter(Boolean);
 
-  let nameMap: Record<string, { name: string; imageUrl: string | null }> = {};
+  const nameMap: Record<string, { name: string; imageUrl: string | null }> = {};
   if (clerkUserIds.length > 0) {
     try {
       // Clerk's getUserList accepts up to 100 userId filters at once

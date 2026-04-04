@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Clock } from "lucide-react";
 import { getDaysUntilWorkshop, isRegistrationOpen } from "@/lib/workshop";
@@ -17,25 +17,29 @@ function shouldShowOnRoute(pathname: string): boolean {
 export default function StickyCountdown() {
   const pathname = usePathname();
 
-  // If on a /workshops/[slug] page, use that workshop's data; else fall back to global
-  const slugMatch = pathname.match(/^\/workshops\/([^/]+)/);
-  const pageWorkshop = slugMatch ? getPublicWorkshopBySlug(slugMatch[1]) : undefined;
+  const { daysLeft, open, pageWorkshop } = useMemo(() => {
+    const slugMatch = pathname.match(/^\/workshops\/([^/]+)/);
+    const pw = slugMatch ? getPublicWorkshopBySlug(slugMatch[1]) : undefined;
+    if (pw) {
+      // eslint-disable-next-line react-hooks/purity -- countdown uses wall clock
+      const diff = pw.date.getTime() - Date.now();
+      return {
+        pageWorkshop: pw,
+        daysLeft: Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24))),
+        open: isOpen(pw),
+      };
+    }
+    return {
+      pageWorkshop: undefined,
+      daysLeft: getDaysUntilWorkshop(),
+      open: isRegistrationOpen(),
+    };
+  }, [pathname]);
 
-  const [daysLeft, setDaysLeft] = useState<number | null>(null);
-  const [open, setOpen] = useState(true);
   const [visible, setVisible] = useState(false);
   const [viewportBottomOffset, setViewportBottomOffset] = useState(0);
 
   useEffect(() => {
-    if (pageWorkshop) {
-      const diff = pageWorkshop.date.getTime() - Date.now();
-      setDaysLeft(Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24))));
-      setOpen(isOpen(pageWorkshop));
-    } else {
-      setDaysLeft(getDaysUntilWorkshop());
-      setOpen(isRegistrationOpen());
-    }
-
     const handleScroll = () => {
       setVisible(window.scrollY > 600);
     };
@@ -73,7 +77,7 @@ export default function StickyCountdown() {
     };
   }, []);
 
-  if (daysLeft === null || !open || !shouldShowOnRoute(pathname)) return null;
+  if (!open || !shouldShowOnRoute(pathname)) return null;
 
   return (
     <div

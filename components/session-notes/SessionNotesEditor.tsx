@@ -29,6 +29,8 @@ function renderMarkdown(md: string): string {
 function RelativeTime({ iso }: { iso: string | null }) {
   if (!iso) return null;
   const date = new Date(iso);
+  // "Time ago" needs the current clock; not derivable from props alone.
+  // eslint-disable-next-line react-hooks/purity -- intentional wall-clock display
   const now = Date.now();
   const diff = Math.floor((now - date.getTime()) / 1000);
   let label: string;

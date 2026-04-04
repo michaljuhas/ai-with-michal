@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -37,10 +37,8 @@ const nextSteps = [
 function ThankYouContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const [verified, setVerified] = useState<boolean | null>(null);
 
   useEffect(() => {
-    setVerified(!!sessionId);
     if (sessionId) {
       posthog.capture("mentoring_payment_completed", {
         $insert_id: `mentoring_purchase_${sessionId}`,
@@ -122,7 +120,7 @@ function ThankYouContent() {
             What happens next
           </h2>
           <div className="space-y-5">
-            {nextSteps.map((step, i) => {
+            {nextSteps.map((step) => {
               const Icon = step.icon;
               return (
                 <div key={step.title} className="flex items-start gap-4">

@@ -11,7 +11,9 @@ const { verifyMock } = vi.hoisted(() => ({ verifyMock: vi.fn() }));
 
 vi.mock("svix", () => ({
   Webhook: class WebhookMock {
-    constructor(_secret: string) {}
+    constructor(secret: string) {
+      void secret;
+    }
     verify(...args: unknown[]) {
       return verifyMock(...args);
     }

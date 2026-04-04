@@ -113,11 +113,9 @@ function downloadICS(meetingUrl: string) {
 function ThankYouContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
-  const [verified, setVerified] = useState<boolean | null>(null);
   const [meetingUrl, setMeetingUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    setVerified(!!sessionId);
     fetch("/api/meeting-url")
       .then((r) => r.json())
       .then((d) => setMeetingUrl(d.url ?? null))
@@ -267,7 +265,7 @@ function ThankYouContent() {
           transition={{ duration: 0.5, delay: 0.35 }}
         >
           <p className="text-blue-100 text-xs font-semibold tracking-widest uppercase mb-2">
-            Know a recruiter who'd love this?
+            Know a recruiter who&apos;d love this?
           </p>
           <h2 className="text-white font-bold text-xl mb-3">
             Share the workshop with a colleague
@@ -278,7 +276,7 @@ function ThankYouContent() {
           <ShareButtons />
         </motion.div>
 
-        {verified === false && (
+        {!sessionId && (
           <motion.p
             className="mt-6 text-center text-slate-400 text-sm"
             initial={{ opacity: 0 }}
