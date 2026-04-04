@@ -1,0 +1,59 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  # Minimal public env so `next build` and `next start` succeed in CI (no real secrets).
+  NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ci_placeholder
+  NEXT_PUBLIC_CLERK_SIGN_IN_URL: /register
+  NEXT_PUBLIC_CLERK_SIGN_UP_URL: /register
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: /tickets
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /tickets
+  NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ci-publishable-placeholder
+  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_ci_placeholder
+  NEXT_PUBLIC_GTM_ID: GTM-XXXXXXX
+  NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: ""
+  NEXT_PUBLIC_POSTHOG_HOST: https://eu.i.posthog.com
+  # Server-only placeholders (API routes that touch DB may return fallbacks or errors; E2E only hits safe paths).
+  CLERK_SECRET_KEY: sk_test_ci_placeholder
+  SUPABASE_SERVICE_ROLE_KEY: ci-service-role-placeholder
+  STRIPE_SECRET_KEY: sk_test_ci_placeholder
+  STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
+  STRIPE_PRICE_BASIC: price_ci_basic
+  STRIPE_PRICE_PRO: price_ci_pro
+  STRIPE_PRICE_MENTORING_GROUP: price_ci_mentoring_group
+  STRIPE_PRICE_MENTORING_VIP: price_ci_mentoring_vip
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      # Playwright smoke (`npm run test:e2e`) expects a running app: start `npm run dev` locally, or hit a
+      # deployed URL with PLAYWRIGHT_BASE_URL — not started here because Next 16 standalone + local port
+      # triggers an internal proxy loop in this project’s build.
