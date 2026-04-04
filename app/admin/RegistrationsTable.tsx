@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import { ChevronDown } from "lucide-react";
 import type { Registration, Order } from "@/lib/supabase";
 
@@ -98,9 +98,8 @@ export default function RegistrationsTable({ registrations, orders }: Props) {
               const hasAttribution = !!(r.source_type || r.utm_source || r.ref);
 
               return (
-                <>
+                <Fragment key={r.id}>
                   <tr
-                    key={r.id}
                     className={`hover:bg-slate-50 cursor-pointer select-none ${isOpen ? "bg-slate-50" : ""}`}
                     onClick={() => toggle(r.id)}
                   >
@@ -136,11 +135,11 @@ export default function RegistrationsTable({ registrations, orders }: Props) {
                     </td>
                   </tr>
                   {isOpen && (
-                    <tr key={`${r.id}-detail`} className="bg-slate-50">
+                    <tr className="bg-slate-50">
                       <AttributionDetail reg={r} />
                     </tr>
                   )}
-                </>
+                </Fragment>
               );
             })}
             {registrations.length === 0 && (
