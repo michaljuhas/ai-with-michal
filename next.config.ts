@@ -7,6 +7,8 @@ const nextConfig: NextConfig = {
   output: "standalone",
   skipTrailingSlashRedirect: true,
   pageExtensions: ["ts", "tsx", "mdx"],
+  // HMR: allow when the page is opened on 127.0.0.1 vs localhost (or Clerk redirects differ).
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   images: {
     remotePatterns: [
       {
