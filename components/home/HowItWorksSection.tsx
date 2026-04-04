@@ -46,11 +46,13 @@ const steps = [
   },
 ];
 
+const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
+
 const fadeSlide = (fromLeft: boolean) => ({
   initial: { opacity: 0, x: fromLeft ? -32 : 32 },
   whileInView: { opacity: 1, x: 0 },
   viewport: { once: true },
-  transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
+  transition: { duration: 0.65, ease: EASE },
 });
 
 export default function HowItWorksSection() {
