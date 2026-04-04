@@ -43,9 +43,11 @@ npm run test:watch
 
 ### CI and deployment
 
-- **CI** ([`.github/workflows/ci.yml`](.github/workflows/ci.yml)) runs on every **pull request** and **push to `main`**: `npm ci` → `npm run lint` → `npm test` → `npm run build`, using placeholder public env vars so the build does not need real secrets.
-- **Deploy** ([`.github/workflows/deploy.yml`](.github/workflows/deploy.yml)) runs on **push to `main`**: builds a Docker image, pushes to Artifact Registry, and deploys the service to **Cloud Run**. That job focuses on build and release; it does not re-run the test suite — rely on **CI passing on the same commit** before merging.
-- **Playwright is not run in CI** right now (the suite expects a live server or a chosen `PLAYWRIGHT_BASE_URL`; keeping it local avoids flakiness with how this app is started in automation).
+One workflow — **[`.github/workflows/ci.yml`](.github/workflows/ci.yml)** (`CI & Cloud Run`):
+
+- **Pull requests:** job **verify** runs `npm ci` → `npm run lint` → `npm test` → `npm run build` (placeholder env vars, no secrets).
+- **Push to `main`:** **verify** runs first; if it succeeds, **deploy** builds the Docker image, pushes to Artifact Registry, and deploys to **Cloud Run** (Prod environment). You get a single Actions run with both jobs instead of two separate workflows.
+- **Playwright is not run in CI** (needs a live app or `PLAYWRIGHT_BASE_URL`; run it locally).
 
 ## Learn more
 

@@ -1,37 +1,35 @@
-name: CI
+name: CI & Cloud Run
 
 on:
   pull_request:
   push:
     branches: [main]
 
-env:
-  # Minimal public env so `next build` and `next start` succeed in CI (no real secrets).
-  NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ci_placeholder
-  NEXT_PUBLIC_CLERK_SIGN_IN_URL: /register
-  NEXT_PUBLIC_CLERK_SIGN_UP_URL: /register
-  NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: /tickets
-  NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /tickets
-  NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ci-publishable-placeholder
-  NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_ci_placeholder
-  NEXT_PUBLIC_GTM_ID: GTM-XXXXXXX
-  NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: ""
-  NEXT_PUBLIC_POSTHOG_HOST: https://eu.i.posthog.com
-  # Server-only placeholders (API routes that touch DB may return fallbacks or errors; E2E only hits safe paths).
-  CLERK_SECRET_KEY: sk_test_ci_placeholder
-  SUPABASE_SERVICE_ROLE_KEY: ci-service-role-placeholder
-  STRIPE_SECRET_KEY: sk_test_ci_placeholder
-  STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
-  STRIPE_PRICE_BASIC: price_ci_basic
-  STRIPE_PRICE_PRO: price_ci_pro
-  STRIPE_PRICE_MENTORING_GROUP: price_ci_mentoring_group
-  STRIPE_PRICE_MENTORING_VIP: price_ci_mentoring_vip
-
 jobs:
   verify:
     runs-on: ubuntu-latest
+    env:
+      # Minimal public env so `next build` succeeds (no real secrets).
+      NEXT_PUBLIC_APP_URL: http://127.0.0.1:3000
+      NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ci_placeholder
+      NEXT_PUBLIC_CLERK_SIGN_IN_URL: /register
+      NEXT_PUBLIC_CLERK_SIGN_UP_URL: /register
+      NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: /tickets
+      NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /tickets
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-placeholder.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY: ci-publishable-placeholder
+      NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: pk_test_ci_placeholder
+      NEXT_PUBLIC_GTM_ID: GTM-XXXXXXX
+      NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN: ""
+      NEXT_PUBLIC_POSTHOG_HOST: https://eu.i.posthog.com
+      CLERK_SECRET_KEY: sk_test_ci_placeholder
+      SUPABASE_SERVICE_ROLE_KEY: ci-service-role-placeholder
+      STRIPE_SECRET_KEY: sk_test_ci_placeholder
+      STRIPE_WEBHOOK_SECRET: whsec_ci_placeholder
+      STRIPE_PRICE_BASIC: price_ci_basic
+      STRIPE_PRICE_PRO: price_ci_pro
+      STRIPE_PRICE_MENTORING_GROUP: price_ci_mentoring_group
+      STRIPE_PRICE_MENTORING_VIP: price_ci_mentoring_vip
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -54,6 +52,90 @@ jobs:
       - name: Build
         run: npm run build
 
-      # Playwright smoke (`npm run test:e2e`) expects a running app: start `npm run dev` locally, or hit a
-      # deployed URL with PLAYWRIGHT_BASE_URL — not started here because Next 16 standalone + local port
-      # triggers an internal proxy loop in this project’s build.
+      # Playwright (`npm run test:e2e`) needs a running app — run locally or set PLAYWRIGHT_BASE_URL.
+
+  deploy:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: Prod
+    env:
+      PROJECT_ID: ai-with-michal
+      REGION: us-central1
+      SERVICE_NAME: ai-with-michal
+      IMAGE: us-central1-docker.pkg.dev/ai-with-michal/ai-with-michal/app
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: projects/546644949085/locations/global/workloadIdentityPools/github/providers/github
+          service_account: github-actions@ai-with-michal.iam.gserviceaccount.com
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v3
+
+      - name: Configure Docker
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      - name: Build and push image
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_APP_URL=${{ vars.NEXT_PUBLIC_APP_URL }} \
+            --build-arg NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }} \
+            --build-arg NEXT_PUBLIC_CLERK_SIGN_IN_URL=${{ vars.NEXT_PUBLIC_CLERK_SIGN_IN_URL }} \
+            --build-arg NEXT_PUBLIC_CLERK_SIGN_UP_URL=${{ vars.NEXT_PUBLIC_CLERK_SIGN_UP_URL }} \
+            --build-arg NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=${{ vars.NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL }} \
+            --build-arg NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=${{ vars.NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL }} \
+            --build-arg NEXT_PUBLIC_SUPABASE_URL=${{ vars.NEXT_PUBLIC_SUPABASE_URL }} \
+            --build-arg NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY }} \
+            --build-arg NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ secrets.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }} \
+            --build-arg NEXT_PUBLIC_GTM_ID=${{ vars.NEXT_PUBLIC_GTM_ID }} \
+            --build-arg NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN=${{ vars.NEXT_PUBLIC_POSTHOG_PROJECT_TOKEN }} \
+            --build-arg NEXT_PUBLIC_POSTHOG_HOST=${{ vars.NEXT_PUBLIC_POSTHOG_HOST }} \
+            -t ${{ env.IMAGE }}:${{ github.sha }} \
+            -t ${{ env.IMAGE }}:latest .
+          docker push ${{ env.IMAGE }}:${{ github.sha }}
+          docker push ${{ env.IMAGE }}:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy ${{ env.SERVICE_NAME }} \
+            --image ${{ env.IMAGE }}:${{ github.sha }} \
+            --region ${{ env.REGION }} \
+            --platform managed \
+            --allow-unauthenticated \
+            --port 8080 \
+            --project ${{ env.PROJECT_ID }} \
+            --set-env-vars "CLERK_SECRET_KEY=${{ secrets.CLERK_SECRET_KEY }}" \
+            --set-env-vars "CLERK_WEBHOOK_SECRET=${{ secrets.CLERK_WEBHOOK_SECRET }}" \
+            --set-env-vars "STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}" \
+            --set-env-vars "STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}" \
+            --set-env-vars "SUPABASE_SERVICE_ROLE_KEY=${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" \
+            --set-env-vars "STRIPE_PRICE_BASIC=${{ vars.STRIPE_PRICE_BASIC }}" \
+            --set-env-vars "STRIPE_PRICE_PRO=${{ vars.STRIPE_PRICE_PRO }}" \
+            --set-env-vars "STRIPE_PRICE_MENTORING_GROUP=${{ vars.STRIPE_PRICE_MENTORING_GROUP }}" \
+            --set-env-vars "STRIPE_PRICE_MENTORING_VIP=${{ vars.STRIPE_PRICE_MENTORING_VIP }}" \
+            --set-env-vars "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" \
+            --set-env-vars "WORKSHOP_MEETING_URL=${{ vars.WORKSHOP_MEETING_URL }}" \
+            --set-env-vars "META_ACCESS_TOKEN=${{ secrets.META_ACCESS_TOKEN }}" \
+            --set-env-vars "ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}" \
+            --set-env-vars "POSTHOG_PERSONAL_API_KEY=${{ secrets.POSTHOG_PERSONAL_API_KEY }}" \
+            --set-env-vars "POSTHOG_PROJECT_ID=${{ vars.POSTHOG_PROJECT_ID }}" \
+            --set-env-vars "META_SYSTEM_USER_ACCESS_TOKEN=${{ secrets.META_SYSTEM_USER_ACCESS_TOKEN }}" \
+            --set-env-vars "META_AD_ACCOUNT_ID=${{ vars.META_AD_ACCOUNT_ID }}"
+
+      - name: Show service URL
+        run: |
+          gcloud run services describe ${{ env.SERVICE_NAME }} \
+            --region ${{ env.REGION }} \
+            --project ${{ env.PROJECT_ID }} \
+            --format "value(status.url)"
