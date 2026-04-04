@@ -10,14 +10,23 @@ export const maxDuration = 120;
 const execFileAsync = promisify(execFile);
 
 const CAMPAIGN_START = "2026-03-20";
-const ROOT = process.cwd();
+
+/** Avoid Turbopack tracing the entire repo from `path.join(process.cwd(), …)` (NFT / standalone). */
+function cwdJoin(...segments: string[]) {
+  return join(/* turbopackIgnore: true */ process.cwd(), ...segments);
+}
 
 async function runScript(scriptName: string): Promise<string> {
   try {
     const { stdout } = await execFileAsync(
       process.execPath,
-      [join(ROOT, "scripts", scriptName)],
-      { cwd: ROOT, env: process.env, timeout: 60_000, encoding: "utf8" }
+      [cwdJoin("scripts", scriptName)],
+      {
+        cwd: /* turbopackIgnore: true */ process.cwd(),
+        env: process.env,
+        timeout: 60_000,
+        encoding: "utf8",
+      }
     );
     return stdout;
   } catch (err: unknown) {
@@ -29,7 +38,7 @@ async function runScript(scriptName: string): Promise<string> {
 
 function readFile(filename: string): string {
   try {
-    return readFileSync(join(ROOT, filename), "utf8");
+    return readFileSync(cwdJoin(filename), "utf8");
   } catch {
     return `(${filename} not found)`;
   }
@@ -37,7 +46,7 @@ function readFile(filename: string): string {
 
 function readRecentActivity(): string {
   try {
-    const raw = readFileSync(join(ROOT, "ACTIVITY.md"), "utf8");
+    const raw = readFileSync(cwdJoin("ACTIVITY.md"), "utf8");
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 14);
     const sections = raw.split(/^## /m).slice(1);
