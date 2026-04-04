@@ -3,12 +3,12 @@ import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import { isAdminUser } from "@/lib/config";
 
 export const maxDuration = 120;
 
 const execFileAsync = promisify(execFile);
 
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 const CAMPAIGN_START = "2026-03-20";
 const ROOT = process.cwd();
 
@@ -198,7 +198,7 @@ ${data.meta.trim()}
 
 export async function GET() {
   const { userId } = await auth();
-  if (!userId || userId !== ADMIN_USER_ID) {
+  if (!isAdminUser(userId)) {
     return new Response("Forbidden", { status: 403 });
   }
 

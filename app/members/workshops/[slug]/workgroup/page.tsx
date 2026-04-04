@@ -3,8 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import { getWorkshopBySlug } from "@/lib/workshops";
 import WorkgroupSection from "@/components/workgroup/WorkgroupSection";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+import { isAdminUser } from "@/lib/config";
 
 type WorkgroupPageProps = {
   params: Promise<{ slug: string }>;
@@ -22,7 +21,7 @@ export default async function WorkgroupPage({ params }: WorkgroupPageProps) {
   const { userId } = await auth();
   let hasAccess = false;
 
-  if (userId === ADMIN_USER_ID) {
+  if (isAdminUser(userId)) {
     hasAccess = true;
   } else if (userId) {
     const supabase = createServiceClient();
@@ -53,5 +52,5 @@ export default async function WorkgroupPage({ params }: WorkgroupPageProps) {
     );
   }
 
-  return <WorkgroupSection workshopSlug={slug} isAdmin={userId === ADMIN_USER_ID} />;
+  return <WorkgroupSection workshopSlug={slug} isAdmin={isAdminUser(userId)} />;
 }

@@ -7,8 +7,7 @@ import {
   getWorkshopBySlug,
   getWorkshopTrainingSections,
 } from "@/lib/workshops";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+import { isAdminUser } from "@/lib/config";
 
 type WorkshopPageProps = {
   params: Promise<{ slug: string }>;
@@ -29,7 +28,7 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
   let hasProAccess = false;
   const { userId } = await auth();
   if (userId) {
-    if (userId === ADMIN_USER_ID) {
+    if (isAdminUser(userId)) {
       hasProAccess = true;
     } else {
       const supabase = createServiceClient();

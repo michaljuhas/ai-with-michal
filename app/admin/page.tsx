@@ -7,8 +7,8 @@ import RegistrationsTable from "./RegistrationsTable";
 import WorkshopSelector from "./WorkshopSelector";
 import CopyEmailButton from "./CopyEmailButton";
 import { Suspense } from "react";
+import { isAdminUser } from "@/lib/config";
 
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 const SPOTS_TARGET = 20;
 
 /** Parse a date from a workshop slug like "2026-04-02-ai-in-recruiting" */
@@ -53,7 +53,7 @@ export default async function AdminPage({
   const { userId } = await auth();
   if (!userId) redirect("/login");
 
-  if (userId !== ADMIN_USER_ID) {
+  if (!isAdminUser(userId)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
         <p className="text-slate-500">Access denied.</p>

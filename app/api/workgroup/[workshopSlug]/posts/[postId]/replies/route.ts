@@ -1,8 +1,7 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
+import { isAdminUser } from "@/lib/config";
 import type { NextRequest } from "next/server";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
 
 export async function POST(
   request: NextRequest,
@@ -33,7 +32,7 @@ export async function POST(
   const authorName = user?.firstName
     ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`.trim()
     : null;
-  const isAdmin = userId === ADMIN_USER_ID;
+  const isAdmin = isAdminUser(userId);
 
   const supabase = createServiceClient();
 

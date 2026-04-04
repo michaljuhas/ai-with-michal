@@ -5,6 +5,7 @@ import { getWorkshopBySlug } from "@/lib/workshops";
 import type { Registration } from "@/lib/supabase";
 import CommunityDirectory from "@/components/members/CommunityDirectory";
 import type { CommunityMember } from "@/components/members/CommunityDirectory";
+import { ADMIN_USER_IDS, isAdminUser } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
@@ -24,37 +25,28 @@ export default async function WorkshopMembersPage({ params }: Props) {
     .eq("workshop_slug", slug)
     .eq("status", "paid");
 
-  const clerkUserIds = [...new Set((orders ?? []).map((o: { clerk_user_id: string }) => o.clerk_user_id).filter(Boolean))];
+  const attendeeIds = [...new Set((orders ?? []).map((o: { clerk_user_id: string }) => o.clerk_user_id).filter(Boolean))];
 
-  if (clerkUserIds.length === 0) {
-    return (
-      <div className="space-y-6">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-blue-600">Overview</p>
-          <h2 className="mt-1 text-xl font-bold text-slate-900">Members</h2>
-        </div>
-        <CommunityDirectory members={[]} showFilters={false} />
-      </div>
-    );
-  }
+  // Always include all admin IDs (host) — fetch their Clerk profile separately
+  const allClerkIds = [...new Set([...ADMIN_USER_IDS, ...attendeeIds])];
 
-  // 2. Fetch registration profile data for these users
+  // 2. Fetch registration profile data for attendees
   const { data: registrations } = await supabase
     .from("registrations")
     .select("clerk_user_id, country, ai_level, function, linkedin_url")
-    .in("clerk_user_id", clerkUserIds);
+    .in("clerk_user_id", attendeeIds.length > 0 ? attendeeIds : ["__none__"]);
 
   const profileMap = new Map<string, Pick<Registration, "country" | "ai_level" | "function" | "linkedin_url">>();
   for (const row of (registrations ?? []) as Pick<Registration, "clerk_user_id" | "country" | "ai_level" | "function" | "linkedin_url">[]) {
     profileMap.set(row.clerk_user_id, row);
   }
 
-  // 3. Batch-fetch Clerk users for name + avatar
+  // 3. Batch-fetch Clerk users for name + avatar (attendees + admin)
   const client = await clerkClient();
   let nameMap: Record<string, { name: string; imageUrl: string | null }> = {};
   try {
     const { data: clerkUsers } = await client.users.getUserList({
-      userId: clerkUserIds,
+      userId: allClerkIds,
       limit: 200,
     });
     for (const u of clerkUsers) {
@@ -68,9 +60,23 @@ export default async function WorkshopMembersPage({ params }: Props) {
     // Degrade gracefully — show initials fallback
   }
 
-  // 4. Merge into CommunityMember shape (skip deleted/missing Clerk accounts)
-  const members: CommunityMember[] = clerkUserIds
-    .filter((id) => nameMap[id])
+  // 4. Build host card first, then attendees (skip deleted/missing Clerk accounts)
+  const hostAdminId = ADMIN_USER_IDS.find((id) => nameMap[id]);
+  const hostCard: CommunityMember | null = hostAdminId
+    ? {
+        clerkUserId: hostAdminId,
+        name: nameMap[hostAdminId].name,
+        imageUrl: nameMap[hostAdminId].imageUrl,
+        country: "Slovakia",
+        aiLevel: "ai_native",
+        jobFunction: "recruiting_ta_hr",
+        linkedinUrl: "https://www.linkedin.com/in/michaljuhas/",
+        isHost: true,
+      }
+    : null;
+
+  const attendeeCards: CommunityMember[] = attendeeIds
+    .filter((id) => nameMap[id] && !isAdminUser(id))
     .map((id) => {
       const profile = profileMap.get(id);
       return {
@@ -83,6 +89,8 @@ export default async function WorkshopMembersPage({ params }: Props) {
         linkedinUrl: profile?.linkedin_url ?? null,
       };
     });
+
+  const members: CommunityMember[] = [...(hostCard ? [hostCard] : []), ...attendeeCards];
 
   return (
     <div className="space-y-6">

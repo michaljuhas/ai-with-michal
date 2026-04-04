@@ -25,12 +25,21 @@ export const metadata: Metadata = {
     description:
       "Accelerate your AI adoption with live workshops, 1-on-1 mentoring, and implementation services for individuals and teams.",
     type: "website",
+    images: [
+      {
+        url: "/Michal-Juhas-headshot-square-v1.jpg",
+        width: 800,
+        height: 800,
+        alt: "Michal Juhas — AI with Michal",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "AI with Michal — Workshops, Mentoring & AI Implementation",
     description:
       "Accelerate your AI adoption with live workshops, 1-on-1 mentoring, and implementation services for individuals and teams.",
+    images: ["/Michal-Juhas-headshot-square-v1.jpg"],
   },
 };
 

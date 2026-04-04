@@ -13,6 +13,7 @@ export type CommunityMember = {
   aiLevel: "offline" | "chatting" | "systemizing" | "automating" | "ai_native" | null;
   jobFunction: "recruiting_ta_hr" | "gtm" | "business_ops" | "builder_founder" | null;
   linkedinUrl: string | null;
+  isHost?: boolean;
 };
 
 // ─── Display maps ─────────────────────────────────────────────────────────────
@@ -60,7 +61,11 @@ function MemberCard({ member }: { member: CommunityMember }) {
     .toUpperCase();
 
   return (
-    <div className="group flex flex-col bg-white rounded-2xl border border-slate-100 p-5 shadow-sm hover:shadow-md hover:border-slate-200 transition-all duration-200">
+    <div className={`group flex flex-col rounded-2xl border p-5 shadow-sm hover:shadow-md transition-all duration-200 ${
+      member.isHost
+        ? "bg-gradient-to-b from-blue-50 to-white border-blue-200 hover:border-blue-300"
+        : "bg-white border-slate-100 hover:border-slate-200"
+    }`}>
       {/* Avatar + LinkedIn */}
       <div className="flex items-start justify-between mb-3">
         <div className="relative">
@@ -70,11 +75,16 @@ function MemberCard({ member }: { member: CommunityMember }) {
               alt={member.name}
               width={56}
               height={56}
-              className="rounded-full object-cover ring-2 ring-white shadow-sm"
+              className={`rounded-full object-cover ring-2 shadow-sm ${member.isHost ? "ring-blue-300" : "ring-white"}`}
             />
           ) : (
             <span className="flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-white text-lg font-bold shadow-sm">
               {initials}
+            </span>
+          )}
+          {member.isHost && (
+            <span className="absolute -bottom-1 -right-1 flex items-center justify-center rounded-full bg-blue-600 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white shadow ring-2 ring-white leading-none">
+              Host
             </span>
           )}
         </div>

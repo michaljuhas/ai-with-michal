@@ -99,14 +99,14 @@ export async function POST(
     ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ""}`.trim()
     : null;
 
-  let body: { headline?: string; body?: string; broadcast?: boolean };
+  let body: { headline?: string; body?: string; broadcast?: boolean; image_url?: string };
   try {
     body = await request.json();
   } catch {
     return Response.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const { headline, body: postBody, broadcast } = body;
+  const { headline, body: postBody, broadcast, image_url } = body;
 
   if (!headline?.trim() || !postBody?.trim()) {
     return Response.json({ error: "Headline and body are required" }, { status: 400 });
@@ -122,6 +122,7 @@ export async function POST(
       author_name: authorName,
       headline: headline.trim(),
       body: postBody.trim(),
+      image_url: image_url ?? null,
     })
     .select()
     .single();
@@ -162,6 +163,7 @@ export async function POST(
         workshopSlug,
         headline: headline.trim(),
         body: postBody.trim(),
+        imageUrl: image_url ?? undefined,
         recipients,
       });
       broadcastResult = { sent: result.sent };

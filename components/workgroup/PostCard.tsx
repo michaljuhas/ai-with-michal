@@ -90,6 +90,17 @@ export default function PostCard({ post, workshopSlug, onUpdate }: PostCardProps
 
         <h3 className="text-base font-semibold text-slate-900 mb-2">{post.headline}</h3>
         <p className="text-sm leading-relaxed text-slate-600 whitespace-pre-wrap">{post.body}</p>
+
+        {post.image_url && (
+          <div className="mt-3">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.image_url}
+              alt="Post image"
+              className="rounded-xl border border-slate-100 max-w-[600px] w-full h-auto"
+            />
+          </div>
+        )}
       </div>
 
       {/* Replies */}

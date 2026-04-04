@@ -9,8 +9,7 @@ import {
 import type { WorkshopDef } from "@/lib/workshops";
 import WorkshopCard from "@/components/members/WorkshopCard";
 import MembersNav from "@/components/members/MembersNav";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+import { isAdminUser } from "@/lib/config";
 
 export default async function MembersPage() {
   const { userId } = await auth();
@@ -18,7 +17,7 @@ export default async function MembersPage() {
 
   let myWorkshops: WorkshopDef[] = [];
 
-  if (userId === ADMIN_USER_ID) {
+  if (isAdminUser(userId)) {
     // Admin sees every workshop that has a members-area page, sorted upcoming first then past
     myWorkshops = [...workshops].sort((a, b) => {
       const aUpcoming = a.date >= now;

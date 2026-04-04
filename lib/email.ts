@@ -629,8 +629,9 @@ function buildWorkgroupBroadcastHtml(params: {
   headline: string;
   body: string;
   workgroupUrl: string;
+  imageUrl?: string;
 }) {
-  const { authorName, workshopTitle, headline, body, workgroupUrl } = params;
+  const { authorName, workshopTitle, headline, body, workgroupUrl, imageUrl } = params;
   const bodyHtml = escapeHtml(body).replace(/\n/g, "<br/>");
 
   return `<!DOCTYPE html>
@@ -692,6 +693,13 @@ function buildWorkgroupBroadcastHtml(params: {
                 </td>
               </tr>
 
+              ${imageUrl ? `<!-- Post image -->
+              <tr>
+                <td style="padding:0 0 28px;">
+                  <img src="${escapeHtml(imageUrl)}" alt="Post image" style="display:block;max-width:100%;border-radius:8px;border:1px solid #e2e8f0;" />
+                </td>
+              </tr>` : ""}
+
               <!-- CTA -->
               <tr>
                 <td style="padding:0 0 32px;text-align:center;">
@@ -730,8 +738,10 @@ function buildWorkgroupBroadcastText(params: {
   headline: string;
   body: string;
   workgroupUrl: string;
+  imageUrl?: string;
 }) {
-  const { authorName, workshopTitle, headline, body, workgroupUrl } = params;
+  const { authorName, workshopTitle, headline, body, workgroupUrl, imageUrl } = params;
+  const imageLine = imageUrl ? `\nImage: ${imageUrl}\n` : "";
   return `WORKGROUP ANNOUNCEMENT: ${headline}
 
 Posted by: ${authorName}
@@ -739,7 +749,7 @@ Posted by: ${authorName}
 ---
 
 ${body}
-
+${imageLine}
 ---
 
 Open Workgroup: ${workgroupUrl}
@@ -759,17 +769,18 @@ export async function sendWorkgroupBroadcast(params: {
   workshopSlug: string;
   headline: string;
   body: string;
+  imageUrl?: string;
   recipients: { email: string; name: string }[];
 }) {
-  const { authorName, workshopTitle, workshopSlug, headline, body, recipients } = params;
+  const { authorName, workshopTitle, workshopSlug, headline, body, imageUrl, recipients } = params;
 
   const mail = getSendGrid();
   const adminEmail = getAdminEmail();
   const workgroupUrl = `https://aiwithmichal.com/members/workshops/${workshopSlug}/workgroup`;
   const subject = `[Workgroup] ${headline}`;
 
-  const html = buildWorkgroupBroadcastHtml({ authorName, workshopTitle, headline, body, workgroupUrl });
-  const text = buildWorkgroupBroadcastText({ authorName, workshopTitle, headline, body, workgroupUrl });
+  const html = buildWorkgroupBroadcastHtml({ authorName, workshopTitle, headline, body, workgroupUrl, imageUrl });
+  const text = buildWorkgroupBroadcastText({ authorName, workshopTitle, headline, body, workgroupUrl, imageUrl });
 
   // Collect unique recipient emails, always include admin
   const emailSet = new Set(recipients.map((r) => r.email.toLowerCase()));

@@ -8,8 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+import { isAdminUser } from "@/lib/config";
 
 function UserMenu() {
   const { user } = useUser();
@@ -33,7 +32,7 @@ function UserMenu() {
     user?.primaryEmailAddress?.emailAddress?.split("@")[0] ||
     "Account";
   const avatarUrl = user?.imageUrl ?? null;
-  const isAdmin = user?.id === ADMIN_USER_ID;
+  const isAdmin = isAdminUser(user?.id);
 
   async function handleSignOut() {
     setOpen(false);

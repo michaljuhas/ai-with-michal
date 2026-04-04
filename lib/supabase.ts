@@ -84,6 +84,7 @@ export type WorkgroupPost = {
   author_image_url?: string | null;
   headline: string;
   body: string;
+  image_url?: string | null;
   created_at: string;
 };
 

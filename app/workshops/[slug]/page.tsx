@@ -10,6 +10,7 @@ import WhatYouBuildSection from "@/components/home/WhatYouBuildSection";
 import WhoItsForSection from "@/components/home/WhoItsForSection";
 import AgendaSection from "@/components/home/AgendaSection";
 import WhatYouGetSection from "@/components/home/WhatYouGetSection";
+import HowItWorksSection from "@/components/home/HowItWorksSection";
 import PricingSection from "@/components/home/PricingSection";
 import GuaranteeSection from "@/components/home/GuaranteeSection";
 import AboutSection from "@/components/home/AboutSection";
@@ -39,6 +40,7 @@ export default async function WorkshopPage({ params }: Props) {
       <WhoItsForSection />
       <AgendaSection />
       <WhatYouGetSection />
+      <HowItWorksSection />
       <VideoTestimonialSection />
       <PricingSection open={open} displayDate={workshop.displayDate} displayTime={workshop.displayTime} workshopSlug={workshop.slug} timezoneConverterUrl={getTimezoneConverterUrl(workshop.date)} />
       <GuaranteeSection />

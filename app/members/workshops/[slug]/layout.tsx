@@ -5,8 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import TrainingSidebar from "@/components/training/TrainingSidebar";
 import { getWorkshopBySlug, getWorkshopTrainingSections, STREAMS } from "@/lib/workshops";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+import { isAdminUser } from "@/lib/config";
 
 type WorkshopLayoutProps = {
   children: ReactNode;
@@ -28,7 +27,7 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
   let hasProAccess = false;
   const { userId } = await auth();
   if (userId) {
-    if (userId === ADMIN_USER_ID) {
+    if (isAdminUser(userId)) {
       hasProAccess = true;
     } else {
       const supabase = createServiceClient();

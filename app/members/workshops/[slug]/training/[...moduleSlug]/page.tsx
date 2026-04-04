@@ -11,8 +11,7 @@ import {
   getWorkshopTrainingLessons,
   workshops,
 } from "@/lib/workshops";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+import { isAdminUser } from "@/lib/config";
 const SESSION_NOTES_SLUG = ["live-workshop", "session-notes"];
 
 type TrainingModulePageProps = {
@@ -62,7 +61,7 @@ export default async function TrainingModulePage({ params }: TrainingModulePageP
   const isSessionNotes = moduleSlug.join("/") === SESSION_NOTES_SLUG.join("/");
   if (isSessionNotes) {
     const { userId } = await auth();
-    const isAdmin = userId === ADMIN_USER_ID;
+    const isAdmin = isAdminUser(userId);
     const supabase = createServiceClient();
     const { data } = await supabase
       .from("workshop_session_notes")

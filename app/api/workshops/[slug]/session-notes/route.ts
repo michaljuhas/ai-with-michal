@@ -1,8 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
-
-const ADMIN_USER_ID = "user_3BAd2lxThMRnjSjR2lBRTcLcXFp";
+import { isAdminUser } from "@/lib/config";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
@@ -26,7 +25,7 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
 export async function PATCH(req: NextRequest, { params }: RouteContext) {
   const { userId } = await auth();
 
-  if (userId !== ADMIN_USER_ID) {
+  if (!isAdminUser(userId)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
