@@ -4,7 +4,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useRef, useState, useEffect } from "react";
-import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser, useClerk } from "@clerk/nextjs";
 import { ChevronDown, Menu, X } from "lucide-react";
@@ -189,15 +188,19 @@ function ForTeamsDropdown() {
   );
 }
 
-/** Remount on `pathname` so the drawer closes on navigation without an effect. */
-function MobileNavBar({
+/** Fullscreen overlay — rendered as a sibling of motion.header so fixed positioning
+ *  is never clipped by the header's stacking context. */
+function MobileOverlay({
+  open,
+  onClose,
   pathname,
   isSignedIn,
 }: {
+  open: boolean;
+  onClose: () => void;
   pathname: string;
   isSignedIn: boolean;
 }) {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const { user } = useUser();
   const { signOut } = useClerk();
   const isAdmin = isAdminUser(user?.id);
@@ -207,8 +210,6 @@ function MobileNavBar({
     user?.primaryEmailAddress?.emailAddress?.split("@")[0] ||
     "Account";
   const avatarUrl = user?.imageUrl ?? null;
-
-  const closeMobile = () => setMobileOpen(false);
 
   const linkClass = (href: string, exact = false) => {
     const active = exact
@@ -220,148 +221,141 @@ function MobileNavBar({
   };
 
   return (
-    <>
-      <button
-        type="button"
-        onClick={() => setMobileOpen((o) => !o)}
-        className="md:hidden shrink-0 p-2 -mr-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
-        aria-label="Open menu"
-      >
-        <Menu size={22} />
-      </button>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          className="fixed inset-0 z-[60] md:hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {/* Blurred dark backdrop — tap to close */}
+          <div
+            className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
+            onClick={onClose}
+          />
 
-      <AnimatePresence>
-        {mobileOpen && createPortal(
-          <motion.div
-            key="mobile-overlay"
-            className="fixed inset-0 z-[60] md:hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
-          >
-            {/* Blurred dark backdrop — tap to close */}
-            <div
-              className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-              onClick={closeMobile}
-            />
+          {/* Scrollable cards */}
+          <div className="relative h-full overflow-y-auto">
+            <div className="px-4 pt-20 pb-28 flex flex-col gap-3">
 
-            {/* Scrollable cards */}
-            <div className="relative h-full overflow-y-auto">
-              <div className="px-4 pt-20 pb-28 flex flex-col gap-3">
+              {/* Learn more */}
+              <motion.div
+                className="bg-white rounded-2xl p-6"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 }}
+              >
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
+                  Learn more
+                </p>
+                <Link href="/" onClick={onClose} className={linkClass("/", true)}>Home</Link>
+                <Link href="/workshops" onClick={onClose} className={linkClass("/workshops")}>Workshops</Link>
+                <Link href="/ai-mentoring" onClick={onClose} className={linkClass("/ai-mentoring")}>Mentoring</Link>
+                {isSignedIn && (
+                  <Link href="/members" onClick={onClose} className={linkClass("/members")}>Members</Link>
+                )}
+              </motion.div>
 
-                {/* Learn more */}
-                <motion.div
-                  className="bg-white rounded-2xl p-6"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.05 }}
-                >
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
-                    Learn more
-                  </p>
-                  <Link href="/" onClick={closeMobile} className={linkClass("/", true)}>Home</Link>
-                  <Link href="/workshops" onClick={closeMobile} className={linkClass("/workshops")}>Workshops</Link>
-                  <Link href="/ai-mentoring" onClick={closeMobile} className={linkClass("/ai-mentoring")}>Mentoring</Link>
-                  {isSignedIn && (
-                    <Link href="/members" onClick={closeMobile} className={linkClass("/members")}>Members</Link>
-                  )}
-                </motion.div>
+              {/* For Teams */}
+              <motion.div
+                className="bg-white rounded-2xl p-6"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
+                  For Teams
+                </p>
+                <Link href="/ai-workshops-for-teams" onClick={onClose} className={linkClass("/ai-workshops-for-teams")}>
+                  AI Workshops for Teams
+                </Link>
+                <Link href="/ai-integrations" onClick={onClose} className={linkClass("/ai-integrations")}>
+                  AI Integrations
+                </Link>
+              </motion.div>
 
-                {/* For Teams */}
-                <motion.div
-                  className="bg-white rounded-2xl p-6"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
-                    For Teams
-                  </p>
-                  <Link href="/ai-workshops-for-teams" onClick={closeMobile} className={linkClass("/ai-workshops-for-teams")}>
-                    AI Workshops for Teams
-                  </Link>
-                  <Link href="/ai-integrations" onClick={closeMobile} className={linkClass("/ai-integrations")}>
-                    AI Integrations
-                  </Link>
-                </motion.div>
-
-                {/* Account */}
-                <motion.div
-                  className="bg-white rounded-2xl p-6"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.15 }}
-                >
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
-                    Account
-                  </p>
-                  {isSignedIn ? (
-                    <>
-                      <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100">
-                        {avatarUrl ? (
-                          <Image
-                            src={avatarUrl}
-                            alt={displayName}
-                            width={36}
-                            height={36}
-                            className="rounded-full object-cover flex-shrink-0"
-                          />
-                        ) : (
-                          <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
-                            {displayName.charAt(0).toUpperCase()}
-                          </span>
-                        )}
-                        <div className="min-w-0">
-                          <p className="font-semibold text-slate-900 truncate">{displayName}</p>
-                          <p className="text-xs text-slate-400 truncate">
-                            {user?.primaryEmailAddress?.emailAddress}
-                          </p>
-                        </div>
-                      </div>
-                      {isAdmin && (
-                        <Link href="/admin" onClick={closeMobile} className={linkClass("/admin")}>Admin</Link>
+              {/* Account */}
+              <motion.div
+                className="bg-white rounded-2xl p-6"
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+              >
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
+                  Account
+                </p>
+                {isSignedIn ? (
+                  <>
+                    <div className="flex items-center gap-3 mb-4 pb-4 border-b border-slate-100">
+                      {avatarUrl ? (
+                        <Image
+                          src={avatarUrl}
+                          alt={displayName}
+                          width={36}
+                          height={36}
+                          className="rounded-full object-cover flex-shrink-0"
+                        />
+                      ) : (
+                        <span className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-blue-600 text-sm font-bold text-white">
+                          {displayName.charAt(0).toUpperCase()}
+                        </span>
                       )}
-                      <Link href="/profile" onClick={closeMobile} className={linkClass("/profile")}>Profile</Link>
-                      <Link href="/billing" onClick={closeMobile} className={linkClass("/billing")}>Billing</Link>
-                      <button
-                        type="button"
-                        onClick={() => { closeMobile(); signOut({ redirectUrl: "/" }); }}
-                        className="block text-2xl font-medium py-1.5 text-red-500 hover:text-red-600 transition-colors text-left"
-                      >
-                        Log out
-                      </button>
-                    </>
-                  ) : (
-                    <Link href="/login" onClick={closeMobile} className={linkClass("/login")}>
-                      Log in
-                    </Link>
-                  )}
-                </motion.div>
+                      <div className="min-w-0">
+                        <p className="font-semibold text-slate-900 truncate">{displayName}</p>
+                        <p className="text-xs text-slate-400 truncate">
+                          {user?.primaryEmailAddress?.emailAddress}
+                        </p>
+                      </div>
+                    </div>
+                    {isAdmin && (
+                      <Link href="/admin" onClick={onClose} className={linkClass("/admin")}>Admin</Link>
+                    )}
+                    <Link href="/profile" onClick={onClose} className={linkClass("/profile")}>Profile</Link>
+                    <Link href="/billing" onClick={onClose} className={linkClass("/billing")}>Billing</Link>
+                    <button
+                      type="button"
+                      onClick={() => { onClose(); signOut({ redirectUrl: "/" }); }}
+                      className="block text-2xl font-medium py-1.5 text-red-500 hover:text-red-600 transition-colors text-left"
+                    >
+                      Log out
+                    </button>
+                  </>
+                ) : (
+                  <Link href="/login" onClick={onClose} className={linkClass("/login")}>
+                    Log in
+                  </Link>
+                )}
+              </motion.div>
 
-              </div>
             </div>
+          </div>
 
-            {/* Close button */}
-            <button
-              type="button"
-              onClick={closeMobile}
-              aria-label="Close menu"
-              className="fixed bottom-8 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-slate-800 text-white shadow-xl hover:bg-slate-700 transition-colors"
-            >
-              <X size={22} />
-            </button>
-          </motion.div>,
-          document.body
-        )}
-      </AnimatePresence>
-    </>
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close menu"
+            className="fixed bottom-8 right-6 flex h-14 w-14 items-center justify-center rounded-full bg-slate-800 text-white shadow-xl hover:bg-slate-700 transition-colors"
+          >
+            <X size={22} />
+          </button>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
 
 export default function Header() {
   const pathname = usePathname();
   const { isSignedIn } = useUser();
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  // Close overlay on route change
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const navLinkClass = (href: string) => {
     const active = pathname === href || pathname.startsWith(href + "/");
@@ -373,59 +367,77 @@ export default function Header() {
   };
 
   return (
-    <motion.header
-      className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80"
-      initial={{ opacity: 0, y: -10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      <div className="max-w-7xl mx-auto px-6 min-h-16 flex flex-wrap items-center justify-between">
-        <Link href="/" className="group">
-          <span className="text-slate-900 font-bold text-lg tracking-tight">
-            AI{" "}
-            <span className="text-blue-600">with</span>{" "}
-            Michal
-          </span>
-        </Link>
+    <>
+      <motion.header
+        className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200/80"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <div className="max-w-7xl mx-auto px-6 min-h-16 flex flex-wrap items-center justify-between">
+          <Link href="/" className="group">
+            <span className="text-slate-900 font-bold text-lg tracking-tight">
+              AI{" "}
+              <span className="text-blue-600">with</span>{" "}
+              Michal
+            </span>
+          </Link>
 
-        {/* Desktop nav */}
-        <div className="hidden md:flex items-center gap-1">
-          <Link
-            href="/workshops"
-            className={navLinkClass("/workshops")}
-          >
-            Workshops
-          </Link>
-          <Link
-            href="/ai-mentoring"
-            className={navLinkClass("/ai-mentoring")}
-          >
-            Mentoring
-          </Link>
-          <ForTeamsDropdown />
-          {isSignedIn && (
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-1">
             <Link
-              href="/members"
-              className={navLinkClass("/members")}
+              href="/workshops"
+              className={navLinkClass("/workshops")}
             >
-              Members
+              Workshops
             </Link>
-          )}
-          <div className="w-px h-5 bg-slate-200 mx-1" />
-          {isSignedIn ? (
-            <UserMenu />
-          ) : (
             <Link
-              href="/login"
-              className="text-sm font-medium px-3.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+              href="/ai-mentoring"
+              className={navLinkClass("/ai-mentoring")}
             >
-              Log in
+              Mentoring
             </Link>
-          )}
+            <ForTeamsDropdown />
+            {isSignedIn && (
+              <Link
+                href="/members"
+                className={navLinkClass("/members")}
+              >
+                Members
+              </Link>
+            )}
+            <div className="w-px h-5 bg-slate-200 mx-1" />
+            {isSignedIn ? (
+              <UserMenu />
+            ) : (
+              <Link
+                href="/login"
+                className="text-sm font-medium px-3.5 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 hover:border-slate-300 transition-colors"
+              >
+                Log in
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile hamburger — only the button lives inside the header */}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((o) => !o)}
+            className="md:hidden shrink-0 p-2 -mr-2 text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+            aria-label="Open menu"
+          >
+            <Menu size={22} />
+          </button>
         </div>
+      </motion.header>
 
-        <MobileNavBar key={pathname} pathname={pathname} isSignedIn={!!isSignedIn} />
-      </div>
-    </motion.header>
+      {/* Overlay is a sibling of motion.header — never clipped by its stacking context */}
+      <MobileOverlay
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        pathname={pathname}
+        isSignedIn={!!isSignedIn}
+      />
+    </>
   );
 }
