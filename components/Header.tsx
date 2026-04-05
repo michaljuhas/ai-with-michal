@@ -198,7 +198,6 @@ function MobileNavBar({
   isSignedIn: boolean;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const { user } = useUser();
   const { signOut } = useClerk();
   const isAdmin = isAdminUser(user?.id);
@@ -208,8 +207,6 @@ function MobileNavBar({
     user?.primaryEmailAddress?.emailAddress?.split("@")[0] ||
     "Account";
   const avatarUrl = user?.imageUrl ?? null;
-
-  useEffect(() => setMounted(true), []);
 
   const closeMobile = () => setMobileOpen(false);
 
@@ -233,10 +230,10 @@ function MobileNavBar({
         <Menu size={22} />
       </button>
 
-      {mounted && createPortal(
       <AnimatePresence>
-        {mobileOpen && (
+        {mobileOpen && createPortal(
           <motion.div
+            key="mobile-overlay"
             className="fixed inset-0 z-[60] md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -354,11 +351,10 @@ function MobileNavBar({
             >
               <X size={22} />
             </button>
-          </motion.div>
+          </motion.div>,
+          document.body
         )}
-      </AnimatePresence>,
-      document.body
-      )}
+      </AnimatePresence>
     </>
   );
 }
