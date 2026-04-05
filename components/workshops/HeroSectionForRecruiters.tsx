@@ -14,7 +14,7 @@ const highlights = [
   "Handle more roles with less busywork and stronger output",
 ];
 
-export default function HeroSection({
+export default function HeroSectionForRecruiters({
   open,
   displayDate,
   workshopDate,
