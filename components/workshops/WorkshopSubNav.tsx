@@ -37,7 +37,7 @@ export default function WorkshopSubNav() {
           setActive("workshop");
         }
       },
-      { rootMargin: "-64px 0px -50% 0px", threshold: 0 }
+      { rootMargin: "-108px 0px -50% 0px", threshold: 0 }
     );
 
     sectionIds.forEach((id) => {
@@ -56,13 +56,19 @@ export default function WorkshopSubNav() {
     };
   }, []);
 
+  // 64px fixed header + 44px sticky sub-nav + 24px breathing room
+  const SCROLL_OFFSET = 132;
+
   const handleClick = (item: (typeof NAV_ITEMS)[number]) => {
     if (item.href === null) {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
     const el = document.getElementById(item.id);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (el) {
+      const top = el.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET;
+      window.scrollTo({ top, behavior: "smooth" });
+    }
   };
 
   return (
