@@ -351,11 +351,11 @@ export default function Header() {
   const pathname = usePathname();
   const { isSignedIn } = useUser();
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  // Close overlay on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname);
+    if (mobileOpen) setMobileOpen(false);
+  }
 
   const navLinkClass = (href: string) => {
     const active = pathname === href || pathname.startsWith(href + "/");
