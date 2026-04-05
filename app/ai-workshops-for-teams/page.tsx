@@ -7,7 +7,7 @@ import {
   Zap,
   Users,
   TrendingUp,
-  ArrowRight,
+  ArrowDown,
   ChevronDown,
   CheckCircle2,
   Star,
@@ -80,7 +80,7 @@ export default function AIWorkshopsForTeamsPage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero */}
-      <section className="pt-28 pb-20 px-6 bg-gradient-to-b from-slate-50 to-white">
+      <section className="pt-28 pb-10 px-6 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-4xl mx-auto text-center">
           <motion.p
             variants={fadeUp}
@@ -118,11 +118,12 @@ export default function AIWorkshopsForTeamsPage() {
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <button
+              type="button"
               onClick={() => scrollToForm("hero")}
-              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-base group shadow-lg shadow-blue-600/20"
+              className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-base group shadow-lg shadow-blue-600/20 cursor-pointer"
             >
               Request more info &amp; pricing
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
             </button>
           </motion.div>
           <motion.div
@@ -130,7 +131,7 @@ export default function AIWorkshopsForTeamsPage() {
             initial="hidden"
             animate="visible"
             custom={0.4}
-            className="mt-10 flex justify-center"
+            className="mt-5 flex justify-center"
           >
             <ChevronDown size={20} className="text-slate-300 animate-bounce" />
           </motion.div>
@@ -138,7 +139,7 @@ export default function AIWorkshopsForTeamsPage() {
       </section>
 
       {/* Featured Workshop */}
-      <section className="py-20 px-6 bg-white">
+      <section className="pt-12 pb-20 px-6 bg-white">
         <div className="max-w-4xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
@@ -179,11 +180,12 @@ export default function AIWorkshopsForTeamsPage() {
               </div>
 
               <button
+                type="button"
                 onClick={() => scrollToForm("card", "How To Use AI In Your Business")}
-                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 text-base group"
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl transition-all duration-200 text-base group cursor-pointer"
               >
                 Request this workshop
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                <ArrowDown size={18} className="group-hover:translate-y-0.5 transition-transform" />
               </button>
             </div>
           </motion.div>
@@ -242,11 +244,12 @@ export default function AIWorkshopsForTeamsPage() {
                   </div>
 
                   <button
+                    type="button"
                     onClick={() => scrollToForm("card", w.title)}
-                    className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors group"
+                    className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors group cursor-pointer"
                   >
                     Request more info
-                    <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                    <ArrowDown size={14} className="group-hover:translate-y-0.5 transition-transform" />
                   </button>
                 </motion.div>
               );

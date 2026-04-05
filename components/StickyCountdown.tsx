@@ -7,11 +7,11 @@ import { getDaysUntilWorkshop, isRegistrationOpen } from "@/lib/workshop";
 import { getPublicWorkshopBySlug, isOpen } from "@/lib/workshops";
 import RegisterButton from "@/components/RegisterButton";
 
-const VISIBLE_PREFIXES = ["/", "/workshops"];
-
+/** Sticky bar on `/workshops/*` only — not homepage, not `/workshops/[slug]/tickets`. */
 function shouldShowOnRoute(pathname: string): boolean {
-  if (pathname === "/") return true;
-  return VISIBLE_PREFIXES.some((p) => p !== "/" && pathname.startsWith(p));
+  if (!pathname.startsWith("/workshops")) return false;
+  if (/^\/workshops\/[^/]+\/tickets(\/|$)/.test(pathname)) return false;
+  return true;
 }
 
 export default function StickyCountdown() {
