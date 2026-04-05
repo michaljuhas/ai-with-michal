@@ -14,6 +14,7 @@ import PricingSection from "@/components/workshops/PricingSection";
 import GuaranteeSection from "@/components/workshops/GuaranteeSection";
 import AboutSection from "@/components/workshops/AboutSection";
 import FinalCTA from "@/components/workshops/FinalCTA";
+import WorkshopSubNav from "@/components/workshops/WorkshopSubNav";
 
 interface WorkshopPageProps {
   open: boolean;
@@ -34,6 +35,7 @@ export default function WorkshopPage({
 }: WorkshopPageProps) {
   return (
     <main>
+      <WorkshopSubNav />
       <HeroSectionForRecruiters open={open} displayDate={displayDate} workshopDate={workshopDate} workshopSlug={workshopSlug} />
       <RecruiterFomoSection />
       <HostIntroSection />

@@ -60,7 +60,7 @@ const fadeSlide = (fromLeft: boolean) => ({
 
 export default function HowItWorksSection() {
   return (
-    <section className="py-24 px-6 bg-white overflow-hidden">
+    <section id="how-it-works" className="scroll-mt-28 py-24 px-6 bg-white overflow-hidden">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <motion.div

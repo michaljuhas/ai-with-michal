@@ -31,7 +31,7 @@ const agenda = [
 
 export default function AgendaSection() {
   return (
-    <section className="py-24 px-6 bg-white">
+    <section id="agenda" className="scroll-mt-28 py-24 px-6 bg-white">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}

@@ -59,7 +59,7 @@ export default function PricingSection({
   }, [workshopSlug]);
 
   return (
-    <section id="pricing" className="scroll-mt-16 py-24 px-6 bg-white">
+    <section id="pricing" className="scroll-mt-28 py-24 px-6 bg-white">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
