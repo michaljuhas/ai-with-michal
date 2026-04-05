@@ -16,6 +16,7 @@ import {
   Video,
   Map,
 } from "lucide-react";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
 import { WORKSHOP } from "@/lib/workshop";
 
@@ -291,7 +292,7 @@ export default function HomePage() {
               mentoring, or a custom solution for your team.
             </p>
             <a
-              href="mailto:michal@michaljuhas.com"
+              href={`mailto:${PUBLIC_CONTACT_EMAIL}`}
               className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3.5 rounded-xl transition-colors"
             >
               <Users size={16} />

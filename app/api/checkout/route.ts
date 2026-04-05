@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { getStripe, findOrCreateCustomer, PriceTier } from "@/lib/stripe";
 import { getPublicWorkshopBySlug } from "@/lib/workshops";
 import { createServiceClient } from "@/lib/supabase";
@@ -108,7 +109,7 @@ export async function POST(req: NextRequest) {
               ? "AI with Michal Workshop + Toolkit — live 90-min workshop, full recording, private work group access, bonus workflow examples and notes, extra recruiting automation resources."
               : "AI with Michal Workshop Ticket — members-area pre-training, live 90-min workshop, live Q&A with Michal.",
           footer:
-            "Juhas Digital Services s.r.o., Sukennicka 1, Bratislava 82109, Slovakia – AI with Michal – https://aiwithmichal.com – michal@michaljuhas.com",
+            `Juhas Digital Services s.r.o., Sukennicka 1, Bratislava 82109, Slovakia – AI with Michal – https://aiwithmichal.com – ${PUBLIC_CONTACT_EMAIL}`,
           custom_fields: [{ name: "TAX ID", value: "SK2120815323" }],
           rendering_options: { amount_tax_display: "include_inclusive_tax" },
         },

@@ -2,6 +2,9 @@ export const SITE = {
   bookingLink: "https://calendar.app.google/J29ersE4HuZCsobA6",
 } as const;
 
+/** Public contact address (footer, mailto, invoice footer, email templates). */
+export const PUBLIC_CONTACT_EMAIL = "hello@aiwithmichal.com" as const;
+
 // Production admin + dev/localhost admin
 export const ADMIN_USER_IDS = [
   "user_3BAd2lxThMRnjSjR2lBRTcLcXFp",

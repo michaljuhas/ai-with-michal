@@ -191,6 +191,39 @@ export function getPublicWorkshopBySlug(slug: string): Workshop | undefined {
   return PUBLIC_WORKSHOPS.find((w) => w.slug === slug);
 }
 
+/** Title and schedule for post-registration emails (public page first, then members def). */
+export function getWorkshopWelcomeSnapshot(slug: string): {
+  slug: string;
+  title: string;
+  displayDate: string;
+  displayTime: string;
+} {
+  const pub = getPublicWorkshopBySlug(slug);
+  if (pub) {
+    return {
+      slug: pub.slug,
+      title: pub.title,
+      displayDate: pub.displayDate,
+      displayTime: pub.displayTime,
+    };
+  }
+  const def = getWorkshopBySlug(slug);
+  if (def) {
+    return {
+      slug: def.slug,
+      title: def.title,
+      displayDate: def.displayDate,
+      displayTime: def.displayTime ?? "",
+    };
+  }
+  return {
+    slug,
+    title: "Live workshop",
+    displayDate: "",
+    displayTime: "",
+  };
+}
+
 export function getNextUpcomingPublicWorkshop(): Workshop | undefined {
   const now = new Date();
   return PUBLIC_WORKSHOPS.find((w) => w.date > now);

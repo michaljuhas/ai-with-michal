@@ -10,7 +10,7 @@ import {
   MessageCircle,
   ArrowRight,
 } from "lucide-react";
-import { SITE } from "@/lib/config";
+import { PUBLIC_CONTACT_EMAIL, SITE } from "@/lib/config";
 import posthog from "posthog-js";
 
 const nextSteps = [
@@ -150,10 +150,10 @@ function ThankYouContent() {
         >
           Questions? Reach out at{" "}
           <a
-            href="mailto:michal@michaljuhas.com"
+            href={`mailto:${PUBLIC_CONTACT_EMAIL}`}
             className="text-violet-600 hover:underline"
           >
-            michal@michaljuhas.com
+            {PUBLIC_CONTACT_EMAIL}
           </a>
         </motion.p>
       </div>

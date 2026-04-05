@@ -198,14 +198,14 @@ describe("POST /api/webhooks/clerk", () => {
     );
     expect(captureEvent).toHaveBeenCalled();
     expect(sendMetaEvent).toHaveBeenCalled();
-    expect(sendWelcomeEmail).toHaveBeenCalled();
+    expect(sendWelcomeEmail).not.toHaveBeenCalled();
     expect(notifyAdminNewRegistration).toHaveBeenCalled();
   });
 
   it("stores interested_in_product from unsafe_metadata and updates Clerk publicMetadata", async () => {
     const payload = userCreatedPayload();
     (payload.data as { unsafe_metadata?: Record<string, string> }).unsafe_metadata = {
-      interested_in_product: "workshop:2026-04-23",
+      interested_in_product: "workshop:2026-04-23-sourcing-automation",
     };
     verifyMock.mockReturnValue(payload);
 
@@ -232,13 +232,54 @@ describe("POST /api/webhooks/clerk", () => {
     expect(res.status).toBe(200);
     expect(upsert).toHaveBeenCalledWith(
       expect.objectContaining({
-        interested_in_product: "workshop:2026-04-23",
+        interested_in_product: "workshop:2026-04-23-sourcing-automation",
       }),
       { onConflict: "clerk_user_id" }
     );
     expect(updateUser).toHaveBeenCalledWith("user_clerk_new", {
-      publicMetadata: { interested_in_product: "workshop:2026-04-23" },
+      publicMetadata: { interested_in_product: "workshop:2026-04-23-sourcing-automation" },
     });
+    expect(sendWelcomeEmail).toHaveBeenCalledWith({
+      toEmail: "new@example.com",
+      toName: "New User",
+      workshop: expect.objectContaining({
+        slug: "2026-04-23-sourcing-automation",
+        title: "Sourcing Automation for Recruiters (90-min online workshop)",
+        displayDate: "April 23, 2026",
+        displayTime: "4:00 PM – 5:30 PM CET",
+      }),
+    });
+  });
+
+  it("does not send welcome email for mentoring signups", async () => {
+    const payload = userCreatedPayload();
+    (payload.data as { unsafe_metadata?: Record<string, string> }).unsafe_metadata = {
+      interested_in_product: "mentoring:group-a",
+    };
+    verifyMock.mockReturnValue(payload);
+
+    const upsert = vi.fn(async () => ({ error: null }));
+    vi.mocked(createServiceClient).mockReturnValue({
+      from: vi.fn(() => ({ upsert })),
+    } as never);
+
+    const updateUser = vi.fn(async () => {});
+    vi.mocked(clerkClient).mockResolvedValue({
+      users: { updateUser },
+    } as never);
+
+    const req = new NextRequest("http://localhost/api/webhooks/clerk", {
+      method: "POST",
+      headers: {
+        "svix-id": "id",
+        "svix-timestamp": "1",
+        "svix-signature": "v1,x",
+      },
+      body: "{}",
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(sendWelcomeEmail).not.toHaveBeenCalled();
   });
 
   it("returns received true for non-user.created events without touching registrations", async () => {

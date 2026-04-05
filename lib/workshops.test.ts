@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getPublicWorkshopBySlug,
   getWorkshopBySlug,
+  getWorkshopWelcomeSnapshot,
   isOpen,
   type Workshop,
 } from "./workshops";
@@ -27,6 +28,23 @@ describe("getPublicWorkshopBySlug", () => {
 
   it("returns undefined for unknown slug", () => {
     expect(getPublicWorkshopBySlug("unknown-slug")).toBeUndefined();
+  });
+});
+
+describe("getWorkshopWelcomeSnapshot", () => {
+  it("prefers public workshop title and schedule", () => {
+    const s = getWorkshopWelcomeSnapshot("2026-04-23-sourcing-automation");
+    expect(s.slug).toBe("2026-04-23-sourcing-automation");
+    expect(s.title).toContain("Sourcing Automation");
+    expect(s.displayDate).toBe("April 23, 2026");
+    expect(s.displayTime).toBeTruthy();
+  });
+
+  it("falls back to generic copy for unknown slug", () => {
+    const s = getWorkshopWelcomeSnapshot("legacy-unknown-slug");
+    expect(s.slug).toBe("legacy-unknown-slug");
+    expect(s.title).toBe("Live workshop");
+    expect(s.displayDate).toBe("");
   });
 });
 

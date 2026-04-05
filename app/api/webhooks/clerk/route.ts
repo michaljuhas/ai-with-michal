@@ -6,7 +6,11 @@ import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
 import { notifyAdminNewRegistration, sendWelcomeEmail } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
-import { metaLeadEventSourceUrl } from "@/lib/meta-event-source-url";
+import {
+  metaLeadEventSourceUrl,
+  parseWorkshopSlugFromInterestedProduct,
+} from "@/lib/meta-event-source-url";
+import { getWorkshopWelcomeSnapshot } from "@/lib/workshops";
 
 type EmailAddress = {
   email_address: string;
@@ -137,10 +141,23 @@ export async function POST(req: NextRequest) {
 
     const fullName = [first_name, last_name].filter(Boolean).join(" ") || email;
 
-    try {
-      await sendWelcomeEmail({ toEmail: email, toName: fullName });
-    } catch (welcomeErr) {
-      console.error("Failed to send welcome email:", welcomeErr);
+    const workshopSlug = parseWorkshopSlugFromInterestedProduct(interestedInProduct);
+    if (workshopSlug) {
+      const workshop = getWorkshopWelcomeSnapshot(workshopSlug);
+      try {
+        await sendWelcomeEmail({
+          toEmail: email,
+          toName: fullName,
+          workshop: {
+            slug: workshop.slug,
+            title: workshop.title,
+            displayDate: workshop.displayDate,
+            displayTime: workshop.displayTime,
+          },
+        });
+      } catch (welcomeErr) {
+        console.error("Failed to send welcome email:", welcomeErr);
+      }
     }
 
     try {

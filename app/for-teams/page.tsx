@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Mail,
 } from "lucide-react";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 
 const offerings = [
   {
@@ -254,7 +255,7 @@ export default function ForTeamsPage() {
               the right solution — workshops, integrations, or both.
             </p>
             <a
-              href="mailto:michal@michaljuhas.com?subject=AI%20for%20Teams%20—%20Inquiry"
+              href={`mailto:${PUBLIC_CONTACT_EMAIL}?subject=${encodeURIComponent("AI for Teams — Inquiry")}`}
               className="inline-flex items-center gap-2 bg-white hover:bg-emerald-50 text-emerald-700 font-semibold px-6 py-3.5 rounded-xl transition-colors"
             >
               <Mail size={16} />

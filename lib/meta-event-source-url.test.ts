@@ -1,5 +1,23 @@
 import { describe, expect, it } from "vitest";
-import { metaLeadEventSourceUrl, metaPurchaseEventSourceUrl } from "./meta-event-source-url";
+import {
+  metaLeadEventSourceUrl,
+  metaPurchaseEventSourceUrl,
+  parseWorkshopSlugFromInterestedProduct,
+} from "./meta-event-source-url";
+
+describe("parseWorkshopSlugFromInterestedProduct", () => {
+  it("returns slug for workshop: prefix", () => {
+    expect(parseWorkshopSlugFromInterestedProduct("workshop:2026-04-16-ai-in-recruiting")).toBe(
+      "2026-04-16-ai-in-recruiting"
+    );
+  });
+
+  it("returns null for mentoring or empty", () => {
+    expect(parseWorkshopSlugFromInterestedProduct("mentoring:x")).toBeNull();
+    expect(parseWorkshopSlugFromInterestedProduct(null)).toBeNull();
+    expect(parseWorkshopSlugFromInterestedProduct("")).toBeNull();
+  });
+});
 
 describe("metaPurchaseEventSourceUrl", () => {
   it("uses workshop tickets path when slug is set", () => {

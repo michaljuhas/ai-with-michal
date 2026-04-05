@@ -6,7 +6,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 const msg = {
   to: { email: 'evka.valovska@gmail.com', name: 'Eva' },
   from: { email: 'hello@aiwithmichal.com', name: 'Michal Juhas' },
-  replyTo: process.env.ADMIN_EMAIL ?? 'michal@michaljuhas.com',
+  replyTo: process.env.ADMIN_EMAIL ?? 'hello@aiwithmichal.com',
   subject: 'Reminder: Workshop today at 3pm UTC',
   text: `Hi Eva,\n\nJust a quick reminder that we have a workshop today at 3pm UTC.\n\nSee you there!\n\nMichal`,
   html: `<!DOCTYPE html>

@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Mail } from "lucide-react";
+import { ExternalLink, Mail } from "lucide-react";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { PUBLIC_WORKSHOPS } from "@/lib/workshops";
 
 const now = new Date();
@@ -24,6 +25,13 @@ export default function Footer() {
             <p className="mt-1.5 text-slate-400 text-sm">
               © {new Date().getFullYear()} Juhas Digital Services s.r.o.
             </p>
+            <a
+              href={`mailto:${PUBLIC_CONTACT_EMAIL}`}
+              className="mt-1.5 inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 text-sm transition-colors"
+            >
+              <Mail size={15} className="shrink-0" aria-hidden />
+              {PUBLIC_CONTACT_EMAIL}
+            </a>
           </div>
 
           {/* Workshops nav */}
@@ -103,17 +111,23 @@ export default function Footer() {
                   Free Guides
                 </Link>
               </li>
+              <li>
+                <a
+                  href="https://michaljuhas.substack.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  Blog
+                  <ExternalLink
+                    size={14}
+                    className="shrink-0 text-slate-400 group-hover:text-blue-600 transition-colors"
+                    aria-hidden
+                  />
+                </a>
+              </li>
             </ul>
           </div>
-
-          {/* Contact */}
-          <a
-            href="mailto:michal@michaljuhas.com"
-            className="inline-flex items-center gap-2 text-slate-500 hover:text-blue-600 text-sm transition-colors"
-          >
-            <Mail size={15} />
-            michal@michaljuhas.com
-          </a>
         </div>
       </div>
     </footer>

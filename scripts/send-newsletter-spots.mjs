@@ -6,11 +6,11 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const FROM_EMAIL = 'hello@aiwithmichal.com';
 const FROM_NAME  = 'Michal Juhas';
-const REPLY_TO   = process.env.ADMIN_EMAIL ?? 'michal@michaljuhas.com';
+const REPLY_TO   = process.env.ADMIN_EMAIL ?? 'hello@aiwithmichal.com';
 const DRY_RUN    = process.argv.includes('--dry-run');
 
 const recipients = [
-  { email: 'michal@michaljuhas.com', name: 'Michal' },
+  { email: 'hello@aiwithmichal.com', name: 'Michal' },
 ];
 
 function buildHtml(firstName) {

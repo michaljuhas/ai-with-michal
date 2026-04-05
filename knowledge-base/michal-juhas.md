@@ -55,7 +55,7 @@ For recruiters and talent acquisition teams who want real leverage, not generic 
 
 ## Contact
 
-- Email: michal@michaljuhas.com
+- Public contact: hello@aiwithmichal.com
 - Website: https://aiwithmichal.com
 
 ---

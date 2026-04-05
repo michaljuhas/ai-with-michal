@@ -11,7 +11,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const FROM_EMAIL = 'hello@aiwithmichal.com';
 const FROM_NAME  = 'Michal Juhas';
-const REPLY_TO   = process.env.ADMIN_EMAIL ?? 'michal@michaljuhas.com';
+const REPLY_TO   = process.env.ADMIN_EMAIL ?? 'hello@aiwithmichal.com';
 const DRY_RUN    = process.argv.includes('--dry-run');
 const TICKETS_URL = 'https://aiwithmichal.com/tickets';
 
@@ -219,7 +219,7 @@ function buildHtml(firstName) {
                   <td style="padding: 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                     <p style="margin: 0; font-size: 13px; color: #94a3b8;">
                       Questions? Reply to this email or reach out at
-                      <a href="mailto:michal@michaljuhas.com" style="color: #1d4ed8;">michal@michaljuhas.com</a>.
+                      <a href="mailto:hello@aiwithmichal.com" style="color: #1d4ed8;">hello@aiwithmichal.com</a>.
                     </p>
                     <p style="margin: 8px 0 0 0; font-size: 13px; color: #cbd5e1;">— Michal Juhas / <a href="https://aiwithmichal.com" style="color: #cbd5e1; text-decoration: none;">AIwithMichal.com</a></p>
                   </td>
@@ -269,7 +269,7 @@ Basic €79 | Pro (+ recording & toolkit) €129
 
 ---
 
-Questions? Reply to this email or write to michal@michaljuhas.com.
+Questions? Reply to this email or write to hello@aiwithmichal.com.
 
 — Michal Juhas
 AIwithMichal.com

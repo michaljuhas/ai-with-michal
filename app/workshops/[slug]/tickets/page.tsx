@@ -11,6 +11,7 @@ import { useUser } from "@clerk/nextjs";
 import posthog from "posthog-js";
 import { getDaysUntilWorkshop, WORKSHOP } from "@/lib/workshop";
 import { getPublicWorkshopBySlug } from "@/lib/workshops";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { getStoredTrackingParams } from "@/lib/tracking-params";
 
 const CAPACITY = parseInt(process.env.NEXT_PUBLIC_WORKSHOP_CAPACITY ?? "20", 10);
@@ -132,7 +133,9 @@ export default function WorkshopTicketsPage() {
       const data = await res.json();
 
       if (res.status === 409) {
-        setError("Sorry, this workshop just sold out. Email michal@michaljuhas.com to join the waitlist.");
+        setError(
+          `Sorry, this workshop just sold out. Email ${PUBLIC_CONTACT_EMAIL} to join the waitlist.`,
+        );
         setLoading(null);
         return;
       }

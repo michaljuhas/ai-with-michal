@@ -4,6 +4,7 @@ import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { CheckCircle, Calendar, Download, ExternalLink, Copy, Share2 } from "lucide-react";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { WORKSHOP } from "@/lib/workshop";
 import { getTimezoneConverterUrl } from "@/lib/workshops";
 import posthog from "posthog-js";
@@ -285,10 +286,10 @@ function ThankYouContent() {
           >
             If you have any questions, contact us at{" "}
             <a
-              href="mailto:michal@michaljuhas.com"
+              href={`mailto:${PUBLIC_CONTACT_EMAIL}`}
               className="text-blue-600 hover:underline"
             >
-              michal@michaljuhas.com
+              {PUBLIC_CONTACT_EMAIL}
             </a>
           </motion.p>
         )}

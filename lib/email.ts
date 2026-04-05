@@ -1,5 +1,19 @@
 import sgMail from "@sendgrid/mail";
+import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { WORKSHOP } from "@/lib/workshop";
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function appBaseUrl(): string {
+  const u = (process.env.NEXT_PUBLIC_APP_URL ?? "").trim().replace(/\/$/, "");
+  return u || "https://aiwithmichal.com";
+}
 
 function getSendGrid() {
   const apiKey = process.env.SENDGRID_API_KEY;
@@ -12,7 +26,7 @@ const FROM_EMAIL = "hello@aiwithmichal.com";
 const FROM_NAME = "Michal Juhas";
 
 function getAdminEmail(): string {
-  return process.env.ADMIN_EMAIL ?? "michal@michaljuhas.com";
+  return process.env.ADMIN_EMAIL ?? PUBLIC_CONTACT_EMAIL;
 }
 
 export type TicketTier = "basic" | "pro";
@@ -140,7 +154,7 @@ function buildConfirmationHtml(params: {
                   <td style="padding: 0; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                     <p style="margin: 0; font-size: 13px; color: #94a3b8;">
                       Questions? Reply to this email or reach out at
-                      <a href="mailto:michal@michaljuhas.com" style="color: #1d4ed8;">michal@michaljuhas.com</a>.
+                      <a href="mailto:${PUBLIC_CONTACT_EMAIL}" style="color: #1d4ed8;">${PUBLIC_CONTACT_EMAIL}</a>.
                     </p>
                     <p style="margin: 8px 0 0 0; font-size: 13px; color: #cbd5e1;">— Michal Juhas</p>
                   </td>
@@ -180,7 +194,7 @@ As a Workshop + Toolkit ticket holder, you'll also receive the recording, workfl
 `
     : ""
 }
-Questions? Reply to this email or write to michal@michaljuhas.com.
+Questions? Reply to this email or write to ${PUBLIC_CONTACT_EMAIL}.
 
 — Michal Juhas
 `;
@@ -207,9 +221,24 @@ export async function sendWorkshopConfirmation(params: {
   });
 }
 
-function buildWelcomeHtml(params: { firstName: string }) {
-  const { firstName } = params;
-  const ticketsUrl = "https://aiwithmichal.com/tickets";
+function buildWelcomeHtml(params: {
+  firstName: string;
+  workshopTitle: string;
+  displayDate: string;
+  displayTime: string;
+  ticketsUrl: string;
+}) {
+  const { firstName, workshopTitle, displayDate, displayTime, ticketsUrl } = params;
+  const titleHtml = escapeHtml(workshopTitle);
+  const dateTimeBlock =
+    displayDate.trim() && displayTime.trim()
+      ? `<p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Date &amp; Time</p>
+                          <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 600; color: #0f172a;">${escapeHtml(displayDate)} · ${escapeHtml(displayTime)}</p>`
+      : displayDate.trim()
+        ? `<p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Date</p>
+                          <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 600; color: #0f172a;">${escapeHtml(displayDate)}</p>`
+        : "";
+
   const photoUrl =
     "https://aiwithmichal.com/Michal-Juhas-headshot-square-v1.jpg";
 
@@ -254,6 +283,9 @@ function buildWelcomeHtml(params: { firstName: string }) {
                     <p style="margin: 12px 0 0 0; font-size: 15px; color: #334155; line-height: 1.7;">
                       I run live implementation workshops for recruiting professionals who want to move beyond LinkedIn and build smarter, AI-powered talent pipelines. No fluff — we build real workflows during the session.
                     </p>
+                    <p style="margin: 12px 0 0 0; font-size: 15px; color: #334155; line-height: 1.7;">
+                      You're one step away from securing your seat for <strong>${titleHtml}</strong> — use the button below to continue to checkout.
+                    </p>
                   </td>
                 </tr>
 
@@ -264,10 +296,9 @@ function buildWelcomeHtml(params: { firstName: string }) {
                       style="background-color: #f1f5f9; border-radius: 10px; padding: 24px;">
                       <tr>
                         <td>
-                          <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Upcoming Live Workshop</p>
-                          <p style="margin: 0 0 12px 0; font-size: 17px; font-weight: 700; color: #0f172a; line-height: 1.4;">${WORKSHOP.title}</p>
-                          <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Date &amp; Time</p>
-                          <p style="margin: 0 0 16px 0; font-size: 15px; font-weight: 600; color: #0f172a;">${WORKSHOP.displayDate} · ${WORKSHOP.displayTime}</p>
+                          <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Your workshop</p>
+                          <p style="margin: 0 0 12px 0; font-size: 17px; font-weight: 700; color: #0f172a; line-height: 1.4;">${titleHtml}</p>
+                          ${dateTimeBlock}
                           <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">Tickets</p>
                           <p style="margin: 0; font-size: 15px; color: #334155;">
                             Basic — <strong>€79</strong> &nbsp;|&nbsp; Pro (+ recording &amp; toolkit) — <strong>€129</strong>
@@ -281,9 +312,9 @@ function buildWelcomeHtml(params: { firstName: string }) {
                 <!-- CTA button -->
                 <tr>
                   <td style="padding: 0 0 36px 0; text-align: center;">
-                    <a href="${ticketsUrl}"
+                    <a href="${escapeHtml(ticketsUrl)}"
                       style="display: inline-block; background-color: #1d4ed8; color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px;">
-                      Get Your Ticket →
+                      Continue to checkout →
                     </a>
                     <p style="margin: 10px 0 0 0; font-size: 12px; color: #94a3b8;">Feel free to forward this to a colleague who'd benefit.</p>
                   </td>
@@ -361,7 +392,7 @@ function buildWelcomeHtml(params: { firstName: string }) {
                     </p>
                     <p style="margin: 12px 0 0 0; font-size: 12px; color: #94a3b8;">
                       Questions? Reply to this email or write to
-                      <a href="mailto:michal@michaljuhas.com" style="color: #94a3b8;">michal@michaljuhas.com</a>.
+                      <a href="mailto:${PUBLIC_CONTACT_EMAIL}" style="color: #94a3b8;">${PUBLIC_CONTACT_EMAIL}</a>.
                     </p>
                   </td>
                 </tr>
@@ -378,23 +409,36 @@ function buildWelcomeHtml(params: { firstName: string }) {
 </html>`;
 }
 
-function buildWelcomeText(params: { firstName: string }) {
-  const { firstName } = params;
+function buildWelcomeText(params: {
+  firstName: string;
+  workshopTitle: string;
+  displayDate: string;
+  displayTime: string;
+  ticketsUrl: string;
+}) {
+  const { firstName, workshopTitle, displayDate, displayTime, ticketsUrl } = params;
+  const dateLine =
+    displayDate.trim() && displayTime.trim()
+      ? `Date: ${displayDate} · ${displayTime}`
+      : displayDate.trim()
+        ? `Date: ${displayDate}`
+        : "";
   return `Hi ${firstName},
 
 Thanks for joining the AI with Michal community. I'm glad you're here.
 
 I run live implementation workshops for recruiting professionals who want to move beyond LinkedIn and build smarter, AI-powered talent pipelines. No fluff — we build real workflows during the session.
 
+You're one step away from securing your seat for ${workshopTitle}.
+
 ---
 
-UPCOMING LIVE WORKSHOP
-${WORKSHOP.title}
+YOUR WORKSHOP
+${workshopTitle}
 
-Date: ${WORKSHOP.displayDate} · ${WORKSHOP.displayTime}
-Tickets: Basic €79 | Pro (+ recording & toolkit) €129
+${dateLine ? `${dateLine}\n` : ""}Tickets: Basic €79 | Pro (+ recording & toolkit) €129
 
-Get your ticket → https://aiwithmichal.com/tickets
+Continue to checkout → ${ticketsUrl}
 
 Feel free to forward this to a colleague who'd benefit.
 
@@ -416,16 +460,23 @@ See you inside,
 Michal Juhas
 AIwithMichal.com
 
-Questions? Reply to this email or write to michal@michaljuhas.com.
+Questions? Reply to this email or write to ${PUBLIC_CONTACT_EMAIL}.
 `;
 }
 
 export async function sendWelcomeEmail(params: {
   toEmail: string;
   toName: string;
+  workshop: {
+    slug: string;
+    title: string;
+    displayDate: string;
+    displayTime: string;
+  };
 }) {
-  const { toEmail, toName } = params;
+  const { toEmail, toName, workshop } = params;
   const firstName = toName.split(" ")[0] || toName;
+  const ticketsUrl = `${appBaseUrl()}/workshops/${workshop.slug}/tickets`;
 
   const mail = getSendGrid();
   await mail.send({
@@ -433,8 +484,20 @@ export async function sendWelcomeEmail(params: {
     from: { email: FROM_EMAIL, name: FROM_NAME },
     replyTo: getAdminEmail(),
     subject: "Welcome to AI with Michal",
-    html: buildWelcomeHtml({ firstName }),
-    text: buildWelcomeText({ firstName }),
+    html: buildWelcomeHtml({
+      firstName,
+      workshopTitle: workshop.title,
+      displayDate: workshop.displayDate,
+      displayTime: workshop.displayTime,
+      ticketsUrl,
+    }),
+    text: buildWelcomeText({
+      firstName,
+      workshopTitle: workshop.title,
+      displayDate: workshop.displayDate,
+      displayTime: workshop.displayTime,
+      ticketsUrl,
+    }),
   });
 }
 
@@ -805,12 +868,4 @@ export async function sendWorkgroupBroadcast(params: {
 
   await mail.send(messages as Parameters<typeof mail.send>[0]);
   return { sent: messages.length };
-}
-
-function escapeHtml(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
 }

@@ -12,7 +12,7 @@ Sends a one-off HTML + plain-text email to all registered users (or a custom lis
 | Field | Value |
 |---|---|
 | **From** | `hello@aiwithmichal.com` (display name: `Michal Juhas`) |
-| **Reply-To** | `ADMIN_EMAIL` env var → `michal@michaljuhas.com` |
+| **Reply-To** | `ADMIN_EMAIL` env var → `hello@aiwithmichal.com` |
 | **Signature** | Michal Juhas / AIwithMichal.com |
 | **Provider** | SendGrid (`SENDGRID_API_KEY` env var) |
 
@@ -73,7 +73,7 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const FROM_EMAIL = 'hello@aiwithmichal.com';
 const FROM_NAME  = 'Michal Juhas';
-const REPLY_TO   = process.env.ADMIN_EMAIL ?? 'michal@michaljuhas.com';
+const REPLY_TO   = process.env.ADMIN_EMAIL ?? 'hello@aiwithmichal.com';
 const DRY_RUN    = process.argv.includes('--dry-run');
 
 // --- Fetch recipients ---
