@@ -11,6 +11,7 @@ import {
 import { sendMetaEvent } from "@/lib/meta-capi";
 import { normalizeBillingCountryCode } from "@/lib/billing-country";
 import { orderAmountsFromCheckoutSession } from "@/lib/stripe-order-amounts";
+import { metaPurchaseEventSourceUrl } from "@/lib/meta-event-source-url";
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -106,7 +107,10 @@ export async function POST(req: NextRequest) {
 
       await sendMetaEvent({
         event_name: "Purchase",
-        event_source_url: `${process.env.NEXT_PUBLIC_APP_URL}/tickets`,
+        event_source_url: metaPurchaseEventSourceUrl(
+          process.env.NEXT_PUBLIC_APP_URL,
+          workshopSlug
+        ),
         event_id: `purchase_${session.id}`,
         user_data: { em: hashedEmail },
         custom_data: {

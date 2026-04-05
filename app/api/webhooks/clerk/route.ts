@@ -6,6 +6,7 @@ import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
 import { notifyAdminNewRegistration, sendWelcomeEmail } from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
+import { metaLeadEventSourceUrl } from "@/lib/meta-event-source-url";
 
 type EmailAddress = {
   email_address: string;
@@ -126,7 +127,10 @@ export async function POST(req: NextRequest) {
 
     await sendMetaEvent({
       event_name: "Lead",
-      event_source_url: `${process.env.NEXT_PUBLIC_APP_URL}/tickets`,
+      event_source_url: metaLeadEventSourceUrl(
+        process.env.NEXT_PUBLIC_APP_URL,
+        interestedInProduct
+      ),
       event_id: `registration_${clerkUserId}`,
       user_data: { em: hashedEmail },
     });
