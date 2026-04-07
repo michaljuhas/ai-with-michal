@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import type { WorkgroupPostWithReplies } from "@/lib/supabase";
+import LinkifiedPlainText from "./LinkifiedPlainText";
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("en-US", {
@@ -89,7 +90,9 @@ export default function PostCard({ post, workshopSlug, onUpdate }: PostCardProps
         </div>
 
         <h3 className="text-base font-semibold text-slate-900 mb-2">{post.headline}</h3>
-        <p className="text-sm leading-relaxed text-slate-600 whitespace-pre-wrap">{post.body}</p>
+        <p className="text-sm leading-relaxed text-slate-600 whitespace-pre-wrap">
+          <LinkifiedPlainText text={post.body} />
+        </p>
 
         {post.image_url && (
           <div className="mt-3">
@@ -139,7 +142,9 @@ export default function PostCard({ post, workshopSlug, onUpdate }: PostCardProps
                     )}
                     <span className="text-xs text-slate-400">{formatDate(reply.created_at)}</span>
                   </div>
-                  <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">{reply.body}</p>
+                  <p className="text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">
+                    <LinkifiedPlainText text={reply.body} />
+                  </p>
                 </div>
               </div>
             );
