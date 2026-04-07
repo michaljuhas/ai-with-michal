@@ -12,8 +12,6 @@ import {
   CheckCircle2,
   Mail,
 } from "lucide-react";
-import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
-
 const offerings = [
   {
     icon: GraduationCap,
@@ -32,17 +30,17 @@ const offerings = [
   },
   {
     icon: Puzzle,
-    title: "AI Integrations",
+    title: "AI implementation",
     description:
-      "We build and deploy AI-powered workflows directly into your business. From inbound lead gen to outbound sales automation, candidate sourcing, and talent pipeline management — we handle the implementation end to end.",
+      "We build and deploy AI-powered workflows directly into your business. From inbound lead gen to outbound sales automation, candidate sourcing, and talent pipeline management — we handle implementation end to end.",
     highlights: [
       "AI for inbound marketing & lead generation",
       "AI for outbound sales & prospecting",
       "AI for candidate sourcing & screening",
       "Talent pipeline automation",
     ],
-    href: "/ai-integrations",
-    cta: "Explore integrations",
+    href: "/ai-implementation",
+    cta: "Explore implementation",
     color: "emerald",
   },
 ];
@@ -91,10 +89,10 @@ export default function ForTeamsPage() {
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="/ai-integrations"
+              href="/ai-implementation"
               className="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-semibold px-6 py-3.5 rounded-xl transition-colors"
             >
-              Explore integrations
+              Explore implementation
             </Link>
           </motion.div>
         </div>
@@ -252,15 +250,15 @@ export default function ForTeamsPage() {
             </h2>
             <p className="text-emerald-100 mb-8">
               Every team is different. Tell us about your needs and we&apos;ll put together
-              the right solution — workshops, integrations, or both.
+              the right solution — workshops, implementation, or both.
             </p>
-            <a
-              href={`mailto:${PUBLIC_CONTACT_EMAIL}?subject=${encodeURIComponent("AI for Teams — Inquiry")}`}
+            <Link
+              href="/contact"
               className="inline-flex items-center gap-2 bg-white hover:bg-emerald-50 text-emerald-700 font-semibold px-6 py-3.5 rounded-xl transition-colors"
             >
               <Mail size={16} />
               Get in touch
-            </a>
+            </Link>
           </motion.div>
         </div>
       </section>

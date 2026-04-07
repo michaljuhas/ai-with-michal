@@ -576,7 +576,7 @@ export async function notifyAdminNewB2BLead(params: {
   email: string;
   company?: string | null;
   role?: string | null;
-  interest_type: "workshop" | "integration";
+  interest_type: "workshop" | "integration" | "contact";
   services?: string[] | null;
   message?: string | null;
   source_type?: string | null;
@@ -600,7 +600,12 @@ export async function notifyAdminNewB2BLead(params: {
 
   const admin = getAdminEmail();
   const mail = getSendGrid();
-  const typeLabel = interest_type === "workshop" ? "AI Workshops for Teams" : "AI Integrations";
+  const typeLabel =
+    interest_type === "workshop"
+      ? "AI Workshops for Teams"
+      : interest_type === "integration"
+        ? "AI Integrations"
+        : "Contact / Work together";
   const subject = `[AI with Michal] New B2B lead — ${name} (${interest_type})`;
 
   const servicesLine = services && services.length > 0 ? services.join(", ") : "—";

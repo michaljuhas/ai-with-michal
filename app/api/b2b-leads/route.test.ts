@@ -130,6 +130,32 @@ describe("POST /api/b2b-leads", () => {
     expect(addLeadToCampaign).not.toHaveBeenCalled();
   });
 
+  it("returns ok true for contact interest_type", async () => {
+    const insert = vi.fn(async () => ({ error: null }));
+    vi.mocked(createServiceClient).mockReturnValue({
+      from: vi.fn(() => ({ insert })),
+    } as never);
+
+    const req = new NextRequest("http://localhost/api/b2b-leads", {
+      method: "POST",
+      body: JSON.stringify({
+        name: "Corp Lead",
+        email: "corp@example.com",
+        interest_type: "contact",
+        services: ['Private workshop "Using AI in your business"'],
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(insert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        interest_type: "contact",
+        services: ['Private workshop "Using AI in your business"'],
+      }),
+    );
+    expect(inboundCampaignId).toHaveBeenCalledWith("contact");
+  });
+
   it("enqueues Lemlist when campaign id configured", async () => {
     vi.mocked(inboundCampaignId).mockReturnValue("camp_123");
 

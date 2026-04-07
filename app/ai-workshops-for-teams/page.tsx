@@ -278,7 +278,8 @@ export default function AIWorkshopsForTeamsPage() {
               Let&apos;s talk about your team
             </h2>
             <p className="mt-3 text-slate-500">
-              Fill in the form and I&apos;ll reply within 1 business day with pricing and next steps.
+              Fill in the form and I&apos;ll reply within one business day with next steps. Pricing for
+              private workshops and services is on the site.
             </p>
           </motion.div>
 

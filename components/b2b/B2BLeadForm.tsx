@@ -1,36 +1,45 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useRouter } from "next/navigation";
 import { ArrowRight, CheckCircle2, Loader2, CalendarDays } from "lucide-react";
 import { SITE } from "@/lib/config";
 import { getStoredTrackingParams } from "@/lib/tracking-params";
 import posthog from "posthog-js";
 
 interface B2BLeadFormProps {
-  interestType: "workshop" | "integration";
+  interestType: "workshop" | "integration" | "contact";
   availableServices: string[];
+  /** Full checkbox label string (must match an entry in `availableServices`) */
   preselectedService?: string;
+  thankYouPath?: string;
+  heading?: string;
+  subheading?: string;
+  submitButtonLabel?: string;
 }
 
 export default function B2BLeadForm({
   interestType,
   availableServices,
   preselectedService,
+  thankYouPath,
+  heading = "Request more info & pricing",
+  subheading = "Tell me a bit about your team and I'll get back to you with a tailored proposal.",
+  submitButtonLabel = "Request more info",
 }: B2BLeadFormProps) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [role, setRole] = useState("");
-  const [selectedServices, setSelectedServices] = useState<string[]>(
-    preselectedService ? [preselectedService] : []
+  const [selectedServices, setSelectedServices] = useState<string[]>(() =>
+    preselectedService && availableServices.includes(preselectedService) ? [preselectedService] : [],
   );
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
-  // Track whether the user has started filling in the form (fire once)
   const hasStarted = useRef(false);
-  // Captured at first focus — referrer and page at time of form engagement
   const capturedReferrer = useRef<string | null>(null);
   const capturedLandingPage = useRef<string | null>(null);
 
@@ -97,7 +106,11 @@ export default function B2BLeadForm({
       }
 
       posthog.capture("b2b_lead_submitted", submitProps);
-      setSubmitted(true);
+      if (thankYouPath) {
+        router.push(thankYouPath);
+      } else {
+        setSubmitted(true);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : "Something went wrong. Please try again.";
       posthog.capture("b2b_form_error", {
@@ -145,13 +158,10 @@ export default function B2BLeadForm({
 
   return (
     <div className="bg-white border border-slate-200 rounded-2xl p-8 md:p-12 shadow-sm">
-      <h3 className="text-2xl font-bold text-slate-900 mb-2">Request more info &amp; pricing</h3>
-      <p className="text-slate-500 mb-8">
-        Tell me a bit about your team and I&apos;ll get back to you with a tailored proposal.
-      </p>
+      <h3 className="text-2xl font-bold text-slate-900 mb-2">{heading}</h3>
+      <p className="text-slate-500 mb-8">{subheading}</p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Name + Email */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5" htmlFor="b2b-name">
@@ -185,7 +195,6 @@ export default function B2BLeadForm({
           </div>
         </div>
 
-        {/* Company + Role */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-1.5" htmlFor="b2b-company">
@@ -217,7 +226,6 @@ export default function B2BLeadForm({
           </div>
         </div>
 
-        {/* Services checkboxes */}
         <div>
           <p className="block text-sm font-medium text-slate-700 mb-3">
             I&apos;m interested in{" "}
@@ -249,7 +257,6 @@ export default function B2BLeadForm({
           </div>
         </div>
 
-        {/* Optional message */}
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-1.5" htmlFor="b2b-message">
             Anything else you&apos;d like me to know?{" "}
@@ -284,7 +291,7 @@ export default function B2BLeadForm({
             </>
           ) : (
             <>
-              Request more info
+              {submitButtonLabel}
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </>
           )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Magnet,
@@ -10,7 +10,6 @@ import {
   ArrowRight,
   ChevronDown,
 } from "lucide-react";
-import B2BLeadForm from "@/components/b2b/B2BLeadForm";
 import posthog from "posthog-js";
 
 const packages = [
@@ -18,41 +17,43 @@ const packages = [
     icon: Magnet,
     iconColor: "text-blue-500",
     iconBg: "bg-blue-50",
+    contactServiceId: "ai-for-inbound-marketing",
     title: "AI for Inbound Marketing",
     description:
-      "Integrate AI-powered lead gen such as a dynamic quiz to segment your leads and personalize follow-ups. Capture higher-quality leads, route them automatically, and tailor every touchpoint based on their profile.",
+      "AI-powered lead gen such as a dynamic quiz to segment your leads and personalize follow-ups. Capture higher-quality leads, route them automatically, and tailor every touchpoint based on their profile.",
     idealFor: ["Marketing", "GTM", "Demand Gen"],
   },
   {
     icon: Send,
     iconColor: "text-violet-500",
     iconBg: "bg-violet-50",
+    contactServiceId: "ai-for-outbound-sales",
     title: "AI for Outbound Sales",
     description:
-      "Integrate AI-powered outreach. Automatically research target companies with AI, monitor their websites and career pages for buying signals, and score prospective leads before your reps ever pick up the phone.",
+      "Research targets with AI, monitor websites and career pages for buying signals, and score prospective leads before your reps pick up the phone.",
     idealFor: ["Sales", "BDR / SDR", "GTM"],
   },
   {
     icon: UserSearch,
     iconColor: "text-teal-500",
     iconBg: "bg-teal-50",
+    contactServiceId: "ai-for-candidate-sourcing",
     title: "AI for Candidate Sourcing",
     description:
-      "Integrate tools to source candidates at scale, automatically pre-screen applications, and engage top prospects with personalized AI-driven outreach — so your team spends time on conversations, not spreadsheets.",
+      "Source candidates at scale, pre-screen applications, and engage top prospects with personalized outreach — so your team spends time on conversations, not spreadsheets.",
     idealFor: ["Recruiting", "TA", "HR"],
   },
   {
     icon: Database,
     iconColor: "text-orange-500",
     iconBg: "bg-orange-50",
+    contactServiceId: "niche-talent-pool-booster",
     title: "Niche Talent Pool Booster",
     description:
-      "Integrate several candidate data sources to build a proprietary niche talent pool. Ideal for recruiting agencies that want to specialize in a vertical and own a defensible, always-fresh pipeline of pre-qualified candidates.",
+      "Combine candidate data sources to build a proprietary niche talent pool. Ideal for agencies specializing in a vertical and owning a defensible, always-fresh pipeline.",
     idealFor: ["Recruiting Agencies", "Executive Search"],
   },
 ];
-
-const AVAILABLE_SERVICES = packages.map((p) => p.title);
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -63,20 +64,17 @@ const fadeUp = {
   }),
 };
 
-export default function AIIntegrationsPage() {
-  const formRef = useRef<HTMLDivElement>(null);
+function goContact(source: "hero" | "card", serviceId?: string) {
+  posthog.capture(source === "hero" ? "b2b_hero_cta_clicked" : "b2b_card_cta_clicked", {
+    page: "ai_implementation",
+    destination: "/contact",
+    ...(serviceId ? { service_id: serviceId } : {}),
+  });
+}
 
-  function scrollToForm(source: "hero" | "card", service?: string) {
-    posthog.capture(
-      source === "hero" ? "b2b_hero_cta_clicked" : "b2b_card_cta_clicked",
-      { page: "integrations", ...(service ? { service } : {}) }
-    );
-    formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-  }
-
+export default function AIImplementationPage() {
   return (
     <main className="min-h-screen bg-white">
-      {/* Hero */}
       <section className="pt-28 pb-20 px-6 bg-gradient-to-b from-slate-50 to-white">
         <div className="max-w-4xl mx-auto text-center">
           <motion.p
@@ -95,7 +93,7 @@ export default function AIIntegrationsPage() {
             custom={0.1}
             className="text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-6"
           >
-            AI Integrations
+            Hands-on AI implementation
           </motion.h1>
           <motion.p
             variants={fadeUp}
@@ -104,9 +102,9 @@ export default function AIIntegrationsPage() {
             custom={0.2}
             className="text-xl text-slate-600 leading-relaxed mb-10 max-w-2xl mx-auto"
           >
-            Standardized AI packages to integrate intelligent automation into your
-            recruiting, marketing, sales, and business operations — without months of
-            custom development.
+            Less slide deck, more working systems. We help you ship AI-powered workflows across
+            marketing, sales, and recruiting — the parts of the business where speed and pipeline
+            actually show up on the P&amp;L.
           </motion.p>
           <motion.div
             variants={fadeUp}
@@ -115,13 +113,14 @@ export default function AIIntegrationsPage() {
             custom={0.3}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <button
-              onClick={() => scrollToForm("hero")}
+            <Link
+              href="/contact"
+              onClick={() => goContact("hero")}
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-xl transition-all duration-200 text-base group shadow-lg shadow-blue-600/20"
             >
-              Request more info &amp; pricing
+              Get in touch
               <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-            </button>
+            </Link>
           </motion.div>
           <motion.div
             variants={fadeUp}
@@ -135,7 +134,6 @@ export default function AIIntegrationsPage() {
         </div>
       </section>
 
-      {/* Package cards */}
       <section className="py-20 px-6 bg-white">
         <div className="max-w-5xl mx-auto">
           <motion.div
@@ -146,17 +144,18 @@ export default function AIIntegrationsPage() {
             className="text-center mb-14"
           >
             <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
-              Standardized AI packages
+              Problems we solve
             </h2>
-            <p className="text-slate-500 max-w-xl mx-auto">
-              Each package is a proven, opinionated setup — you get the tools, the workflows,
-              and the hands-on guidance to make them work for your team.
+            <p className="text-slate-500 max-w-2xl mx-auto">
+              Pick the outcome that matches your bottleneck. Tell us your context on the contact form —
+              we&apos;ll confirm scope and book a call to go deeper.
             </p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {packages.map((pkg, i) => {
               const Icon = pkg.icon;
+              const href = `/contact?service=${encodeURIComponent(pkg.contactServiceId)}`;
               return (
                 <motion.div
                   key={pkg.title}
@@ -186,13 +185,14 @@ export default function AIIntegrationsPage() {
                     </div>
                   </div>
 
-                  <button
-                    onClick={() => scrollToForm("card", pkg.title)}
+                  <Link
+                    href={href}
+                    onClick={() => goContact("card", pkg.contactServiceId)}
                     className="inline-flex items-center gap-1.5 text-blue-600 hover:text-blue-700 text-sm font-semibold transition-colors group"
                   >
-                    Request more info
+                    Get in touch
                     <ArrowRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                  </button>
+                  </Link>
                 </motion.div>
               );
             })}
@@ -200,31 +200,20 @@ export default function AIIntegrationsPage() {
         </div>
       </section>
 
-      {/* Lead capture form */}
-      <section ref={formRef} className="py-20 px-6 bg-slate-50 scroll-mt-20">
-        <div className="max-w-2xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-10"
+      <section className="py-14 px-6 bg-slate-50 border-t border-slate-200">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-slate-600 mb-6">
+            Ready to scope timing, stack, and ownership? Send the form — then book a call on the next
+            screen.
+          </p>
+          <Link
+            href="/contact"
+            onClick={() => goContact("hero")}
+            className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3 rounded-xl transition-colors"
           >
-            <span className="text-blue-600 text-sm font-semibold tracking-widest uppercase">
-              Get in touch
-            </span>
-            <h2 className="mt-4 text-3xl font-bold text-slate-900">
-              Let&apos;s scope your integration
-            </h2>
-            <p className="mt-3 text-slate-500">
-              Fill in the form and I&apos;ll reply within 1 business day with a tailored proposal.
-            </p>
-          </motion.div>
-
-          <B2BLeadForm
-            interestType="integration"
-            availableServices={AVAILABLE_SERVICES}
-          />
+            Go to contact form
+            <ArrowRight size={18} />
+          </Link>
         </div>
       </section>
     </main>

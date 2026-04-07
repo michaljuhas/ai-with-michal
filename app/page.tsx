@@ -16,9 +16,9 @@ import {
   Video,
   Map,
 } from "lucide-react";
-import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
 import { WORKSHOP } from "@/lib/workshop";
+import WorkTogetherSection from "@/components/work-together/WorkTogetherSection";
 
 const stats = [
   { icon: Star, value: "190+", label: "Trustpilot Reviews", iconColor: "text-yellow-500" },
@@ -128,7 +128,7 @@ export default function HomePage() {
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="/ai-mentoring"
+              href="/individual-ai-mentoring"
               className="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-semibold px-6 py-3.5 rounded-xl transition-colors"
             >
               Explore mentoring
@@ -291,13 +291,13 @@ export default function HomePage() {
               Reach out and we&apos;ll help you find the right path — whether it&apos;s a workshop,
               mentoring, or a custom solution for your team.
             </p>
-            <a
-              href={`mailto:${PUBLIC_CONTACT_EMAIL}`}
+            <Link
+              href="/contact"
               className="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-6 py-3.5 rounded-xl transition-colors"
             >
               <Users size={16} />
               Get in touch
-            </a>
+            </Link>
           </motion.div>
         </div>
       </section>

@@ -129,65 +129,6 @@ function UserMenu() {
   );
 }
 
-function ForTeamsDropdown() {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClick);
-    return () => document.removeEventListener("mousedown", handleClick);
-  }, []);
-
-  return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 text-sm font-medium text-slate-700 hover:text-slate-900 px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors"
-      >
-        For Teams
-        <ChevronDown
-          size={14}
-          className={`text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
-        />
-      </button>
-
-      {open && (
-        <div
-          className="absolute right-0 mt-1 w-56 bg-white border border-slate-200 rounded-lg shadow-lg py-1 z-[60]"
-          onMouseDown={(e) => e.stopPropagation()}
-        >
-          <Link
-            href="/for-teams"
-            className="block px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-50 transition-colors"
-            onClick={() => setOpen(false)}
-          >
-            Overview
-          </Link>
-          <Link
-            href="/ai-workshops-for-teams"
-            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-            onClick={() => setOpen(false)}
-          >
-            AI Workshops for Teams
-          </Link>
-          <Link
-            href="/ai-integrations"
-            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors"
-            onClick={() => setOpen(false)}
-          >
-            AI Integrations
-          </Link>
-        </div>
-      )}
-    </div>
-  );
-}
-
 /** Fullscreen overlay — rendered as a sibling of motion.header so fixed positioning
  *  is never clipped by the header's stacking context. */
 function MobileOverlay({
@@ -252,28 +193,12 @@ function MobileOverlay({
                 </p>
                 <Link href="/" onClick={onClose} className={linkClass("/", true)}>Home</Link>
                 <Link href="/workshops" onClick={onClose} className={linkClass("/workshops")}>Workshops</Link>
-                <Link href="/ai-mentoring" onClick={onClose} className={linkClass("/ai-mentoring")}>Mentoring</Link>
+                <Link href="/work-together" onClick={onClose} className={linkClass("/work-together")}>
+                  Work Together
+                </Link>
                 {isSignedIn && (
                   <Link href="/members" onClick={onClose} className={linkClass("/members")}>Members</Link>
                 )}
-              </motion.div>
-
-              {/* For Teams */}
-              <motion.div
-                className="bg-white rounded-2xl p-6"
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
-                  For Teams
-                </p>
-                <Link href="/ai-workshops-for-teams" onClick={onClose} className={linkClass("/ai-workshops-for-teams")}>
-                  AI Workshops for Teams
-                </Link>
-                <Link href="/ai-integrations" onClick={onClose} className={linkClass("/ai-integrations")}>
-                  AI Integrations
-                </Link>
               </motion.div>
 
               {/* Account */}
@@ -281,7 +206,7 @@ function MobileOverlay({
                 className="bg-white rounded-2xl p-6"
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
+                transition={{ delay: 0.1 }}
               >
                 <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
                   Account
@@ -392,12 +317,11 @@ export default function Header() {
               Workshops
             </Link>
             <Link
-              href="/ai-mentoring"
-              className={navLinkClass("/ai-mentoring")}
+              href="/work-together"
+              className={navLinkClass("/work-together")}
             >
-              Mentoring
+              Work Together
             </Link>
-            <ForTeamsDropdown />
             {isSignedIn && (
               <Link
                 href="/members"

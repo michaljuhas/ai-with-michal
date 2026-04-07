@@ -63,10 +63,26 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/ai-mentoring"
+                  href="/individual-ai-mentoring"
                   className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
                 >
-                  AI Mentoring
+                  Individual mentoring
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/group-ai-mentoring"
+                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  Group mentoring
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/ai-mentoring/join"
+                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                >
+                  Sign up / pricing
                 </Link>
               </li>
             </ul>
@@ -80,18 +96,10 @@ export default function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/ai-workshops-for-teams"
+                  href="/work-together"
                   className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
                 >
-                  AI Workshops for Teams
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/ai-integrations"
-                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
-                >
-                  AI Integrations
+                  Work Together
                 </Link>
               </li>
             </ul>

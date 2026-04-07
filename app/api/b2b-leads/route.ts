@@ -9,7 +9,7 @@ type B2BLeadInput = {
   email: string;
   company?: string;
   role?: string;
-  interest_type: "workshop" | "integration";
+  interest_type: "workshop" | "integration" | "contact";
   services?: string[];
   message?: string;
   // Attribution — from localStorage via getStoredTrackingParams()
@@ -36,8 +36,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "valid email is required" }, { status: 400 });
   }
 
-  if (!interest_type || !["workshop", "integration"].includes(interest_type)) {
-    return NextResponse.json({ error: "interest_type must be 'workshop' or 'integration'" }, { status: 400 });
+  if (!interest_type || !["workshop", "integration", "contact"].includes(interest_type)) {
+    return NextResponse.json(
+      { error: "interest_type must be 'workshop', 'integration', or 'contact'" },
+      { status: 400 },
+    );
   }
 
   const { source_type, source_detail } = deriveAttribution(tracking ?? {});

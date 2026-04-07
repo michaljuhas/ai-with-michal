@@ -82,18 +82,22 @@ export async function addLeadToCampaign(
  * this keeps the route working even before campaigns are set up in LemList.
  */
 export function inboundCampaignId(
-  interestType: "workshop" | "integration",
+  interestType: "workshop" | "integration" | "contact",
 ): string | null {
-  const id =
+  const envKey =
     interestType === "workshop"
-      ? process.env.LEMLIST_INBOUND_WORKSHOP_CAMPAIGN_ID
-      : process.env.LEMLIST_INBOUND_INTEGRATION_CAMPAIGN_ID;
+      ? "LEMLIST_INBOUND_WORKSHOP_CAMPAIGN_ID"
+      : interestType === "integration"
+        ? "LEMLIST_INBOUND_INTEGRATION_CAMPAIGN_ID"
+        : "LEMLIST_INBOUND_CONTACT_CAMPAIGN_ID";
+  const id = process.env[envKey];
 
   if (!id) {
-    console.warn(
-      `[lemlist] No campaign ID configured for interest_type="${interestType}". ` +
-        `Set LEMLIST_INBOUND_${interestType.toUpperCase()}_CAMPAIGN_ID to enable syncing.`,
-    );
+    const hint =
+      interestType === "contact"
+        ? "Set LEMLIST_INBOUND_CONTACT_CAMPAIGN_ID to enable syncing."
+        : `Set LEMLIST_INBOUND_${interestType.toUpperCase()}_CAMPAIGN_ID to enable syncing.`;
+    console.warn(`[lemlist] No campaign ID configured for interest_type="${interestType}". ${hint}`);
     return null;
   }
 
