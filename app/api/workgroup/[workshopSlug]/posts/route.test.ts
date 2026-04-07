@@ -200,6 +200,7 @@ describe("POST /api/workgroup/[workshopSlug]/posts", () => {
       primaryEmailAddress: { emailAddress: "u@x.com" },
       firstName: "U",
       lastName: null,
+      imageUrl: "https://img.clerk.com/avatar.png",
     } as never);
 
     const inserted = {
@@ -257,5 +258,10 @@ describe("POST /api/workgroup/[workshopSlug]/posts", () => {
     const json = await res.json();
     expect(json.broadcast).toEqual({ sent: 2 });
     expect(sendWorkgroupBroadcast).toHaveBeenCalledOnce();
+    expect(sendWorkgroupBroadcast).toHaveBeenCalledWith(
+      expect.objectContaining({
+        authorImageUrl: "https://img.clerk.com/avatar.png",
+      })
+    );
   });
 });

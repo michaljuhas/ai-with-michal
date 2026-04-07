@@ -692,9 +692,11 @@ function buildWorkgroupBroadcastHtml(params: {
   headline: string;
   body: string;
   workgroupUrl: string;
+  authorImageUrl?: string;
   imageUrl?: string;
 }) {
-  const { authorName, workshopTitle, headline, body, workgroupUrl, imageUrl } = params;
+  const { authorName, workshopTitle, headline, body, workgroupUrl, authorImageUrl, imageUrl } =
+    params;
   const bodyHtml = escapeHtml(body).replace(/\n/g, "<br/>");
 
   return `<!DOCTYPE html>
@@ -734,8 +736,12 @@ function buildWorkgroupBroadcastHtml(params: {
                 <td style="padding:0 0 24px 0;">
                   <table cellpadding="0" cellspacing="0" border="0">
                     <tr>
-                      <td style="width:36px;height:36px;background-color:#eff6ff;border-radius:50%;text-align:center;vertical-align:middle;font-size:14px;font-weight:700;color:#1d4ed8;">
-                        ${escapeHtml(authorName.charAt(0).toUpperCase())}
+                      <td style="width:36px;padding:0;vertical-align:middle;">
+                        ${
+                          authorImageUrl
+                            ? `<img src="${escapeHtml(authorImageUrl)}" width="36" height="36" alt="" style="display:block;width:36px;height:36px;border-radius:50%;object-fit:cover;border:1px solid #e2e8f0;" />`
+                            : `<table cellpadding="0" cellspacing="0" border="0" style="width:36px;height:36px;"><tr><td style="width:36px;height:36px;background-color:#eff6ff;border-radius:50%;text-align:center;vertical-align:middle;font-size:14px;font-weight:700;color:#1d4ed8;">${escapeHtml(authorName.charAt(0).toUpperCase())}</td></tr></table>`
+                        }
                       </td>
                       <td style="padding-left:10px;vertical-align:middle;">
                         <p style="margin:0;font-size:13px;font-weight:600;color:#0f172a;">${escapeHtml(authorName)}</p>
@@ -801,6 +807,7 @@ function buildWorkgroupBroadcastText(params: {
   headline: string;
   body: string;
   workgroupUrl: string;
+  authorImageUrl?: string;
   imageUrl?: string;
 }) {
   const { authorName, workshopTitle, headline, body, workgroupUrl, imageUrl } = params;
@@ -832,18 +839,36 @@ export async function sendWorkgroupBroadcast(params: {
   workshopSlug: string;
   headline: string;
   body: string;
+  authorImageUrl?: string;
   imageUrl?: string;
   recipients: { email: string; name: string }[];
 }) {
-  const { authorName, workshopTitle, workshopSlug, headline, body, imageUrl, recipients } = params;
+  const { authorName, workshopTitle, workshopSlug, headline, body, authorImageUrl, imageUrl, recipients } =
+    params;
 
   const mail = getSendGrid();
   const adminEmail = getAdminEmail();
   const workgroupUrl = `https://aiwithmichal.com/members/workshops/${workshopSlug}/workgroup`;
   const subject = `[Workgroup] ${headline}`;
 
-  const html = buildWorkgroupBroadcastHtml({ authorName, workshopTitle, headline, body, workgroupUrl, imageUrl });
-  const text = buildWorkgroupBroadcastText({ authorName, workshopTitle, headline, body, workgroupUrl, imageUrl });
+  const html = buildWorkgroupBroadcastHtml({
+    authorName,
+    workshopTitle,
+    headline,
+    body,
+    workgroupUrl,
+    authorImageUrl,
+    imageUrl,
+  });
+  const text = buildWorkgroupBroadcastText({
+    authorName,
+    workshopTitle,
+    headline,
+    body,
+    workgroupUrl,
+    authorImageUrl,
+    imageUrl,
+  });
 
   // Collect unique recipient emails, always include admin
   const emailSet = new Set(recipients.map((r) => r.email.toLowerCase()));

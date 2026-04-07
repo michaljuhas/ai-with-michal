@@ -163,6 +163,7 @@ export async function POST(
         workshopSlug,
         headline: headline.trim(),
         body: postBody.trim(),
+        authorImageUrl: user?.imageUrl ?? undefined,
         imageUrl: image_url ?? undefined,
         recipients,
       });
