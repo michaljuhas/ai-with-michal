@@ -133,3 +133,9 @@ Campaign generator: `ANTHROPIC_API_KEY` (copy generation) + `GEMINI_API_KEY` (im
 > **Note — env loading quirk:** Claude Code sets `ANTHROPIC_API_KEY=""` (empty string) in subprocess environments. Node's `--env-file` silently skips vars already present in `process.env`, even when empty. Scripts that need `ANTHROPIC_API_KEY` (`generate-campaign-assets.mjs`, `daily-report.mjs`) work around this by parsing `.env` manually at startup. If you ever add a new script that uses `ANTHROPIC_API_KEY`, apply the same pattern (see top of `generate-campaign-assets.mjs`). Alternatively, invoke via `set -a && source .env && set +a && node scripts/…` which forces all vars from `.env` regardless of what's already set.
 Todoist CLI: `TODOIST_API_TOKEN` (from Todoist Settings → Integrations → API token), `TODOIST_PROJECT_ID` (default `6gCJVXq7MX73MxFv` — the "AI with Michal" project).
 Threads CLI: `THREADS_ACCESS_TOKEN` (long-lived OAuth 2.0 bearer token; 60-day expiry, refresh with `auth refresh`), `THREADS_USER_ID` (your Threads user ID for user-scoped endpoints).
+
+## Frontend verify guardrails
+
+- In JSX text nodes, always escape apostrophes to avoid verify/lint failures:
+  - Use `&apos;` (preferred), or `&#39;`, `&lsquo;`, `&rsquo;`.
+  - Example: write `You&apos;ll` instead of `You'll`.
