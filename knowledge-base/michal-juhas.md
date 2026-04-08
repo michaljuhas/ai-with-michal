@@ -27,7 +27,7 @@ He runs **AIwithMichal.com**, where he hosts live implementation workshops for H
 ## Workshop: AI in Recruiting and Talent Acquisition
 
 - **Date:** April 2, 2026
-- **Time:** 3:00 PM – 4:30 PM UTC (90 minutes)
+- **Time:** 4:00 PM – 5:30 PM CET (90 minutes)
 - **Format:** Live online workshop
 - **Capacity:** 50 spots
 - **Pricing:**

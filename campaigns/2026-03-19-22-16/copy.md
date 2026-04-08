@@ -22,7 +22,7 @@ Your competitors are already using AI to source faster. In this 90-minute worksh
 
 ### Variation 3
 
-What if you could source in hours what used to take weeks? This hands-on session shows you how to build AI-powered sourcing systems that work while you sleep. April 2nd, 3PM UTC. Save your seat →
+What if you could source in hours what used to take weeks? This hands-on session shows you how to build AI-powered sourcing systems that work while you sleep. April 2nd, 4:00 PM – 5:30 PM CET. Save your seat →
 
 ### Variation 4
 

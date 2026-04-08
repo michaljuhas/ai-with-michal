@@ -1,4 +1,4 @@
-// One-off: reminder email to Eva about the workshop at 3pm UTC
+// One-off: reminder email to Eva about the workshop (CET — see AGENTS.md)
 import sgMail from '@sendgrid/mail';
 
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
@@ -7,8 +7,8 @@ const msg = {
   to: { email: 'evka.valovska@gmail.com', name: 'Eva' },
   from: { email: 'hello@aiwithmichal.com', name: 'Michal Juhas' },
   replyTo: process.env.ADMIN_EMAIL ?? 'hello@aiwithmichal.com',
-  subject: 'Reminder: Workshop today at 3pm UTC',
-  text: `Hi Eva,\n\nJust a quick reminder that we have a workshop today at 3pm UTC.\n\nSee you there!\n\nMichal`,
+  subject: 'Reminder: Workshop today · 4:00 PM – 5:30 PM CET',
+  text: `Hi Eva,\n\nJust a quick reminder that we have a workshop today at 4:00 PM – 5:30 PM CET.\n\nSee you there!\n\nMichal`,
   html: `<!DOCTYPE html>
 <html lang="en">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
@@ -26,7 +26,7 @@ const msg = {
             <td style="background:#ffffff;border:1px solid #e2e8f0;border-top:none;padding:40px;border-radius:0 0 12px 12px;">
               <p style="margin:0 0 16px 0;color:#334155;font-size:15px;line-height:1.7;">Hi Eva,</p>
               <p style="margin:0 0 16px 0;color:#334155;font-size:15px;line-height:1.7;">
-                Just a quick reminder that we have a <strong>workshop today at 3pm UTC</strong>.
+                Just a quick reminder that we have a <strong>workshop today at 4:00 PM – 5:30 PM CET</strong>.
               </p>
               <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;">See you there!</p>
               <p style="margin:24px 0 0 0;color:#334155;font-size:15px;">Michal</p>

@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
         workshop_slug: workshopSlug!,
         price_id: priceId,
       },
-      success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}&workshop_slug=${encodeURIComponent(workshopSlug!)}`,
       cancel_url: `${appUrl}${cancelUrl || "/tickets"}`,
       billing_address_collection: "required",
       tax_id_collection: { enabled: true },

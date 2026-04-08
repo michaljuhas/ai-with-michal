@@ -1,5 +1,6 @@
 import type { TrainingSection } from "./training";
 import { trainingLessons, trainingSections } from "./training";
+import type { WorkshopCalendarEvent } from "./workshop-calendar";
 // ---------------------------------------------------------------------------
 // Streams (members area categorisation)
 // ---------------------------------------------------------------------------
@@ -44,9 +45,9 @@ export const workshops: WorkshopDef[] = [
     slug: "2026-04-02-ai-in-recruiting",
     title: "AI in Recruiting and Talent Acquisition",
     stream: "recruiting-ta",
-    date: new Date("2026-04-02T15:00:00Z"),
+    date: new Date("2026-04-02T14:00:00Z"),
     displayDate: "April 2, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     description:
       "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
     recordingUrl: "https://drive.google.com/file/d/19Qos6UwOELh9SpBsDGbsCXaPP9c2Amas/view?usp=sharing",
@@ -55,9 +56,9 @@ export const workshops: WorkshopDef[] = [
     slug: "2026-04-16-ai-in-recruiting",
     title: "AI in Recruiting and Talent Acquisition",
     stream: "recruiting-ta",
-    date: new Date("2026-04-16T15:00:00Z"),
+    date: new Date("2026-04-16T14:00:00Z"),
     displayDate: "April 16, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     description:
       "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
   },
@@ -65,9 +66,9 @@ export const workshops: WorkshopDef[] = [
     slug: "2026-04-23-sourcing-automation",
     title: "Sourcing Automation for Recruiters",
     stream: "recruiting-ta",
-    date: new Date("2026-04-23T15:00:00Z"),
+    date: new Date("2026-04-23T14:00:00Z"),
     displayDate: "April 23, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     description:
       "Automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
   },
@@ -75,9 +76,9 @@ export const workshops: WorkshopDef[] = [
     slug: "2026-05-07-claude-cowork-recruiting",
     title: "Claude Cowork and Code in Recruiting",
     stream: "recruiting-ta",
-    date: new Date("2026-05-07T15:00:00Z"),
+    date: new Date("2026-05-07T14:00:00Z"),
     displayDate: "May 7, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     description:
       "Build real recruiting automations with Claude Code — no coding experience needed. Leave with working tools you can use immediately.",
   },
@@ -109,11 +110,11 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     description:
       "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
     location: "Online (Video call link will be emailed to you)",
-    date: new Date("2026-04-02T15:00:00Z"),
-    startDate: "20260402T150000Z",
-    endDate: "20260402T163000Z",
+    date: new Date("2026-04-02T14:00:00Z"),
+    startDate: "20260402T140000Z",
+    endDate: "20260402T153000Z",
     displayDate: "April 2, 2026",
-    displayTime: "3:00 PM – 4:30 PM UTC",
+    displayTime: "4:00 PM – 5:30 PM CET",
     displayDateShort: "Apr 2",
     priceIds: {
       basic: "price_1TCatHCDDkiysv3tRCPOeA0S",
@@ -178,7 +179,7 @@ export const CURRENT_WORKSHOP_SLUG = "2026-04-16-ai-in-recruiting";
 
 /**
  * Returns a worldtimebuddy.com URL for a workshop date.
- * All workshops run 4:00–5:30 PM CET (Bratislava), shown in 8 common timezones.
+ * All workshops run 4:00–5:30 PM local (Europe/Bratislava); UI copy uses the label **CET** (see AGENTS.md).
  */
 export function getTimezoneConverterUrl(date: Date): string {
   const y = date.getUTCFullYear();
@@ -189,6 +190,20 @@ export function getTimezoneConverterUrl(date: Date): string {
 
 export function getPublicWorkshopBySlug(slug: string): Workshop | undefined {
   return PUBLIC_WORKSHOPS.find((w) => w.slug === slug);
+}
+
+/** Calendar links / .ics — always derived from `PUBLIC_WORKSHOPS` so thank-you and members area stay in sync. */
+export function getWorkshopCalendarEvent(slug: string): WorkshopCalendarEvent | null {
+  const w = getPublicWorkshopBySlug(slug);
+  if (!w) return null;
+  return {
+    title: w.title,
+    description: w.description,
+    startDate: w.startDate,
+    endDate: w.endDate,
+    date: w.date,
+    location: w.location,
+  };
 }
 
 /** Title and schedule for post-registration emails (public page first, then members def). */

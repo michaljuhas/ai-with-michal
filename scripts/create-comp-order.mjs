@@ -6,15 +6,20 @@
  *   node --env-file=.env scripts/create-comp-order.mjs --email=user@example.com --workshop-slug=2026-04-16-ai-in-recruiting --tier=pro
  *   node --env-file=.env scripts/create-comp-order.mjs --clerk-user-id=user_abc123 --workshop-slug=2026-04-16-ai-in-recruiting --tier=basic
  *   node --env-file=.env scripts/create-comp-order.mjs --email=user@example.com --workshop-slug=2026-04-16-ai-in-recruiting --tier=pro --dry-run
+ *
+ * Dry run: no DB insert, no email — prints the order JSON and the confirmation email body (plain + HTML)
+ * that would be sent after a real run (when SENDGRID_API_KEY is set).
  */
 
 import { randomUUID } from "node:crypto";
+import { getPublicWorkshopEntry, workshopLabel } from "./workshop-registry.mjs";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const MEETING_URL = process.env.WORKSHOP_MEETING_URL || "(meeting link will be sent separately)";
-const MEMBERS_URL = "https://aiwithmichal.com/members";
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL || "https://aiwithmichal.com").replace(/\/$/, "");
+const MEMBERS_URL = `${APP_URL}/members`;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
   console.error("Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
@@ -78,30 +83,122 @@ function slugToLabel(slug) {
   return namePart ? `${namePart} (${datePart})` : datePart;
 }
 
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+function buildConfirmationEmailPayload(toEmail, workshopSlug, tier) {
+  const entry = getPublicWorkshopEntry(workshopSlug);
+  const workshopTitle = entry ? workshopLabel(entry) : slugToLabel(workshopSlug);
+  const whenLine = entry ? `${entry.displayDate} · ${entry.displayTime}` : null;
+  const workshopDetailUrl = `${APP_URL}/members/workshops/${encodeURIComponent(workshopSlug)}`;
+
+  const firstName = toEmail.split("@")[0];
+  const tierLabel = tier === "pro" ? "Pro" : "Basic";
+
+  const subject = `You're in — ${workshopTitle}`;
+  const text = `Hi ${firstName},
+
+Great news — you've been granted complimentary ${tierLabel} access to ${workshopTitle}.
+
+${whenLine ? `When (Central European Time): ${whenLine}\n\n` : ""}Your workshop page (sign in to your account to open it):
+${workshopDetailUrl}
+
+Open the workshop overview there to work through pre-training and to add the live session to your calendar — you can use Google Calendar, Outlook, or download an .ics file so you do not miss it.
+
+All members-only workshops:
+${MEMBERS_URL}
+
+Video call link: ${MEETING_URL}
+(After sign-in you will also find it under Live Workshop → Join.)
+
+If you have any questions, just reply to this email.
+
+See you there,
+Michal`;
+
+  const whenHtml = whenLine
+    ? `<p style="margin:0 0 16px 0;color:#334155;font-size:15px;line-height:1.7;"><strong>When (CET):</strong> ${escapeHtml(whenLine)}</p>`
+    : "";
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"></head>
+<body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f8fafc;padding:32px 16px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+          <tr>
+            <td style="background:#1d4ed8;padding:24px 28px;">
+              <p style="margin:0;color:#bfdbfe;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;">Complimentary access</p>
+              <h1 style="margin:8px 0 0 0;color:#ffffff;font-size:22px;font-weight:700;line-height:1.3;">You&apos;re in — ${escapeHtml(workshopTitle)}</h1>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:28px;">
+              <p style="margin:0 0 16px 0;color:#334155;font-size:15px;line-height:1.7;">Hi ${escapeHtml(firstName)},</p>
+              <p style="margin:0 0 16px 0;color:#334155;font-size:15px;line-height:1.7;">Great news — you&apos;ve been granted complimentary <strong>${escapeHtml(tierLabel)}</strong> access.</p>
+              ${whenHtml}
+              <p style="margin:0 0 12px 0;color:#334155;font-size:15px;line-height:1.7;"><strong>Next step:</strong> open your <strong>workshop overview</strong> (members only). There you can review pre-training and <strong>add the live session to your calendar</strong> — Google Calendar, Outlook, or an .ics download.</p>
+              <p style="margin:0 0 24px 0;">
+                <a href="${escapeHtml(workshopDetailUrl)}" style="display:inline-block;background:#1d4ed8;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:12px 22px;border-radius:8px;">Open workshop page</a>
+              </p>
+              <p style="margin:0 0 8px 0;color:#64748b;font-size:13px;">Or copy this link:</p>
+              <p style="margin:0 0 24px 0;word-break:break-all;"><a href="${escapeHtml(workshopDetailUrl)}" style="color:#1d4ed8;font-size:13px;">${escapeHtml(workshopDetailUrl)}</a></p>
+              <p style="margin:0 0 16px 0;color:#334155;font-size:15px;line-height:1.7;"><strong>Video call:</strong> <a href="${escapeHtml(MEETING_URL)}" style="color:#1d4ed8;">${escapeHtml(MEETING_URL)}</a><br/><span style="color:#64748b;font-size:13px;">Also under Live Workshop → Join after you sign in.</span></p>
+              <p style="margin:0;color:#334155;font-size:15px;line-height:1.7;"><a href="${escapeHtml(MEMBERS_URL)}" style="color:#1d4ed8;">All workshops (members home)</a></p>
+              <p style="margin:24px 0 0 0;color:#334155;font-size:15px;line-height:1.7;">See you there,<br/>Michal</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+
+  return { subject, text, html };
+}
+
+function printDryRunEmailPreview(toEmail, workshopSlug, tier) {
+  const { subject, text, html } = buildConfirmationEmailPayload(toEmail, workshopSlug, tier);
+  console.log("\n[DRY RUN] Confirmation email (not sent):");
+  console.log(`  To:       ${toEmail}`);
+  console.log(`  From:     hello@aiwithmichal.com (Michal Juhas)`);
+  console.log(`  Subject:  ${subject}`);
+  if (!SENDGRID_API_KEY) {
+    console.log(
+      "  Note:    SENDGRID_API_KEY not set — after a real insert the script would skip sending until it is set."
+    );
+  }
+  console.log("\n  --- text/plain ---\n");
+  for (const line of text.split("\n")) {
+    console.log(`  ${line}`);
+  }
+  const htmlMax = 5000;
+  console.log("\n  --- text/html ---\n");
+  if (html.length <= htmlMax) {
+    for (const line of html.split("\n")) {
+      console.log(`  ${line}`);
+    }
+  } else {
+    console.log(html.slice(0, htmlMax).replace(/^/gm, "  "));
+    console.log(`  … (${html.length - htmlMax} more characters; full HTML is ${html.length} bytes)`);
+  }
+}
+
 async function sendConfirmationEmail(toEmail, workshopSlug, tier) {
   if (!SENDGRID_API_KEY) {
     console.log("  ⚠️  SENDGRID_API_KEY not set — skipping confirmation email");
     return;
   }
 
-  const workshopLabel = slugToLabel(workshopSlug);
-  const firstName = toEmail.split("@")[0];
-  const tierLabel = tier === "pro" ? "Pro" : "Basic";
-
-  const subject = `You're in — ${workshopLabel}`;
-  const text = `Hi ${firstName},
-
-Great news — you've been granted complimentary ${tierLabel} access to ${workshopLabel}.
-
-You can access the pre-training materials and all workshop resources here:
-${MEMBERS_URL}
-
-Meeting link: ${MEETING_URL}
-
-If you have any questions, just reply to this email.
-
-See you there,
-Michal`;
+  const { subject, text, html } = buildConfirmationEmailPayload(toEmail, workshopSlug, tier);
 
   const res = await fetch("https://api.sendgrid.com/v3/mail/send", {
     method: "POST",
@@ -113,7 +210,10 @@ Michal`;
       from: { email: "hello@aiwithmichal.com", name: "Michal Juhas" },
       personalizations: [{ to: [{ email: toEmail }] }],
       subject,
-      content: [{ type: "text/plain", value: text }],
+      content: [
+        { type: "text/plain", value: text },
+        { type: "text/html", value: html },
+      ],
     }),
   });
 
@@ -167,6 +267,23 @@ async function main() {
   if (isDryRun) {
     console.log("\n[DRY RUN] Would insert order:");
     console.log(JSON.stringify(order, null, 2));
+
+    let previewEmail = email;
+    if (!previewEmail) {
+      const rows = await supabaseRequest(
+        "GET",
+        `registrations?select=email&clerk_user_id=eq.${clerkUserId}`
+      );
+      previewEmail = rows?.[0]?.email;
+    }
+
+    if (previewEmail) {
+      printDryRunEmailPreview(previewEmail, workshopSlug, tier);
+    } else {
+      console.log(
+        "\n[DRY RUN] Confirmation email: no recipient address (pass --email= or ensure registration has email)."
+      );
+    }
     return;
   }
 

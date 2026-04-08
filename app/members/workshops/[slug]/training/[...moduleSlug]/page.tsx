@@ -3,8 +3,10 @@ import { notFound } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import TrainingLesson from "@/components/training/TrainingLesson";
+import { WorkshopJoinScheduleProvider } from "@/components/training/workshop-join-schedule-context";
 import SessionNotesEditor from "@/components/session-notes/SessionNotesEditor";
 import {
+  getPublicWorkshopBySlug,
   getWorkshopBySlug,
   getWorkshopLessonBySlug,
   getWorkshopLessonNeighbors,
@@ -13,6 +15,7 @@ import {
 } from "@/lib/workshops";
 import { isAdminUser } from "@/lib/config";
 const SESSION_NOTES_SLUG = ["live-workshop", "session-notes"];
+const JOIN_LESSON_SLUG = ["live-workshop", "join"];
 
 type TrainingModulePageProps = {
   params: Promise<{ slug: string; moduleSlug: string[] }>;
@@ -83,9 +86,28 @@ export default async function TrainingModulePage({ params }: TrainingModulePageP
 
   const Content = lesson.Component;
 
-  return (
+  const isJoinLesson =
+    moduleSlug.length === JOIN_LESSON_SLUG.length &&
+    moduleSlug.every((s, i) => s === JOIN_LESSON_SLUG[i]);
+
+  const publicW = getPublicWorkshopBySlug(slug);
+  const joinScheduleValue = {
+    displayDate: publicW?.displayDate ?? workshop.displayDate,
+    displayTime: publicW?.displayTime ?? workshop.displayTime ?? "",
+    workshopSlug: slug,
+  };
+
+  const lessonInner = (
     <TrainingLesson lesson={lesson} previousLesson={previous} nextLesson={next}>
       <Content />
     </TrainingLesson>
+  );
+
+  return isJoinLesson ? (
+    <WorkshopJoinScheduleProvider value={joinScheduleValue}>
+      {lessonInner}
+    </WorkshopJoinScheduleProvider>
+  ) : (
+    lessonInner
   );
 }

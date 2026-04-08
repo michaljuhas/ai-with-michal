@@ -1,4 +1,5 @@
-import { WORKSHOP } from "@/lib/workshop";
+import JoinScheduleBullets from "@/components/training/JoinScheduleBullets";
+import JoinLessonFooter from "@/components/training/JoinLessonFooter";
 
 export const lesson = {
   title: "Join",
@@ -11,22 +12,17 @@ export const lesson = {
 
 # Join the live workshop
 
-- **Date:** {WORKSHOP.displayDate}
-- **Time:** {WORKSHOP.displayTime}
-- **Video call:** [meet.google.com/zbn-wevi-dwf](https://meet.google.com/zbn-wevi-dwf)
+<JoinScheduleBullets />
 
 ## Before you join
 
 - make sure you can access the video platform from your device
-- keep your notes or examples close by
 - block time before and after the session so you are not context-switching
 
 ## During the workshop
 
-- follow the examples with your own recruiting context in mind
-- write down ideas that feel immediately relevant
-- note which workflows could realistically become repeatable in your team
+<ul className="my-5 list-disc space-y-2 pl-6 text-slate-700">
+  <li>Ask questions; that&apos;s why you&apos;re joining a LIVE workshop.</li>
+</ul>
 
-## If you cannot attend live
-
-You can still use the pre-training to get aligned on the concepts and follow up with the materials that are shared afterward.
+<JoinLessonFooter />

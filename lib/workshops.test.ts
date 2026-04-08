@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getPublicWorkshopBySlug,
   getWorkshopBySlug,
+  getWorkshopCalendarEvent,
   getWorkshopWelcomeSnapshot,
   isOpen,
   type Workshop,
@@ -28,6 +29,21 @@ describe("getPublicWorkshopBySlug", () => {
 
   it("returns undefined for unknown slug", () => {
     expect(getPublicWorkshopBySlug("unknown-slug")).toBeUndefined();
+  });
+});
+
+describe("getWorkshopCalendarEvent", () => {
+  it("returns ICS fields aligned with PUBLIC_WORKSHOPS for a known slug", () => {
+    const cal = getWorkshopCalendarEvent("2026-04-23-sourcing-automation");
+    expect(cal).not.toBeNull();
+    const pub = getPublicWorkshopBySlug("2026-04-23-sourcing-automation");
+    expect(cal!.startDate).toBe(pub!.startDate);
+    expect(cal!.endDate).toBe(pub!.endDate);
+    expect(cal!.title).toBe(pub!.title);
+  });
+
+  it("returns null for unknown slug", () => {
+    expect(getWorkshopCalendarEvent("unknown-slug")).toBeNull();
   });
 });
 

@@ -4,9 +4,12 @@ import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import {
+  getPublicWorkshopBySlug,
   getWorkshopBySlug,
+  getWorkshopCalendarEvent,
   getWorkshopTrainingSections,
 } from "@/lib/workshops";
+import WorkshopAddToCalendar from "@/components/WorkshopAddToCalendar";
 import { isAdminUser } from "@/lib/config";
 
 type WorkshopPageProps = {
@@ -49,6 +52,11 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
     .flatMap((s) => s.lessons)
     .find((l) => l.slug[1] === "join");
 
+  const calendarEvent = getWorkshopCalendarEvent(slug);
+  const publicWorkshop = getPublicWorkshopBySlug(slug);
+  const displayDate = publicWorkshop?.displayDate ?? workshop.displayDate;
+  const displayTime = publicWorkshop?.displayTime ?? workshop.displayTime;
+
   return (
     <div className="space-y-6">
       {/* Welcome card */}
@@ -75,12 +83,12 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
               sidebar — each takes about 10 minutes and will make the live session
               much more useful.
             </p>
-            {joinLesson && workshop.displayDate && (
+            {joinLesson && displayDate && (
               <p className="mt-2 text-[15px] leading-relaxed text-slate-600">
                 We go live on{" "}
-                <strong className="text-slate-700">{workshop.displayDate}</strong>
-                {workshop.displayTime && (
-                  <> at <strong className="text-slate-700">{workshop.displayTime}</strong></>
+                <strong className="text-slate-700">{displayDate}</strong>
+                {displayTime && (
+                  <> at <strong className="text-slate-700">{displayTime}</strong></>
                 )}
                 . The video call link is in the{" "}
                 <Link
@@ -102,6 +110,17 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
               </Link>{" "}
               — I reply to every thread.
             </p>
+            {calendarEvent && (
+              <div className="mt-5 border-t border-slate-100 pt-5 max-w-xl">
+                <WorkshopAddToCalendar
+                  event={calendarEvent}
+                  variant="embedded"
+                  source="members_workshop_overview"
+                  workshopSlug={slug}
+                  icsFilename={`workshop-${slug}.ics`}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -148,8 +167,8 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
           </p>
           <p className="font-semibold text-slate-900">Join live</p>
           <p className="mt-1 text-sm text-slate-600 flex-1">
-            {workshop.displayDate}
-            {workshop.displayTime && <> · {workshop.displayTime}</>}
+            {displayDate}
+            {displayTime && <> · {displayTime}</>}
           </p>
           <span className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-emerald-600 group-hover:gap-2 transition-all">
             Get the link

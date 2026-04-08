@@ -5,7 +5,7 @@
 ## 🎯 Join the Live Workshop — April 2, 2026
 
 **Build AI-Powered Talent Pools Outside LinkedIn**
-📅 April 2, 2026 · 3:00 PM – 4:30 PM UTC
+📅 April 2, 2026 · 4:00 PM – 5:30 PM CET
 🔗 **Register now → [aiwithmichal.com](https://aiwithmichal.com)**
 
 Live workflows. Real talent pools. Beyond LinkedIn.
@@ -295,7 +295,7 @@ process, the comp, or something else? Give me 3 specific changes to make.
 These prompts are the foundation. On **April 2nd**, we go live — and I'll show you how to chain them into full recruiting workflows, build real talent pools outside LinkedIn, and use AI to do in hours what used to take days.
 
 ### Build AI-Powered Talent Pools Outside LinkedIn
-📅 **April 2, 2026 · 3:00 PM – 4:30 PM UTC**
+📅 **April 2, 2026 · 4:00 PM – 5:30 PM CET**
 ⏱ 90-minute live session — hands-on, not slides-heavy
 👥 Limited spots · Basic (€79) & Pro + Toolkit (€129)
 

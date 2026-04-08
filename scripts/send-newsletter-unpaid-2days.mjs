@@ -52,7 +52,7 @@ function buildHtml(firstName) {
           <!-- Header -->
           <tr>
             <td style="background:#1e40af;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-              <p style="margin:0 0 12px 0;color:#bfdbfe;font-size:13px;letter-spacing:1px;text-transform:uppercase;">AI with Michal · April 2, 2026 · 3 PM UTC</p>
+              <p style="margin:0 0 12px 0;color:#bfdbfe;font-size:13px;letter-spacing:1px;text-transform:uppercase;">AI with Michal · April 2, 2026 · 4:00 PM – 5:30 PM CET</p>
               <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;line-height:1.3;">Starting Tomorrow — Join Now</h1>
               <p style="margin:12px 0 0 0;color:#bfdbfe;font-size:15px;">AI in Recruiting & Sourcing — live workshop</p>
             </td>
@@ -62,7 +62,7 @@ function buildHtml(firstName) {
           <tr>
             <td style="background:#dc2626;padding:14px 40px;text-align:center;">
               <p style="margin:0;color:#ffffff;font-size:14px;font-weight:600;letter-spacing:0.3px;">
-                🚨 Workshop starts tomorrow, April 2nd at 3 PM UTC — this is your last chance
+                🚨 Workshop starts tomorrow, April 2nd at 4:00 PM CET — this is your last chance
               </p>
             </td>
           </tr>
@@ -75,7 +75,7 @@ function buildHtml(firstName) {
 
               <p style="margin:0 0 20px 0;color:#334155;font-size:15px;line-height:1.7;">
                 You registered for the <strong>AI with Michal live workshop</strong> — and it's happening
-                <strong>tomorrow</strong>, Thursday April 2nd at 3 PM UTC.
+                <strong>tomorrow</strong>, Thursday April 2nd at 4:00 PM – 5:30 PM CET.
               </p>
 
               <p style="margin:0 0 20px 0;color:#334155;font-size:15px;line-height:1.7;">
@@ -153,7 +153,7 @@ function buildHtml(firstName) {
                 </tr>
                 <tr>
                   <td align="center" style="padding-top:12px;">
-                    <p style="margin:0;color:#64748b;font-size:13px;">Thursday, April 2nd · 3 PM UTC · Live on Zoom</p>
+                    <p style="margin:0;color:#64748b;font-size:13px;">Thursday, April 2nd · 4:00 PM – 5:30 PM CET · Live on Zoom</p>
                   </td>
                 </tr>
               </table>
@@ -207,7 +207,7 @@ function buildHtml(firstName) {
 function buildText(firstName) {
   return `Hi ${firstName},
 
-You registered for the AI with Michal live workshop — and it's happening tomorrow, Thursday April 2nd at 3 PM UTC.
+You registered for the AI with Michal live workshop — and it's happening tomorrow, Thursday April 2nd at 4:00 PM – 5:30 PM CET.
 
 I don't want you to miss it. Here's exactly what you'll get:
 
@@ -227,7 +227,7 @@ This is practical, live, and taught by someone who uses these tools every single
 
 → Secure your spot now: https://aiwithmichal.com/tickets
 
-Thursday, April 2nd · 3 PM UTC · Live on Zoom
+Thursday, April 2nd · 4:00 PM – 5:30 PM CET · Live on Zoom
 
 Seats are limited. Once the session starts, registration closes permanently.
 

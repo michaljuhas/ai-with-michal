@@ -1,14 +1,12 @@
-<!-- BEGIN:nextjs-agent-rules -->
 # This is NOT the Next.js you know
 
 This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
-<!-- END:nextjs-agent-rules -->
 
 # Autonomous operation — workshop profitability
 
 ## Goal
 
-Sell upcoming workshop tickets profitably (often several workshops on sale in parallel). Full KPIs, playbooks, and commands are in [`sales-plan/GOALS.md`](sales-plan/GOALS.md).
+Sell upcoming workshop tickets profitably (often several workshops on sale in parallel). Full KPIs, playbooks, and commands are in `[sales-plan/GOALS.md](sales-plan/GOALS.md)`.
 
 ## Always start here
 
@@ -101,41 +99,50 @@ node --env-file=.env scripts/threads/index.mjs profile publishing-limit --pretty
 ./scripts/deploy.sh "your commit message"
 ```
 
+## Workshop times (customer-facing)
+
+- **Always show Central European Time as `CET`** in UI, emails, ads, PDFs, and member content — never `UTC` or dual `UTC / CET` lines for the same slot.
+- **Canonical schedule** lives in `lib/workshops.ts` → `PUBLIC_WORKSHOPS` and the parallel `workshops` array: `displayDate` / `displayTime` use **CET**, while `date`, `startDate`, and `endDate` are **UTC instants** for calendars and APIs. When summer time applies in Europe, we still use the **CET** label in copy (same convention as existing ticket pages).
+- **Join lesson** (`content/training/live-workshop/join.mdx`) reads date/time from `WorkshopJoinScheduleProvider` on the training route so it matches the workshop slug, not `lib/workshop.ts`.
+
 ## Key URLs
 
-- Homepage: https://aiwithmichal.com
-- Admin dashboard: https://aiwithmichal.com/admin (requires login as michal@michaljuhas.com)
+- Homepage: [https://aiwithmichal.com](https://aiwithmichal.com)
+- Admin dashboard: [https://aiwithmichal.com/admin](https://aiwithmichal.com/admin) (requires login as [michal@michaljuhas.com](mailto:michal@michaljuhas.com))
 - Referral links: append `?ref=<source>` to any URL — tracked in PostHog
 
 ## Decision playbook
 
-| Situation | Action |
-|-----------|--------|
-| Conversion < 2% | Run analytics.mjs → find drop-off → fix copy or add promo code |
-| Pro mix < 40% | Strengthen Pro tier benefits on /tickets or /pricing |
-| Spots < 15 | Urgency is already shown on /tickets; push on social |
-| 1 week before | Run send-reminders.mjs (week reminder) |
-| 1 day before | Run send-reminders.mjs --type=dayBefore |
-| Day of | Run send-reminders.mjs --type=dayOf |
+
+| Situation       | Action                                                                        |
+| --------------- | ----------------------------------------------------------------------------- |
+| Conversion < 2% | Run analytics.mjs → find drop-off → fix copy or add promo code                |
+| Pro mix < 40%   | Strengthen Pro tier benefits on /tickets or /pricing                          |
+| Spots < 15      | Urgency is already shown on /tickets; push on social                          |
+| 1 week before   | Run send-reminders.mjs (week reminder)                                        |
+| 1 day before    | Run send-reminders.mjs --type=dayBefore                                       |
+| Day of          | Run send-reminders.mjs --type=dayOf                                           |
 | Need promo code | Create in Stripe dashboard — checkout already has allow_promotion_codes: true |
+
 
 ## Environment variables
 
 See `.env.example` for all variables.
 Key ones for scripts: `NEXT_PUBLIC_SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY`, `STRIPE_SECRET_KEY`,
 `SENDGRID_API_KEY`, `POSTHOG_PERSONAL_API_KEY`, `POSTHOG_PROJECT_ID`, `WORKSHOP_CAPACITY` / `NEXT_PUBLIC_WORKSHOP_CAPACITY` (default 20; keep both aligned),
-`ADMIN_EMAIL` (default hello@aiwithmichal.com), `WORKSHOP_MEETING_URL`.
+`ADMIN_EMAIL` (default [hello@aiwithmichal.com](mailto:hello@aiwithmichal.com)), `WORKSHOP_MEETING_URL`.
 Meta Ads CLI: `META_SYSTEM_USER_ACCESS_TOKEN` (System User Token from Meta Business Manager), `META_AD_ACCOUNT_ID` (e.g. `act_123456789`).
 LinkedIn Ads in `status.mjs` (optional): run `node --env-file=.env scripts/linkedin/index.mjs auth-ads` (OAuth with `r_ads_reporting` → `~/.linkedin-ads-token.json`), or set `LINKEDIN_ADS_ACCESS_TOKEN`, plus `LINKEDIN_ADS_ACCOUNT_URN` or `LINKEDIN_ADS_ACCOUNT_ID`, or manual `LINKEDIN_ADS_SPEND_EUR` — see `.env.example`.
-Daily report AI analysis: `ANTHROPIC_API_KEY` (get from https://console.anthropic.com/settings/keys — required for AI-written reports; without it the report falls back to raw data).
+Daily report AI analysis: `ANTHROPIC_API_KEY` (get from [https://console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys) — required for AI-written reports; without it the report falls back to raw data).
 Campaign generator: `ANTHROPIC_API_KEY` (copy generation) + `GEMINI_API_KEY` (image generation via Imagen 4) — both required.
 
 > **Note — env loading quirk:** Claude Code sets `ANTHROPIC_API_KEY=""` (empty string) in subprocess environments. Node's `--env-file` silently skips vars already present in `process.env`, even when empty. Scripts that need `ANTHROPIC_API_KEY` (`generate-campaign-assets.mjs`, `daily-report.mjs`) work around this by parsing `.env` manually at startup. If you ever add a new script that uses `ANTHROPIC_API_KEY`, apply the same pattern (see top of `generate-campaign-assets.mjs`). Alternatively, invoke via `set -a && source .env && set +a && node scripts/…` which forces all vars from `.env` regardless of what's already set.
-Todoist CLI: `TODOIST_API_TOKEN` (from Todoist Settings → Integrations → API token), `TODOIST_PROJECT_ID` (default `6gCJVXq7MX73MxFv` — the "AI with Michal" project).
-Threads CLI: `THREADS_ACCESS_TOKEN` (long-lived OAuth 2.0 bearer token; 60-day expiry, refresh with `auth refresh`), `THREADS_USER_ID` (your Threads user ID for user-scoped endpoints).
+> Todoist CLI: `TODOIST_API_TOKEN` (from Todoist Settings → Integrations → API token), `TODOIST_PROJECT_ID` (default `6gCJVXq7MX73MxFv` — the "AI with Michal" project).
+> Threads CLI: `THREADS_ACCESS_TOKEN` (long-lived OAuth 2.0 bearer token; 60-day expiry, refresh with `auth refresh`), `THREADS_USER_ID` (your Threads user ID for user-scoped endpoints).
 
 ## Frontend verify guardrails
 
 - In JSX text nodes, always escape apostrophes to avoid verify/lint failures:
-  - Use `&apos;` (preferred), or `&#39;`, `&lsquo;`, `&rsquo;`.
-  - Example: write `You&apos;ll` instead of `You'll`.
+  - Use `'` (preferred), or `'`, `&lsquo;`, `&rsquo;`.
+  - Example: write `You'll` instead of `You'll`.
+

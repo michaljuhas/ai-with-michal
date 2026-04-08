@@ -103,7 +103,7 @@ async function generateCopy(focus) {
 Create compelling ad copy for this live online workshop:
 
 Workshop: Build AI-Powered Talent Pools Outside LinkedIn
-Date: April 2, 2026 · 3:00 PM – 4:30 PM UTC
+Date: April 2, 2026 · 4:00 PM – 5:30 PM CET
 Price: €79 Basic / €129 Pro (includes AI Toolkit)
 Target audience: Recruiters, HR managers, talent acquisition leads, HR tech enthusiasts
 Key promise: Learn to find and organise top talent with AI tools — without depending on LinkedIn

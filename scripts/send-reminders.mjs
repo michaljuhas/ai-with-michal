@@ -30,7 +30,7 @@ if (!SENDGRID_API_KEY && !isDryRun) {
 const FROM_EMAIL = "hello@aiwithmichal.com";
 const FROM_NAME = "Michal Juhas";
 const WORKSHOP_DATE = "April 2, 2026";
-const WORKSHOP_TIME = "3:00 PM – 4:30 PM UTC";
+const WORKSHOP_TIME = "4:00 PM – 5:30 PM CET";
 
 const TEMPLATES = {
   week: {
@@ -64,10 +64,10 @@ See you tomorrow,
 Michal`,
   },
   dayOf: {
-    subject: `Starting in ~3 hours — AI Workshop today at 3 PM UTC / 4 PM CET`,
+    subject: `Starting in ~3 hours — AI Workshop today · ${WORKSHOP_TIME}`,
     body: (name) => `Hi ${name},
 
-The workshop starts in about 3 hours — today at 3 PM UTC (4 PM CET).
+The workshop starts in about 3 hours — today at ${WORKSHOP_TIME}.
 
 📅 Today · ${WORKSHOP_TIME}
 🔗 Join here: ${MEETING_URL}

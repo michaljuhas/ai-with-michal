@@ -30,4 +30,4 @@ If you're still reviewing LinkedIn profiles one by one and manually writing cand
 
 ### Variation 5
 
-You don't need to code. You need a system. In this live workshop, you'll see how recruiters use Claude Code and automation tools to cut the manual work, cover more roles, and stay ahead in a market that's already moved on from 2024 habits. April 2nd, 3PM UTC. Grab your seat →
+You don't need to code. You need a system. In this live workshop, you'll see how recruiters use Claude Code and automation tools to cut the manual work, cover more roles, and stay ahead in a market that's already moved on from 2024 habits. April 2nd, 4:00 PM – 5:30 PM CET. Grab your seat →

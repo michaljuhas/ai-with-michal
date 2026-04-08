@@ -6,7 +6,7 @@
 ## 🎯 Join the Live Workshop — April 2, 2026
 
 **Build AI-Powered Talent Pools Outside LinkedIn**
-📅 April 2, 2026 · 3:00 PM – 4:30 PM UTC
+📅 April 2, 2026 · 4:00 PM – 5:30 PM CET
 🔗 **Register now → [aiwithmichal.com/tickets](https://aiwithmichal.com/tickets)**
 
 I'll show you how to combine these tools into a single automated sourcing workflow — live, hands-on, no fluff.
@@ -225,7 +225,7 @@ Knowing the tools is step one. The real leverage is combining them into a pipeli
 On **April 2nd**, I'm showing exactly how to do that, live:
 
 ### Build AI-Powered Talent Pools Outside LinkedIn
-📅 **April 2, 2026 · 3:00 PM – 4:30 PM UTC**
+📅 **April 2, 2026 · 4:00 PM – 5:30 PM CET**
 ⏱ 90-minute live session — hands-on workflows, real examples
 💡 You'll leave with a working sourcing system, not just slides
 👥 Limited spots · Basic (€79) & Pro + Toolkit (€129)

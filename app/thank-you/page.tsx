@@ -3,10 +3,15 @@
 import { useEffect, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CheckCircle, Calendar, Download, ExternalLink, Copy, Share2 } from "lucide-react";
+import { CheckCircle, Calendar, ExternalLink, Copy, Share2 } from "lucide-react";
 import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
-import { WORKSHOP } from "@/lib/workshop";
-import { getTimezoneConverterUrl } from "@/lib/workshops";
+import {
+  CURRENT_WORKSHOP_SLUG,
+  getPublicWorkshopBySlug,
+  getWorkshopCalendarEvent,
+  getTimezoneConverterUrl,
+} from "@/lib/workshops";
+import WorkshopAddToCalendar from "@/components/WorkshopAddToCalendar";
 import posthog from "posthog-js";
 
 const WORKSHOP_URL = "https://aiwithmichal.com";
@@ -56,64 +61,14 @@ function ShareButtons() {
   );
 }
 
-function generateICSContent(meetingUrl: string) {
-  const lines = [
-    "BEGIN:VCALENDAR",
-    "VERSION:2.0",
-    "PRODID:-//AI with Michal//Workshop//EN",
-    "BEGIN:VEVENT",
-    `DTSTART:${WORKSHOP.startDate}`,
-    `DTEND:${WORKSHOP.endDate}`,
-    `SUMMARY:${WORKSHOP.title}`,
-    `DESCRIPTION:${WORKSHOP.description}`,
-    `LOCATION:${meetingUrl}`,
-    "END:VEVENT",
-    "END:VCALENDAR",
-  ];
-  return lines.join("\r\n");
-}
-
-function buildGoogleCalendarUrl(meetingUrl: string) {
-  const params = new URLSearchParams({
-    action: "TEMPLATE",
-    text: WORKSHOP.title,
-    dates: `${WORKSHOP.startDate}/${WORKSHOP.endDate}`,
-    details: WORKSHOP.description,
-    location: meetingUrl,
-  });
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
-}
-
-function buildOutlookCalendarUrl(meetingUrl: string) {
-  const params = new URLSearchParams({
-    path: "/calendar/action/compose",
-    rru: "addevent",
-    subject: WORKSHOP.title,
-    startdt: WORKSHOP.startDate,
-    enddt: WORKSHOP.endDate,
-    body: WORKSHOP.description,
-    location: meetingUrl,
-  });
-  return `https://outlook.live.com/calendar/0/deeplink/compose?${params.toString()}`;
-}
-
-function downloadICS(meetingUrl: string) {
-  posthog.capture("calendar_added", { provider: "ics" });
-  const content = generateICSContent(meetingUrl);
-  const blob = new Blob([content], { type: "text/calendar;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "ai-with-michal-workshop.ics";
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-}
-
 function ThankYouContent() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id");
+  const workshopSlugParam = searchParams.get("workshop_slug") ?? "";
+  const publicWorkshop =
+    getPublicWorkshopBySlug(workshopSlugParam) ??
+    getPublicWorkshopBySlug(CURRENT_WORKSHOP_SLUG)!;
+  const calendarEvent = getWorkshopCalendarEvent(publicWorkshop.slug)!;
   const [meetingUrl, setMeetingUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -121,7 +76,9 @@ function ThankYouContent() {
       .then((r) => r.json())
       .then((d) => setMeetingUrl(d.url ?? null))
       .catch(() => {});
+  }, []);
 
+  useEffect(() => {
     // Client-side payment tracking: fires when the user lands on this page.
     // Uses the same $insert_id as the server-side webhook event so PostHog
     // deduplicates if both paths succeed.
@@ -179,10 +136,10 @@ function ThankYouContent() {
             <div className="flex items-start gap-3">
               <Calendar className="text-blue-600 shrink-0 mt-0.5" size={18} />
               <div>
-                <p className="text-slate-900 font-medium">{WORKSHOP.displayDate}</p>
-                <p className="text-slate-500 text-sm">{WORKSHOP.displayTime}</p>
+                <p className="text-slate-900 font-medium">{publicWorkshop.displayDate}</p>
+                <p className="text-slate-500 text-sm">{publicWorkshop.displayTime}</p>
                 <a
-                  href={getTimezoneConverterUrl(WORKSHOP.date)}
+                  href={getTimezoneConverterUrl(publicWorkshop.date)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="mt-0.5 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"
@@ -205,57 +162,27 @@ function ThankYouContent() {
                   {meetingUrl}
                 </a>
               ) : (
-                <span className="text-slate-500">{WORKSHOP.location}</span>
+                <span className="text-slate-500">{publicWorkshop.location}</span>
               )}
             </div>
           </div>
         </motion.div>
 
-        {/* Add to Calendar */}
+        {/* Add to Calendar — same instants as PUBLIC_WORKSHOPS (see getWorkshopCalendarEvent) */}
         <motion.div
-          className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.25 }}
         >
-          <h2 className="text-slate-900 font-semibold text-lg mb-2">
-            Add to Your Calendar
-          </h2>
-          <p className="text-slate-500 text-sm mb-6">
-            Don&apos;t miss it — save the date to your calendar now.
-          </p>
-
-          <div className="grid sm:grid-cols-3 gap-3">
-            <a
-              href={buildGoogleCalendarUrl(meetingUrl ?? WORKSHOP.location)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => posthog.capture("calendar_added", { provider: "google" })}
-              className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
-            >
-              <ExternalLink size={14} className="text-blue-500" />
-              Google Calendar
-            </a>
-
-            <a
-              href={buildOutlookCalendarUrl(meetingUrl ?? WORKSHOP.location)}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => posthog.capture("calendar_added", { provider: "outlook" })}
-              className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
-            >
-              <ExternalLink size={14} className="text-blue-500" />
-              Outlook
-            </a>
-
-            <button
-              onClick={() => downloadICS(meetingUrl ?? WORKSHOP.location)}
-              className="flex items-center justify-center gap-2 bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-300 text-slate-700 hover:text-blue-700 text-sm font-medium px-4 py-3 rounded-xl transition-all"
-            >
-              <Download size={14} className="text-blue-500" />
-              Download .ics
-            </button>
-          </div>
+          <WorkshopAddToCalendar
+            event={calendarEvent}
+            variant="card"
+            source="thank_you"
+            workshopSlug={publicWorkshop.slug}
+            icsFilename={`workshop-${publicWorkshop.slug}.ics`}
+            fetchMeetingUrl={false}
+            sharedMeetingUrl={meetingUrl}
+          />
         </motion.div>
 
         {/* Share / refer a colleague */}

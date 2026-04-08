@@ -36,7 +36,7 @@ const EU_COUNTRIES = [
   'GB', 'CH', 'NO',
 ];
 
-const WORKSHOP_END_UNIX = Math.floor(new Date('2026-04-02T15:00:00Z').getTime() / 1000);
+const WORKSHOP_END_UNIX = Math.floor(new Date('2026-04-02T15:30:00Z').getTime() / 1000);
 
 const CAMPAIGN_FOLDER = 'campaigns/2026-03-28-linkedin-sourcing';
 const IMAGE_PATH = join(ROOT, 'public/images/linkedin-sourcing-tools.jpeg');
