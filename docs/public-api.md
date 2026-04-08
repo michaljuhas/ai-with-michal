@@ -79,6 +79,7 @@ When there are no upcoming workshops, `workshops` is an empty array:
 
 ### Notes for implementers
 
+- **Canonical links:** `url` and `thumbnailUrl` always use the production hostname `https://aiwithmichal.com`, even when the API itself is requested from another host (for example a staging or regional deployment URL).
 - **Empty list:** Plan for `workshops` to be `[]` between seasons or after the last scheduled event.
 - **Stability:** Field names and the overall JSON shape are intended to remain stable. New optional fields may be added without breaking well-behaved clients.
 - **Thumbnails:** Today all listed events may share the same `thumbnailUrl`. Per-event images could be introduced later without changing required fields.

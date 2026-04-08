@@ -5,7 +5,7 @@ describe("/api/workshops/upcoming", () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-01-15T12:00:00Z"));
-    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://example.test");
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://wrong-deployment.example");
   });
 
   afterEach(() => {
@@ -36,10 +36,10 @@ describe("/api/workshops/upcoming", () => {
       name: expect.any(String),
       hostName: "Michal Juhas",
       form: "Online",
-      thumbnailUrl: "https://example.test/workshop-og.jpeg",
+      thumbnailUrl: "https://aiwithmichal.com/workshop-og.jpeg",
       date: expect.any(String),
       time: expect.any(String),
-      url: expect.stringMatching(/^https:\/\/example\.test\/workshops\//),
+      url: expect.stringMatching(/^https:\/\/aiwithmichal\.com\/workshops\//),
     });
   });
 });
