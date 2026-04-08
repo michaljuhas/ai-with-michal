@@ -109,7 +109,7 @@ export default function WorkTogetherMenuPage() {
                 Not sure which option is right for you?
               </h2>
               <p className="text-slate-600 text-sm md:text-base leading-relaxed mb-8 max-w-xl mx-auto">
-                Tell me a bit about your team and your goals, and I'll get back to you with a tailored proposal and recommendations.
+                Tell me a bit about your team and your goals, and I&apos;ll get back to you with a tailored proposal and recommendations.
               </p>
               <Link
                 href="/contact"
