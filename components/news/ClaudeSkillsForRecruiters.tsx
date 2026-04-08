@@ -92,7 +92,7 @@ export default function ClaudeSkillsForRecruiters() {
           The new skills
         </h2>
         <p className="text-slate-500 mb-6">
-          You'll import six specialized skills to your Claude project, each skill triggered naturally in conversation.
+          You&apos;ll import six specialized skills to your Claude project, each skill triggered naturally in conversation.
         </p>
 
         {/* Skills overview image */}
@@ -208,8 +208,8 @@ export default function ClaudeSkillsForRecruiters() {
           ))}
         </ol>
         <p className="text-slate-600 leading-relaxed mt-6">
-          This feels like magic, but it's not. 
-          Hope you'll find it useful, let me know what you think.
+          This feels like magic, but it&apos;s not. 
+          Hope you&apos;ll find it useful, let me know what you think.
           And if you need help using it, join my upcoming workshop:
         </p>
       </div>
