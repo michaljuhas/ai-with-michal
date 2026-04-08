@@ -17,12 +17,38 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const article = getArticleBySlug(slug);
   if (!article) return {};
+
+  const articleUrl = `/news/${article.slug}`;
+  const publishedTime = article.date.toISOString();
+
   return {
     title: `${article.title} — AI with Michal`,
-    description: article.excerpt,
+    description: article.subheadline,
+    alternates: {
+      canonical: articleUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
     openGraph: {
       title: article.title,
-      description: article.excerpt,
+      description: article.subheadline,
+      url: articleUrl,
+      type: "article",
+      publishedTime,
+      authors: [article.author],
+      images: [
+        {
+          url: article.thumbnail,
+          alt: article.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.subheadline,
       images: [article.thumbnail],
     },
   };

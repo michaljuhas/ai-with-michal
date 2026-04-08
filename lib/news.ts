@@ -16,7 +16,7 @@ export const NEWS_ARTICLES: NewsArticle[] = [
       "I released and open-sourced a Claude skill on GitHub that makes recruiters dramatically more productive; from analyzing job requirements to writing personalized outreach.",
     author: "Michal Juhas",
     date: new Date("2026-04-08"),
-    thumbnail: "/news/candidate-sourcer-skill-thumbnail.jpg",
+    thumbnail: "/news/candidate-sourcer-skill-thumbnail.png",
     excerpt:
       "Six specialized AI skills for recruiters: job requirement analysis, candidate ICP builder, job seller, sourcing strategy generator, candidate screener, and outreach writer.",
   },
