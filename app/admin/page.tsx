@@ -206,6 +206,11 @@ export default async function AdminPage({
                       <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${o.tier === "pro" ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"}`}>
                         {o.tier}
                       </span>
+                      {o.order_type === "comp" && (
+                        <span className="ml-1 inline-block px-2 py-0.5 rounded text-xs font-semibold bg-amber-100 text-amber-700">
+                          comp
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-3 text-slate-700">
                       €{o.amount_eur}

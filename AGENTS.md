@@ -36,6 +36,11 @@ node --env-file=.env scripts/send-reminders.mjs --type=dayBefore  # day-before
 node --env-file=.env scripts/send-reminders.mjs --type=dayOf      # day-of (1 hour before)
 node --env-file=.env scripts/send-reminders.mjs --dry-run         # preview without sending
 
+# Comp orders — grant free workshop access (no Stripe payment)
+node --env-file=.env scripts/create-comp-order.mjs --email=user@example.com --workshop-slug=2026-04-16-ai-in-recruiting --tier=pro
+node --env-file=.env scripts/create-comp-order.mjs --clerk-user-id=user_abc123 --workshop-slug=2026-04-16-ai-in-recruiting --tier=basic
+node --env-file=.env scripts/create-comp-order.mjs --email=user@example.com --workshop-slug=2026-04-16-ai-in-recruiting --tier=pro --dry-run
+
 # PostHog CLI (analytics queries, feature flags, etc.)
 scripts/posthog-cli/bin/posthog-cli --help
 

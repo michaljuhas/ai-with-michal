@@ -129,7 +129,7 @@ export default function HeroSectionForRecruiters({
             <RegisterButton label="Get my ticket — from €79" open={open} workshopSlug={workshopSlug} />
             <div className="flex items-center gap-2 text-slate-500 text-sm">
               <Clock size={14} />
-              <span>90 minutes · Live online · Full refund if not satisfied</span>
+              <span>90 minutes · Live online · Full refund if you don&apos;t like the workshop</span>
             </div>
           </motion.div>
         </div>

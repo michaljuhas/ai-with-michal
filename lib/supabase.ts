@@ -77,6 +77,8 @@ export type Order = {
   workshop_slug?: string | null;
   // Stripe Checkout billing address (migration 011)
   billing_country_code?: string | null;
+  // Order origin (migration 014): 'stripe' (default), 'comp', or 'manual'
+  order_type?: "stripe" | "comp" | "manual";
 };
 
 export type WorkgroupPost = {

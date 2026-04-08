@@ -23,12 +23,15 @@ export default function GuaranteeSection() {
             Try It Risk-Free
           </h2>
           <p className="text-slate-600 text-lg leading-relaxed mb-4">
-            Join the workshop. If you feel it wasn&apos;t worth your time, just
-            send me a message and I&apos;ll refund you — no awkward questions,
-            no forms to fill.
+            Attend the workshop. If you don&apos;t like it, just send me a
+            message and I&apos;ll refund you — no awkward questions, no forms
+            to fill.
           </p>
-          <p className="text-emerald-700 font-semibold text-lg">
-            Your investment is protected. The only risk is missing out.
+          <p className="text-emerald-700 font-semibold text-lg mb-2">
+            Your investment is protected.
+          </p>
+          <p className="text-slate-500 text-sm">
+            Refund policy applies to attendees only. If you miss the workshop, the ticket is non-refundable.
           </p>
         </motion.div>
       </div>

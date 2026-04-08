@@ -47,7 +47,7 @@ export default async function RegisterPage({
           </div>
           <div className="flex items-center gap-2 text-sm text-emerald-700">
             <ShieldCheck size={14} className="text-emerald-500 shrink-0" />
-            <span>Full refund if not satisfied — no questions asked</span>
+            <span>Full refund if you don&apos;t like the workshop</span>
           </div>
         </div>
 

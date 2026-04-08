@@ -327,7 +327,7 @@ export default function WorkshopTicketsPage() {
         >
           <ShieldCheck size={20} className="text-emerald-600 shrink-0 mt-0.5" />
           <p className="text-sm text-slate-700">
-            <strong className="text-emerald-700">Full refund guarantee.</strong> If you feel the workshop wasn&apos;t worth your time, send a message and I&apos;ll refund you — no questions asked.
+            <strong className="text-emerald-700">Full refund guarantee.</strong> If you don&apos;t like the workshop, send a message and I&apos;ll refund you. Applies to attendees only — missed workshops are non-refundable.
           </p>
         </motion.div>
 
