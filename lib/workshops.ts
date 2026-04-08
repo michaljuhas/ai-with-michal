@@ -244,6 +244,14 @@ export function getNextUpcomingPublicWorkshop(): Workshop | undefined {
   return PUBLIC_WORKSHOPS.find((w) => w.date > now);
 }
 
+/** All future public workshops, soonest first (for public listings / API). */
+export function getUpcomingPublicWorkshops(): Workshop[] {
+  const now = new Date();
+  return PUBLIC_WORKSHOPS.filter((w) => w.date > now).sort(
+    (a, b) => a.date.getTime() - b.date.getTime(),
+  );
+}
+
 export function getDaysUntil(workshop: Workshop): number {
   const now = new Date();
   const diff = workshop.date.getTime() - now.getTime();
