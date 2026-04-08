@@ -20,10 +20,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const articleUrl = `/news/${article.slug}`;
   const publishedTime = article.date.toISOString();
+  const articleKeywords = [
+    "AI with Michal",
+    "AI news",
+    "AI workshop",
+    "AI productivity",
+    ...article.title
+      .split(" ")
+      .map((word) => word.toLowerCase().replace(/[^a-z0-9]/g, ""))
+      .filter((word) => word.length > 3),
+  ];
 
   return {
     title: `${article.title} — AI with Michal`,
     description: article.subheadline,
+    keywords: articleKeywords,
     alternates: {
       canonical: articleUrl,
     },
@@ -35,6 +46,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: article.title,
       description: article.subheadline,
       url: articleUrl,
+      siteName: "AI with Michal",
       type: "article",
       publishedTime,
       authors: [article.author],
@@ -72,9 +84,40 @@ export default async function ArticlePage({ params }: Props) {
   if (!article) notFound();
 
   const ArticleBody = ARTICLE_COMPONENTS[slug];
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://aiwithmichal.com";
+  const canonicalUrl = `${appUrl.replace(/\/$/, "")}/news/${article.slug}`;
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.subheadline,
+    image: [`${appUrl.replace(/\/$/, "")}${article.thumbnail}`],
+    datePublished: article.date.toISOString(),
+    dateModified: article.date.toISOString(),
+    author: {
+      "@type": "Person",
+      name: article.author,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "AI with Michal",
+      logo: {
+        "@type": "ImageObject",
+        url: `${appUrl.replace(/\/$/, "")}/Michal-Juhas-headshot-square-v1.jpg`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": canonicalUrl,
+    },
+  };
 
   return (
     <main className="min-h-screen bg-white">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       {/* Thumbnail */}
       <div className="w-full max-w-[700px] mx-auto px-4 sm:px-6 pt-10">
         <div className="w-full bg-slate-100 rounded-2xl overflow-hidden">

@@ -5,6 +5,13 @@ export const metadata: Metadata = {
   title: "News | AI with Michal",
   description:
     "Latest updates from AI with Michal: practical AI workflows, workshop insights, tools, and implementation playbooks.",
+  keywords: [
+    "AI news",
+    "AI workshops",
+    "AI tools",
+    "recruiting automation",
+    "AI with Michal",
+  ],
   alternates: {
     canonical: "/news",
   },
