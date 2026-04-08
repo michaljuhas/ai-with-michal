@@ -16,7 +16,6 @@ import {
   Video,
   Map,
 } from "lucide-react";
-import { CURRENT_WORKSHOP_SLUG } from "@/lib/workshops";
 import { WORKSHOP } from "@/lib/workshop";
 import WorkTogetherSection from "@/components/work-together/WorkTogetherSection";
 
@@ -32,32 +31,32 @@ const stats = [
 const pillars = [
   {
     icon: Calendar,
-    title: "AI Workshops",
+    title: "Online Workshops",
     description:
       "Bi-weekly live workshops where you learn practical AI workflows — not theory. Each session is hands-on with real tools and real use cases. Open to anyone.",
     highlight: `Next: ${WORKSHOP.displayDate}`,
-    href: `/workshops/${CURRENT_WORKSHOP_SLUG}`,
-    cta: "See upcoming workshop",
+    href: `/workshops`,
+    cta: "See upcoming workshops",
     color: "blue",
   },
   {
     icon: Sparkles,
-    title: "AI Mentoring",
+    title: "Personal Mentoring",
     description:
       "1-on-1 and group mentoring for solopreneurs and founders who want to accelerate their AI adoption. Join our inner circle with dedicated sessions and direct access to Michal and the team.",
     highlight: "VIP inner circle",
-    href: "/ai-mentoring",
-    cta: "Learn about mentoring",
+    href: "/individual-ai-mentoring",
+    cta: "Individual mentoring",
     color: "violet",
   },
   {
     icon: Building2,
-    title: "For Teams",
+    title: "Consulting",
     description:
       "Custom AI training and implementation services for companies. From half-day workshops to full integration projects — delivered by Michal and his colleagues.",
     highlight: "Training & implementation",
-    href: "/for-teams",
-    cta: "Explore team options",
+    href: "/work-together",
+    cta: "Explore options",
     color: "emerald",
   },
 ];
@@ -121,17 +120,17 @@ export default function HomePage() {
             className="mt-10 flex flex-wrap gap-4"
           >
             <Link
-              href={`/workshops/${CURRENT_WORKSHOP_SLUG}`}
+              href="/workshops"
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3.5 rounded-xl transition-colors group shadow-lg shadow-blue-600/20"
             >
-              See upcoming workshop
+              Join upcoming workshops
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
-              href="/individual-ai-mentoring"
+              href="/work-together"
               className="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-semibold px-6 py-3.5 rounded-xl transition-colors"
             >
-              Explore mentoring
+              Start working together
             </Link>
           </motion.div>
         </div>
