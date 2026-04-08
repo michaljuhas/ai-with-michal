@@ -20,9 +20,6 @@ export type WorkTogetherService = {
   detailSlug?: string;
 };
 
-const LEVELLING_PRIVATE_WORKSHOP_DESCRIPTION =
-  "Highly customized workshop with your management team. A session includes prep, a 2-hour video call, a roadmap, and follow-up.";
-
 /** Ordered list for the dedicated /work-together menu (excludes custom-scope contact-only rows). */
 export const WORK_TOGETHER_NAV_MENU_SERVICE_IDS: readonly string[] = [
   "bi-weekly-individual-mentoring",
@@ -85,7 +82,8 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
   {
     id: "levelling-ai-recruiting",
     title: "Levelling AI adoption in Recruiting Teams (private workshop)",
-    description: LEVELLING_PRIVATE_WORKSHOP_DESCRIPTION,
+    description: 
+      "Highly customized workshop with your recruiting team. A session includes Michal's preparation, a 2-hour video call, roadmap, and followup.",
     priceLabel: "€1,500/session",
     ctaKind: "private_workshop",
     detailSlug: "levelling-ai-adoption-recruiting-teams",
@@ -93,7 +91,8 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
   {
     id: "levelling-ai-gtm",
     title: "Levelling AI adoption in GTM Teams (private workshop)",
-    description: LEVELLING_PRIVATE_WORKSHOP_DESCRIPTION,
+    description: 
+      "Highly customized workshop with your GTM team. A session includes Michal's preparation, a 2-hour video call, roadmap, and followup.",
     priceLabel: "€1,500/session",
     ctaKind: "private_workshop",
     detailSlug: "levelling-ai-adoption-gtm-teams",
@@ -101,7 +100,8 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
   {
     id: "levelling-ai-operations",
     title: "Levelling AI adoption in Operations Teams (private workshop)",
-    description: LEVELLING_PRIVATE_WORKSHOP_DESCRIPTION,
+    description: 
+      "Highly customized workshop with your operations team. A session includes Michal's preparation, a 2-hour video call, roadmap, and followup.",
     priceLabel: "€1,500/session",
     ctaKind: "private_workshop",
     detailSlug: "levelling-ai-adoption-operations-teams",
@@ -110,7 +110,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
     id: "advisory-board-member",
     title: "Advisory Board Member",
     description:
-      "I join your select management meetings and dedicate one day per month to helping your business become AI-native.",
+      "I join your select management meetings and dedicate one day per month to helping your business become AI-native.\n\nWe'll work on mid-term projects to help your organization not only to increase AI adoption, but also to implement innovative projects.",
     priceLabel: "€2,500/month",
     ctaKind: "contact",
   },
@@ -118,7 +118,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
     id: "implementation-part-time",
     title: "Hands on Implementation 1+1 – Part-time Package",
     description:
-      "Tell me what needs to get done and my colleague and I will take care of it. I am paired with an AI-native agentic engineer who gets stuff done for you.",
+      "Tell me what needs to get done and my colleague and I will take care of it. I am paired with an AI-native agentic engineer who gets stuff done for you.\n\nWe'll work on projects with immediate ROI approx 80 hours per month.",
     priceLabel: "€5,000/month",
     ctaKind: "implementation_landing",
   },
@@ -126,7 +126,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
     id: "implementation-full-time",
     title: "Hands on Implementation 1+1 – Full-time Package",
     description:
-      "Tell me what needs to get done and my colleague and I will take care of it. I am paired with an AI-native agentic engineer who gets stuff done for you.",
+      "Tell me what needs to get done and my colleague and I will take care of it. I am paired with an AI-native agentic engineer who gets stuff done for you.\n\nWe'll work on projects with immediate ROI approx 160 hours per month.",
     priceLabel: "€10,000/month",
     ctaKind: "implementation_landing",
   },
