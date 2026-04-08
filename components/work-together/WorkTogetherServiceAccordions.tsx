@@ -82,7 +82,7 @@ function AccordionItem({ service, isOpen, onToggle }: { service: WorkTogetherSer
     >
       <button
         onClick={onToggle}
-        className="group w-full flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 md:p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset"
+        className="group w-full flex items-center justify-between gap-4 p-5 md:p-6 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-inset"
       >
         <div className="flex items-center gap-4 min-w-0 flex-1">
           <div className={`flex-shrink-0 w-10 h-10 rounded-xl border flex items-center justify-center ${getServiceIconBg(service.ctaKind)}`}>
@@ -98,7 +98,7 @@ function AccordionItem({ service, isOpen, onToggle }: { service: WorkTogetherSer
           </div>
         </div>
         
-        <div className="flex items-center justify-between sm:justify-end gap-6 sm:pl-4">
+        <div className="flex items-center justify-end gap-6 sm:pl-4">
           <p className="text-sm md:text-base font-bold text-slate-900 whitespace-nowrap hidden sm:block">
             {service.priceLabel}
           </p>
