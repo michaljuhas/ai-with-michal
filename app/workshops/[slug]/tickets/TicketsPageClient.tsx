@@ -57,13 +57,9 @@ export default function TicketsPageClient({
   const params = useParams<{ slug: string }>();
   const ticketsPath = `/workshops/${params.slug}/tickets`;
   const [loading, setLoading] = useState<PriceTier | null>(null);
-  const [soldCount, setSoldCount] = useState<number | null>(initialSoldCount);
   const [error, setError] = useState<string | null>(null);
   const { user } = useUser();
-
-  useEffect(() => {
-    setSoldCount(initialSoldCount);
-  }, [params.slug, initialSoldCount]);
+  const soldCount = initialSoldCount;
 
   useEffect(() => {
     posthog.capture("ticket_tier_viewed", {
@@ -103,9 +99,10 @@ export default function TicketsPageClient({
 
   const workshop = getPublicWorkshopBySlug(params.slug);
   const isRegistrationOpen = workshop ? new Date() < workshop.date : false;
-  const spotsLeft = soldCount !== null ? CAPACITY - soldCount : null;
-  const isSoldOut = !isRegistrationOpen || (spotsLeft !== null && spotsLeft <= 0);
-  const showUrgency = isRegistrationOpen && spotsLeft !== null && spotsLeft > 0 && spotsLeft <= URGENCY_THRESHOLD;
+  const spotsLeft = CAPACITY - soldCount;
+  const isSoldOut = !isRegistrationOpen || spotsLeft <= 0;
+  const showUrgency =
+    isRegistrationOpen && spotsLeft > 0 && spotsLeft <= URGENCY_THRESHOLD;
 
   async function handleCheckout(tier: PriceTier) {
     if (!user) {
@@ -206,7 +203,7 @@ export default function TicketsPageClient({
               Only {spotsLeft} spots left
             </motion.div>
           )}
-          {soldCount !== null && soldCount >= 10 && !isSoldOut && !showUrgency && (
+          {soldCount >= 10 && !isSoldOut && !showUrgency && (
             <motion.p
               className="mt-4 text-slate-400 text-sm"
               initial={{ opacity: 0 }}

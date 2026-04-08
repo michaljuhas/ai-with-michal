@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { CheckCircle, Star, Calendar, Users, ExternalLink } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 import RegisterButton from "@/components/RegisterButton";
-import { useEffect, useState } from "react";
 
 const plans = [
   {
@@ -49,13 +48,8 @@ export default function PricingSection({
   /** Server-provided paid order count (same-origin SSR; /api/count is admin-only). */
   initialSoldCount?: number;
 } = {}) {
-  const [soldCount, setSoldCount] = useState<number | null>(
-    typeof initialSoldCount === "number" ? initialSoldCount : null
-  );
-
-  useEffect(() => {
-    if (typeof initialSoldCount === "number") setSoldCount(initialSoldCount);
-  }, [initialSoldCount]);
+  const soldCount =
+    typeof initialSoldCount === "number" ? initialSoldCount : null;
 
   return (
     <section id="pricing" className="scroll-mt-32 pt-12 pb-24 px-6 bg-white">
