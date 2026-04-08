@@ -1,5 +1,8 @@
 import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
+import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
+import { getWorkshopBySlug } from "@/lib/workshops";
 import type { NextRequest } from "next/server";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/jpg", "image/png"];
@@ -17,6 +20,26 @@ export async function POST(request: NextRequest) {
     formData = await request.formData();
   } catch {
     return Response.json({ error: "Invalid form data" }, { status: 400 });
+  }
+
+  const workshopSlugRaw = formData.get("workshop_slug");
+  const workshopSlug =
+    typeof workshopSlugRaw === "string" ? workshopSlugRaw.trim() : "";
+  if (!workshopSlug) {
+    return Response.json({ error: "workshop_slug is required" }, { status: 400 });
+  }
+
+  const workshop = getWorkshopBySlug(workshopSlug);
+  if (!workshop) {
+    return Response.json({ error: "Workshop not found" }, { status: 404 });
+  }
+
+  const supabase = createServiceClient();
+  if (!isAdminUser(userId)) {
+    const allowed = await userHasProWorkshopOrder(supabase, userId, workshopSlug);
+    if (!allowed) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
   }
 
   const file = formData.get("file");
@@ -45,7 +68,6 @@ export async function POST(request: NextRequest) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = new Uint8Array(arrayBuffer);
 
-  const supabase = createServiceClient();
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
     .upload(path, buffer, {

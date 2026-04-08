@@ -8,6 +8,8 @@ import {
 } from "@/lib/stripe";
 import { captureEvent } from "@/lib/posthog-server";
 import { sendMetaEvent } from "@/lib/meta-capi";
+import { getClientIp } from "@/lib/client-ip";
+import { safeCheckoutCancelPath } from "@/lib/safe-cancel-path";
 
 const INVOICE_DESCRIPTIONS: Record<MentoringTier, string> = {
   group:
@@ -54,6 +56,8 @@ export async function POST(req: NextRequest) {
       { clerk_user_id: userId },
     );
 
+    const cancelPath = safeCheckoutCancelPath(cancelUrl, "/ai-mentoring/join");
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       currency: "eur",
@@ -84,7 +88,7 @@ export async function POST(req: NextRequest) {
         description: INVOICE_DESCRIPTIONS[tier],
       },
       success_url: `${appUrl}/ai-mentoring/thank-you?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${appUrl}${cancelUrl || "/ai-mentoring/join"}`,
+      cancel_url: `${appUrl}${cancelPath}`,
       billing_address_collection: "required",
       tax_id_collection: { enabled: true },
       custom_fields: [
@@ -111,17 +115,12 @@ export async function POST(req: NextRequest) {
       ...(ref ? { ref } : {}),
     });
 
-    const clientIp =
-      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-      req.headers.get("x-real-ip") ??
-      undefined;
-
     sendMetaEvent({
       event_name: "InitiateCheckout",
       event_source_url: `${appUrl}/ai-mentoring/join`,
       user_data: {
         client_user_agent: req.headers.get("user-agent") ?? undefined,
-        client_ip_address: clientIp,
+        client_ip_address: getClientIp(req),
       },
     });
 

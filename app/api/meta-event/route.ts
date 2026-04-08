@@ -1,22 +1,42 @@
 import { NextRequest, NextResponse } from "next/server";
 import { sendMetaEvent } from "@/lib/meta-capi";
+import { getClientIp } from "@/lib/client-ip";
+import {
+  isAllowedMetaClientEventName,
+  isAllowedMetaEventSourceUrl,
+} from "@/lib/meta-event-server";
+
+const MAX_BODY_BYTES = 12_000;
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const { event_name, event_source_url, event_id } = body as {
-    event_name: string;
-    event_source_url: string;
-    event_id?: string;
-  };
-
-  if (!event_name || !event_source_url) {
-    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  const contentLength = req.headers.get("content-length");
+  if (contentLength && parseInt(contentLength, 10) > MAX_BODY_BYTES) {
+    return NextResponse.json({ error: "Payload too large" }, { status: 413 });
   }
 
-  const clientIp =
-    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-    req.headers.get("x-real-ip") ??
-    undefined;
+  let body: Record<string, unknown>;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
+  }
+
+  const event_name = body.event_name;
+  const event_source_url = body.event_source_url;
+  const event_id =
+    typeof body.event_id === "string" ? body.event_id : undefined;
+
+  if (
+    !isAllowedMetaClientEventName(event_name) ||
+    typeof event_source_url !== "string" ||
+    !event_source_url
+  ) {
+    return NextResponse.json({ error: "Missing or invalid fields" }, { status: 400 });
+  }
+
+  if (!isAllowedMetaEventSourceUrl(event_source_url)) {
+    return NextResponse.json({ error: "Invalid event_source_url" }, { status: 400 });
+  }
 
   await sendMetaEvent({
     event_name,
@@ -24,9 +44,9 @@ export async function POST(req: NextRequest) {
     event_id,
     user_data: {
       client_user_agent: req.headers.get("user-agent") ?? undefined,
-      client_ip_address: clientIp,
-      fbc: body.fbc ?? undefined,
-      fbp: body.fbp ?? undefined,
+      client_ip_address: getClientIp(req),
+      fbc: typeof body.fbc === "string" ? body.fbc : undefined,
+      fbp: typeof body.fbp === "string" ? body.fbp : undefined,
     },
   });
 

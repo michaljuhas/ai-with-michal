@@ -11,11 +11,8 @@ test.describe("smoke", () => {
     expect(res?.ok()).toBe(true);
   });
 
-  test("GET /api/count returns JSON with count", async ({ request }) => {
+  test("GET /api/count is forbidden without admin session", async ({ request }) => {
     const res = await request.get("/api/count");
-    expect(res.ok()).toBe(true);
-    const body = await res.json();
-    expect(body).toHaveProperty("count");
-    expect(typeof body.count).toBe("number");
+    expect(res.status()).toBe(403);
   });
 });

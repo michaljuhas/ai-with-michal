@@ -6,6 +6,8 @@ import { getPublicWorkshopBySlug } from "@/lib/workshops";
 import { createServiceClient } from "@/lib/supabase";
 import { captureEvent } from "@/lib/posthog-server";
 import { sendMetaEvent } from "@/lib/meta-capi";
+import { getClientIp } from "@/lib/client-ip";
+import { safeCheckoutCancelPath } from "@/lib/safe-cancel-path";
 
 const CAPACITY = parseInt(
   process.env.WORKSHOP_CAPACITY || process.env.NEXT_PUBLIC_WORKSHOP_CAPACITY || "20",
@@ -65,6 +67,8 @@ export async function POST(req: NextRequest) {
       { clerk_user_id: userId },
     );
 
+    const cancelPath = safeCheckoutCancelPath(cancelUrl, "/tickets");
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
       currency: "eur",
@@ -88,7 +92,7 @@ export async function POST(req: NextRequest) {
         price_id: priceId,
       },
       success_url: `${appUrl}/thank-you?session_id={CHECKOUT_SESSION_ID}&workshop_slug=${encodeURIComponent(workshopSlug!)}`,
-      cancel_url: `${appUrl}${cancelUrl || "/tickets"}`,
+      cancel_url: `${appUrl}${cancelPath}`,
       billing_address_collection: "required",
       tax_id_collection: { enabled: true },
       custom_fields: [
@@ -125,17 +129,12 @@ export async function POST(req: NextRequest) {
       ...(ref ? { ref } : {}),
     });
 
-    const clientIp =
-      req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
-      req.headers.get("x-real-ip") ??
-      undefined;
-
     sendMetaEvent({
       event_name: "InitiateCheckout",
-      event_source_url: `${appUrl}${cancelUrl || "/tickets"}`,
+      event_source_url: `${appUrl}${cancelPath}`,
       user_data: {
         client_user_agent: req.headers.get("user-agent") ?? undefined,
-        client_ip_address: clientIp,
+        client_ip_address: getClientIp(req),
       },
     });
 

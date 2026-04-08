@@ -1,6 +1,8 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
+import { getWorkshopBySlug } from "@/lib/workshops";
 import type { NextRequest } from "next/server";
 
 export async function POST(
@@ -12,7 +14,20 @@ export async function POST(
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { postId } = await params;
+  const { postId, workshopSlug } = await params;
+
+  const workshop = getWorkshopBySlug(workshopSlug);
+  if (!workshop) {
+    return Response.json({ error: "Workshop not found" }, { status: 404 });
+  }
+
+  const supabase = createServiceClient();
+  if (!isAdminUser(userId)) {
+    const allowed = await userHasProWorkshopOrder(supabase, userId, workshopSlug);
+    if (!allowed) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
 
   let body: { body?: string };
   try {
@@ -34,13 +49,12 @@ export async function POST(
     : null;
   const isAdmin = isAdminUser(userId);
 
-  const supabase = createServiceClient();
-
-  // Verify the post exists
+  // Verify the post exists in this workshop
   const { data: post, error: postError } = await supabase
     .from("workgroup_posts")
     .select("id")
     .eq("id", postId)
+    .eq("workshop_slug", workshopSlug)
     .single();
 
   if (postError || !post) {

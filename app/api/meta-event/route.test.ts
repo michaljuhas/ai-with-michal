@@ -8,12 +8,15 @@ vi.mock("@/lib/meta-capi", () => ({
 }));
 
 describe("POST /api/meta-event", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://aiwithmichal.com");
+  });
 
   it("returns 400 when event_name missing", async () => {
     const req = new NextRequest("http://localhost/api/meta-event", {
       method: "POST",
-      body: JSON.stringify({ event_source_url: "https://x.com" }),
+      body: JSON.stringify({ event_source_url: "https://aiwithmichal.com/tickets" }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
@@ -23,10 +26,36 @@ describe("POST /api/meta-event", () => {
   it("returns 400 when event_source_url missing", async () => {
     const req = new NextRequest("http://localhost/api/meta-event", {
       method: "POST",
-      body: JSON.stringify({ event_name: "PageView" }),
+      body: JSON.stringify({ event_name: "ViewContent" }),
     });
     const res = await POST(req);
     expect(res.status).toBe(400);
+  });
+
+  it("returns 400 when event_name not allowlisted", async () => {
+    const req = new NextRequest("http://localhost/api/meta-event", {
+      method: "POST",
+      body: JSON.stringify({
+        event_name: "PageView",
+        event_source_url: "https://aiwithmichal.com/tickets",
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    expect(sendMetaEvent).not.toHaveBeenCalled();
+  });
+
+  it("returns 400 when event_source_url host does not match app", async () => {
+    const req = new NextRequest("http://localhost/api/meta-event", {
+      method: "POST",
+      body: JSON.stringify({
+        event_name: "ViewContent",
+        event_source_url: "https://evil.com/phish",
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+    expect(sendMetaEvent).not.toHaveBeenCalled();
   });
 
   it("calls sendMetaEvent and returns ok", async () => {
@@ -60,5 +89,17 @@ describe("POST /api/meta-event", () => {
         }),
       })
     );
+  });
+
+  it("allows www variant when app url uses apex host", async () => {
+    const req = new NextRequest("http://localhost/api/meta-event", {
+      method: "POST",
+      body: JSON.stringify({
+        event_name: "AddToCart",
+        event_source_url: "https://www.aiwithmichal.com/workshops/x/tickets",
+      }),
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
   });
 });

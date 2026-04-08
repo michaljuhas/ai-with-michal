@@ -2,12 +2,29 @@ import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { isAdminUser } from "@/lib/config";
+import { userHasPaidWorkshopOrder } from "@/lib/workshop-access";
+import { getWorkshopBySlug } from "@/lib/workshops";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
 export async function GET(_req: NextRequest, { params }: RouteContext) {
+  const { userId } = await auth();
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { slug } = await params;
+  if (!getWorkshopBySlug(slug)) {
+    return NextResponse.json({ error: "Workshop not found" }, { status: 404 });
+  }
+
   const supabase = createServiceClient();
+  if (!isAdminUser(userId)) {
+    const paid = await userHasPaidWorkshopOrder(supabase, userId, slug);
+    if (!paid) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
 
   const { data, error } = await supabase
     .from("workshop_session_notes")

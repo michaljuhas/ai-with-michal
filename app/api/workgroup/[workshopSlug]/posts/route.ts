@@ -3,12 +3,19 @@ import { createServiceClient } from "@/lib/supabase";
 import type { WorkgroupPost, WorkgroupReply, WorkgroupPostWithReplies } from "@/lib/supabase";
 import { getWorkshopBySlug } from "@/lib/workshops";
 import { sendWorkgroupBroadcast } from "@/lib/email";
+import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
 import type { NextRequest } from "next/server";
 
 export async function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ workshopSlug: string }> }
 ) {
+  const { userId } = await auth();
+  if (!userId) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   const { workshopSlug } = await params;
 
   const workshop = getWorkshopBySlug(workshopSlug);
@@ -17,23 +24,44 @@ export async function GET(
   }
 
   const supabase = createServiceClient();
+  if (!isAdminUser(userId)) {
+    const allowed = await userHasProWorkshopOrder(supabase, userId, workshopSlug);
+    if (!allowed) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
 
-  const [{ data: posts, error: postsError }, { data: replies, error: repliesError }] =
-    await Promise.all([
-      supabase
-        .from("workgroup_posts")
-        .select("*")
-        .eq("workshop_slug", workshopSlug)
-        .order("created_at", { ascending: false }),
-      supabase.from("workgroup_replies").select("*").order("created_at", { ascending: true }),
-    ]);
+  const { data: posts, error: postsError } = await supabase
+    .from("workgroup_posts")
+    .select("*")
+    .eq("workshop_slug", workshopSlug)
+    .order("created_at", { ascending: false });
 
-  if (postsError || repliesError) {
+  if (postsError) {
+    return Response.json({ error: "Failed to fetch posts" }, { status: 500 });
+  }
+
+  const allPosts = (posts as WorkgroupPost[]) ?? [];
+  const postIds = allPosts.map((p) => p.id);
+
+  let replies: WorkgroupReply[] = [];
+  let repliesError = null as null | { message?: string };
+
+  if (postIds.length > 0) {
+    const r = await supabase
+      .from("workgroup_replies")
+      .select("*")
+      .in("post_id", postIds)
+      .order("created_at", { ascending: true });
+    replies = (r.data as WorkgroupReply[] | null) ?? [];
+    repliesError = r.error;
+  }
+
+  if (repliesError) {
     return Response.json({ error: "Failed to fetch posts" }, { status: 500 });
   }
 
   // Collect all unique clerk_user_ids across posts + replies to batch-fetch avatars
-  const allPosts = (posts as WorkgroupPost[]) ?? [];
   const allReplies = (replies as WorkgroupReply[]) ?? [];
   const userIds = [
     ...new Set([
@@ -93,6 +121,14 @@ export async function POST(
     return Response.json({ error: "Workshop not found" }, { status: 404 });
   }
 
+  const supabase = createServiceClient();
+  if (!isAdminUser(userId)) {
+    const allowed = await userHasProWorkshopOrder(supabase, userId, workshopSlug);
+    if (!allowed) {
+      return Response.json({ error: "Forbidden" }, { status: 403 });
+    }
+  }
+
   const user = await currentUser();
   const authorEmail = user?.primaryEmailAddress?.emailAddress ?? "";
   const authorName = user?.firstName
@@ -112,7 +148,6 @@ export async function POST(
     return Response.json({ error: "Headline and body are required" }, { status: 400 });
   }
 
-  const supabase = createServiceClient();
   const { data, error } = await supabase
     .from("workgroup_posts")
     .insert({
@@ -131,9 +166,9 @@ export async function POST(
     return Response.json({ error: "Failed to create post" }, { status: 500 });
   }
 
-  // Optional email broadcast to all workshop attendees
+  // Optional email broadcast to all workshop attendees (admin-only — UI also hides the toggle)
   let broadcastResult: { sent?: number; error?: string } = {};
-  if (broadcast === true) {
+  if (broadcast === true && isAdminUser(userId)) {
     try {
       // Fetch all paid orders for this workshop
       const { data: orders } = await supabase

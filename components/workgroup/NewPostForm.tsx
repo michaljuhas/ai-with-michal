@@ -157,6 +157,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
       try {
         const formData = new FormData();
         formData.append("file", imageFile);
+        formData.append("workshop_slug", workshopSlug);
         const uploadRes = await fetch("/api/workgroup/upload-image", {
           method: "POST",
           body: formData,

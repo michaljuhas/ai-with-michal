@@ -19,16 +19,28 @@ vi.mock("@/lib/email", () => ({
   sendWorkgroupBroadcast: vi.fn(async () => ({ sent: 2 })),
 }));
 
+vi.mock("@/lib/config", () => ({
+  isAdminUser: vi.fn(),
+}));
+
+vi.mock("@/lib/workshop-access", () => ({
+  userHasProWorkshopOrder: vi.fn(),
+}));
+
+import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
+
 const workshopSlug = "2026-04-23-sourcing-automation";
 
 describe("GET /api/workgroup/[workshopSlug]/posts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(auth).mockResolvedValue({ userId: "u_test" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(false);
+    vi.mocked(userHasProWorkshopOrder).mockResolvedValue(true);
   });
 
   it("returns 404 for unknown workshop", async () => {
-    vi.mocked(createServiceClient).mockReturnValue({} as never);
-
     const req = new NextRequest(`http://localhost/api/workgroup/bad-slug/posts`);
     const res = await GET(req, { params: Promise.resolve({ workshopSlug: "no-such-workshop" }) });
     expect(res.status).toBe(404);
@@ -74,9 +86,11 @@ describe("GET /api/workgroup/[workshopSlug]/posts", () => {
         if (table === "workgroup_replies") {
           return {
             select: vi.fn(() => ({
-              order: vi.fn(async () => ({
-                data: [replyRow],
-                error: null,
+              in: vi.fn(() => ({
+                order: vi.fn(async () => ({
+                  data: [replyRow],
+                  error: null,
+                })),
               })),
             })),
           };
@@ -110,6 +124,8 @@ describe("GET /api/workgroup/[workshopSlug]/posts", () => {
 describe("POST /api/workgroup/[workshopSlug]/posts", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(isAdminUser).mockReturnValue(false);
+    vi.mocked(userHasProWorkshopOrder).mockResolvedValue(true);
   });
 
   it("returns 401 when not signed in", async () => {
@@ -195,6 +211,7 @@ describe("POST /api/workgroup/[workshopSlug]/posts", () => {
   });
 
   it("calls sendWorkgroupBroadcast when broadcast true", async () => {
+    vi.mocked(isAdminUser).mockReturnValue(true);
     vi.mocked(auth).mockResolvedValue({ userId: "u1" } as never);
     vi.mocked(currentUser).mockResolvedValue({
       primaryEmailAddress: { emailAddress: "u@x.com" },

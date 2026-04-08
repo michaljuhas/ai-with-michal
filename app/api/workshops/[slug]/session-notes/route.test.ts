@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import { isAdminUser } from "@/lib/config";
+import { userHasPaidWorkshopOrder } from "@/lib/workshop-access";
 import { GET, PATCH } from "./route";
 
 vi.mock("@clerk/nextjs/server", () => ({
@@ -17,32 +18,62 @@ vi.mock("@/lib/config", () => ({
   isAdminUser: vi.fn(),
 }));
 
+vi.mock("@/lib/workshop-access", () => ({
+  userHasPaidWorkshopOrder: vi.fn(),
+}));
+
+vi.mock("@/lib/workshops", () => ({
+  getWorkshopBySlug: vi.fn((slug: string) => (slug ? { slug } : null)),
+}));
+
 describe("GET /api/workshops/[slug]/session-notes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
+  it("returns 401 when not signed in", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: null } as never);
+
+    const req = new NextRequest("http://localhost/api/workshops/x/session-notes");
+    const res = await GET(req, { params: Promise.resolve({ slug: "2026-04-23-sourcing-automation" }) });
+    expect(res.status).toBe(401);
+  });
+
   it("returns empty content when no row", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "u1" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(false);
+    vi.mocked(userHasPaidWorkshopOrder).mockResolvedValue(true);
+
     vi.mocked(createServiceClient).mockReturnValue({
-      from: vi.fn(() => ({
-        select: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            maybeSingle: vi.fn(async () => ({
-              data: null,
-              error: null,
+      from: vi.fn((table: string) => {
+        if (table === "workshop_session_notes") {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({
+                maybeSingle: vi.fn(async () => ({
+                  data: null,
+                  error: null,
+                })),
+              })),
             })),
-          })),
-        })),
-      })),
+          };
+        }
+        return {};
+      }),
     } as never);
 
     const req = new NextRequest("http://localhost/api/workshops/w/session-notes");
-    const res = await GET(req, { params: Promise.resolve({ slug: "2026-04-23-sourcing-automation" }) });
+    const res = await GET(req, {
+      params: Promise.resolve({ slug: "2026-04-23-sourcing-automation" }),
+    });
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ content: "", updated_at: null });
   });
 
   it("returns stored content", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "u1" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(true);
+
     vi.mocked(createServiceClient).mockReturnValue({
       from: vi.fn(() => ({
         select: vi.fn(() => ({
@@ -64,6 +95,9 @@ describe("GET /api/workshops/[slug]/session-notes", () => {
   });
 
   it("returns 500 on database error", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "u1" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(true);
+
     vi.mocked(createServiceClient).mockReturnValue({
       from: vi.fn(() => ({
         select: vi.fn(() => ({

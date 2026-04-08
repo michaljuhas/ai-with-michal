@@ -1,10 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
+import { isAdminUser } from "@/lib/config";
 
-// Cached for 60s — public endpoint, no auth needed
+// Cached for 60s — admin-only (order totals are sensitive)
 export const revalidate = 60;
 
 export async function GET(req: NextRequest) {
+  const { userId } = await auth();
+  if (!isAdminUser(userId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+
   try {
     const slug = req.nextUrl.searchParams.get("slug");
     const supabase = createServiceClient();

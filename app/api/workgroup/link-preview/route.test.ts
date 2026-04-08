@@ -7,6 +7,10 @@ vi.mock("@clerk/nextjs/server", () => ({
   auth: vi.fn(),
 }));
 
+vi.mock("@/lib/public-fetch-url", () => ({
+  assertUrlSafeForServerFetch: vi.fn().mockResolvedValue(undefined),
+}));
+
 describe("GET /api/workgroup/link-preview", () => {
   const originalFetch = globalThis.fetch;
 

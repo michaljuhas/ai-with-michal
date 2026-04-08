@@ -4,6 +4,7 @@ import {
   extractPreviewImage,
   PREVIEW_EXTRACTOR_STRATEGY_COUNT,
 } from "@/lib/link-preview";
+import { assertUrlSafeForServerFetch } from "@/lib/public-fetch-url";
 
 export async function GET(request: NextRequest) {
   const { userId } = await auth();
@@ -24,6 +25,12 @@ export async function GET(request: NextRequest) {
   }
 
   if (parsed.protocol !== "http:" && parsed.protocol !== "https:") {
+    return Response.json({ imageUrl: null });
+  }
+
+  try {
+    await assertUrlSafeForServerFetch(parsed);
+  } catch {
     return Response.json({ imageUrl: null });
   }
 

@@ -37,11 +37,16 @@ export default function WorkshopAddToCalendar({
 
   useEffect(() => {
     if (!fetchMeetingUrl) return;
-    fetch("/api/meeting-url")
-      .then((r) => r.json())
-      .then((d) => setInternalMeetingUrl(d.url ?? null))
+    if (!workshopSlug?.trim()) return;
+    const q = `?workshopSlug=${encodeURIComponent(workshopSlug.trim())}`;
+    fetch(`/api/meeting-url${q}`)
+      .then((r) => {
+        if (!r.ok) return null;
+        return r.json();
+      })
+      .then((d) => setInternalMeetingUrl(d?.url ?? null))
       .catch(() => {});
-  }, [fetchMeetingUrl]);
+  }, [fetchMeetingUrl, workshopSlug]);
 
   const meetingUrl = fetchMeetingUrl ? internalMeetingUrl : sharedMeetingUrl;
   const location = meetingUrl ?? event.location;

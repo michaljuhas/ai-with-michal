@@ -72,11 +72,19 @@ function ThankYouContent() {
   const [meetingUrl, setMeetingUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch("/api/meeting-url")
-      .then((r) => r.json())
-      .then((d) => setMeetingUrl(d.url ?? null))
+    const slug = publicWorkshop.slug;
+    const stripeQ =
+      sessionId && sessionId.length > 0
+        ? `&session_id=${encodeURIComponent(sessionId)}`
+        : "";
+    fetch(`/api/meeting-url?workshopSlug=${encodeURIComponent(slug)}${stripeQ}`)
+      .then((r) => {
+        if (!r.ok) return null;
+        return r.json();
+      })
+      .then((d) => setMeetingUrl(d?.url ?? null))
       .catch(() => {});
-  }, []);
+  }, [publicWorkshop.slug, sessionId]);
 
   useEffect(() => {
     // Client-side payment tracking: fires when the user lands on this page.

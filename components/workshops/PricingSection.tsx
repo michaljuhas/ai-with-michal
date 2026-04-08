@@ -39,24 +39,23 @@ export default function PricingSection({
   displayTime,
   workshopSlug,
   timezoneConverterUrl,
+  initialSoldCount,
 }: {
   open?: boolean;
   displayDate?: string;
   displayTime?: string;
   workshopSlug?: string;
   timezoneConverterUrl?: string;
+  /** Server-provided paid order count (same-origin SSR; /api/count is admin-only). */
+  initialSoldCount?: number;
 } = {}) {
-  const [soldCount, setSoldCount] = useState<number | null>(null);
+  const [soldCount, setSoldCount] = useState<number | null>(
+    typeof initialSoldCount === "number" ? initialSoldCount : null
+  );
 
   useEffect(() => {
-    const url = workshopSlug
-      ? `/api/count?slug=${encodeURIComponent(workshopSlug)}`
-      : "/api/count";
-    fetch(url)
-      .then((r) => r.json())
-      .then((d) => setSoldCount(d.count ?? null))
-      .catch(() => {});
-  }, [workshopSlug]);
+    if (typeof initialSoldCount === "number") setSoldCount(initialSoldCount);
+  }, [initialSoldCount]);
 
   return (
     <section id="pricing" className="scroll-mt-32 pt-12 pb-24 px-6 bg-white">

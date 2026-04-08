@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import TrainingLesson from "@/components/training/TrainingLesson";
@@ -14,6 +14,7 @@ import {
   workshops,
 } from "@/lib/workshops";
 import { isAdminUser } from "@/lib/config";
+import { userHasPaidWorkshopOrder } from "@/lib/workshop-access";
 const SESSION_NOTES_SLUG = ["live-workshop", "session-notes"];
 const JOIN_LESSON_SLUG = ["live-workshop", "join"];
 
@@ -54,6 +55,17 @@ export default async function TrainingModulePage({ params }: TrainingModulePageP
   const workshop = getWorkshopBySlug(slug);
   if (!workshop) notFound();
 
+  const { userId } = await auth();
+  if (!isAdminUser(userId)) {
+    const supabase = createServiceClient();
+    const paid = userId
+      ? await userHasPaidWorkshopOrder(supabase, userId, slug)
+      : false;
+    if (!paid) {
+      redirect(`/members/workshops/${slug}`);
+    }
+  }
+
   const lesson = getWorkshopLessonBySlug(slug, moduleSlug);
   if (!lesson) notFound();
 
@@ -63,7 +75,6 @@ export default async function TrainingModulePage({ params }: TrainingModulePageP
   // Session notes: render live DB-backed editor instead of static MDX
   const isSessionNotes = moduleSlug.join("/") === SESSION_NOTES_SLUG.join("/");
   if (isSessionNotes) {
-    const { userId } = await auth();
     const isAdmin = isAdminUser(userId);
     const supabase = createServiceClient();
     const { data } = await supabase

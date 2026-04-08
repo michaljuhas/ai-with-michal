@@ -3,6 +3,7 @@ import { NextRequest } from "next/server";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
 import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
 import { POST } from "./route";
 
 vi.mock("@clerk/nextjs/server", () => ({
@@ -16,6 +17,14 @@ vi.mock("@/lib/supabase", () => ({
 
 vi.mock("@/lib/config", () => ({
   isAdminUser: vi.fn(),
+}));
+
+vi.mock("@/lib/workshop-access", () => ({
+  userHasProWorkshopOrder: vi.fn(),
+}));
+
+vi.mock("@/lib/workshops", () => ({
+  getWorkshopBySlug: vi.fn(() => ({ slug: "w", title: "Test" })),
 }));
 
 describe("POST .../replies", () => {
@@ -44,6 +53,7 @@ describe("POST .../replies", () => {
       lastName: null,
     } as never);
     vi.mocked(isAdminUser).mockReturnValue(false);
+    vi.mocked(userHasProWorkshopOrder).mockResolvedValue(true);
 
     const req = new NextRequest("http://localhost/api/workgroup/w/posts/p1/replies", {
       method: "POST",
@@ -63,12 +73,15 @@ describe("POST .../replies", () => {
       lastName: null,
     } as never);
     vi.mocked(isAdminUser).mockReturnValue(false);
+    vi.mocked(userHasProWorkshopOrder).mockResolvedValue(true);
 
     vi.mocked(createServiceClient).mockReturnValue({
       from: vi.fn(() => ({
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
-            single: vi.fn(async () => ({ data: null, error: { code: "PGRST116" } })),
+            eq: vi.fn(() => ({
+              single: vi.fn(async () => ({ data: null, error: { code: "PGRST116" } })),
+            })),
           })),
         })),
       })),
@@ -107,7 +120,9 @@ describe("POST .../replies", () => {
           return {
             select: vi.fn(() => ({
               eq: vi.fn(() => ({
-                single: vi.fn(async () => ({ data: { id: "p1" }, error: null })),
+                eq: vi.fn(() => ({
+                  single: vi.fn(async () => ({ data: { id: "p1" }, error: null })),
+                })),
               })),
             })),
           };

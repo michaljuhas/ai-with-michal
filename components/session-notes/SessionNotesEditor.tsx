@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition, useRef, useEffect, useCallback } from "react";
+import { useState, useTransition, useRef, useEffect, useCallback, useMemo } from "react";
 import { marked } from "marked";
+import DOMPurify from "dompurify";
 
 marked.use({
   gfm: true,
@@ -60,7 +61,11 @@ export default function SessionNotesEditor({
   const [saveSuccess, setSaveSuccess] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
-  const html = renderMarkdown(content);
+  const html = useMemo(() => {
+    const raw = renderMarkdown(content);
+    if (!raw) return "";
+    return DOMPurify.sanitize(raw);
+  }, [content]);
 
   // Auto-resize textarea
   const autoResize = useCallback(() => {

@@ -1,10 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/supabase";
+import { isAdminUser } from "@/lib/config";
 import { GET } from "./route";
+
+vi.mock("@clerk/nextjs/server", () => ({
+  auth: vi.fn(),
+}));
 
 vi.mock("@/lib/supabase", () => ({
   createServiceClient: vi.fn(),
+}));
+
+vi.mock("@/lib/config", () => ({
+  isAdminUser: vi.fn(),
 }));
 
 describe("GET /api/count", () => {
@@ -12,7 +22,19 @@ describe("GET /api/count", () => {
     vi.clearAllMocks();
   });
 
-  it("returns count without slug filter", async () => {
+  it("returns 403 when not admin", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "user_normal" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(false);
+
+    const req = new NextRequest("http://localhost/api/count");
+    const res = await GET(req);
+    expect(res.status).toBe(403);
+  });
+
+  it("returns count without slug filter when admin", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "admin" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(true);
+
     vi.mocked(createServiceClient).mockReturnValue({
       from: vi.fn(() => ({
         select: vi.fn(() => ({
@@ -27,7 +49,10 @@ describe("GET /api/count", () => {
     expect(await res.json()).toEqual({ count: 12 });
   });
 
-  it("returns count with workshop slug filter", async () => {
+  it("returns count with workshop slug filter when admin", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "admin" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(true);
+
     const secondEq = vi.fn(async () => ({ count: 3, error: null }));
     const firstEq = vi.fn(() => ({ eq: secondEq }));
 
@@ -53,6 +78,9 @@ describe("GET /api/count", () => {
   });
 
   it("returns count 0 when supabase errors", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "admin" } as never);
+    vi.mocked(isAdminUser).mockReturnValue(true);
+
     vi.mocked(createServiceClient).mockReturnValue({
       from: vi.fn(() => ({
         select: vi.fn(() => ({

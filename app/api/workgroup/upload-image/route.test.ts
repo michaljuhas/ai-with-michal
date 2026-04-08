@@ -12,6 +12,18 @@ vi.mock("@/lib/supabase", () => ({
   createServiceClient: vi.fn(),
 }));
 
+vi.mock("@/lib/workshops", () => ({
+  getWorkshopBySlug: vi.fn(() => ({ slug: "ws-test", title: "T" })),
+}));
+
+vi.mock("@/lib/config", () => ({
+  isAdminUser: vi.fn(() => false),
+}));
+
+vi.mock("@/lib/workshop-access", () => ({
+  userHasProWorkshopOrder: vi.fn().mockResolvedValue(true),
+}));
+
 describe("POST /api/workgroup/upload-image", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,6 +38,7 @@ describe("POST /api/workgroup/upload-image", () => {
     vi.mocked(auth).mockResolvedValue({ userId: null } as never);
 
     const fd = new FormData();
+    fd.set("workshop_slug", "ws-test");
     fd.set("file", new File([new Uint8Array([1])], "x.jpg", { type: "image/jpeg" }));
 
     const req = new NextRequest("http://localhost/api/workgroup/upload-image", {
@@ -36,10 +49,25 @@ describe("POST /api/workgroup/upload-image", () => {
     expect(res.status).toBe(401);
   });
 
+  it("returns 400 when workshop_slug missing", async () => {
+    vi.mocked(auth).mockResolvedValue({ userId: "u1" } as never);
+
+    const fd = new FormData();
+    fd.set("file", new File([new Uint8Array([1])], "x.jpg", { type: "image/jpeg" }));
+
+    const req = new NextRequest("http://localhost/api/workgroup/upload-image", {
+      method: "POST",
+      body: fd,
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(400);
+  });
+
   it("returns 400 for disallowed mime type", async () => {
     vi.mocked(auth).mockResolvedValue({ userId: "u1" } as never);
 
     const fd = new FormData();
+    fd.set("workshop_slug", "ws-test");
     fd.set("file", new File([new Uint8Array([1])], "x.gif", { type: "image/gif" }));
 
     const req = new NextRequest("http://localhost/api/workgroup/upload-image", {
@@ -55,6 +83,7 @@ describe("POST /api/workgroup/upload-image", () => {
 
     const big = new Uint8Array(5 * 1024 * 1024 + 1);
     const fd = new FormData();
+    fd.set("workshop_slug", "ws-test");
     fd.set("file", new File([big], "big.jpg", { type: "image/jpeg" }));
 
     const req = new NextRequest("http://localhost/api/workgroup/upload-image", {
@@ -83,6 +112,7 @@ describe("POST /api/workgroup/upload-image", () => {
     } as never);
 
     const fd = new FormData();
+    fd.set("workshop_slug", "ws-test");
     fd.set("file", new File([new Uint8Array([1, 2, 3])], "x.jpg", { type: "image/jpeg" }));
 
     const req = new NextRequest("http://localhost/api/workgroup/upload-image", {
