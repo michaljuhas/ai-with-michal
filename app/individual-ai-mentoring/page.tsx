@@ -146,7 +146,7 @@ export default function IndividualMentoringPage() {
               Who it&apos;s for
             </span>
             <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
-              For operators who want results
+              For solopreneurs who want results
             </h2>
           </motion.div>
 
@@ -190,18 +190,18 @@ export default function IndividualMentoringPage() {
             {[
               {
                 step: "1",
-                title: "Join",
-                desc: "Pick your plan and complete checkout — we’ll onboard you into the individual track.",
+                title: "Share what you want to achieve",
+                desc: "First, share what you're trying to achieve or automate with AI.",
               },
               {
                 step: "2",
-                title: "Bring your context",
-                desc: "Share what you’re building, where you’re stuck, and what “good” looks like for you.",
+                title: "Pick the right way to connect your tools and AI",
+                desc: "Second, we'll look into it and discuss the most efficient way to connect tools and AI together — specific to your unique situation and the tools you use.",
               },
               {
                 step: "3",
-                title: "Ship with guidance",
-                desc: "On each call we prioritize the highest-leverage AI moves for your business and follow up with clear next steps.",
+                title: "Implement and stay unblocked",
+                desc: "Third, we'll help you implement and fix technical issues, so you're not stuck and blocked because you don't know what those IT buzzwords are.",
               },
             ].map((item, i) => (
               <motion.div
