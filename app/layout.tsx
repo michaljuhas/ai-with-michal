@@ -24,6 +24,8 @@ export const metadata: Metadata = {
     title: "AI with Michal — Workshops, Mentoring & AI Implementation",
     description:
       "Accelerate your AI adoption with live workshops, 1-on-1 mentoring, and implementation services for individuals and teams.",
+    siteName: "AI with Michal",
+    locale: "en_US",
     type: "website",
     images: [
       {

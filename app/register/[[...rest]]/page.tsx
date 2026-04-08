@@ -1,10 +1,15 @@
+import type { Metadata } from "next";
 import { SignUp } from "@clerk/nextjs";
 import { ShieldCheck, Calendar, Clock } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Register | AI in Recruiting and Talent Acquisition",
   description: "Create your free account to reserve your seat for the AI in Recruiting and Talent Acquisition workshop.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default async function RegisterPage({

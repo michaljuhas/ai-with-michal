@@ -25,9 +25,12 @@ export const metadata: Metadata = {
       "Latest updates from AI with Michal: practical AI workflows, workshop insights, tools, and implementation playbooks.",
     url: "/news",
     type: "website",
+    siteName: "AI with Michal",
     images: [
       {
-        url: "/news/candidate-sourcer-skill-thumbnail.jpg",
+        url: "/news/candidate-sourcer-skill-thumbnail.png",
+        width: 1280,
+        height: 720,
         alt: "AI with Michal News",
       },
     ],
@@ -37,7 +40,7 @@ export const metadata: Metadata = {
     title: "News | AI with Michal",
     description:
       "Latest updates from AI with Michal: practical AI workflows, workshop insights, tools, and implementation playbooks.",
-    images: ["/news/candidate-sourcer-skill-thumbnail.jpg"],
+    images: ["/news/candidate-sourcer-skill-thumbnail.png"],
   },
 };
 

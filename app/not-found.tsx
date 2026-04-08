@@ -1,10 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import UpcomingWorkshopCards from "@/components/workshops/UpcomingWorkshopCards";
 import { PUBLIC_WORKSHOPS } from "@/lib/workshops";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Page not found | AI with Michal",
   description: "This page no longer exists. Browse upcoming workshops or return home.",
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default function NotFound() {

@@ -16,12 +16,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const workshop = getPublicWorkshopBySlug(slug);
   if (!workshop) return {};
 
+  const path = `/workshops/${slug}`;
   return {
     title: `${workshop.title} | AI with Michal`,
     description: workshop.description,
+    alternates: {
+      canonical: path,
+    },
     openGraph: {
       title: workshop.title,
       description: workshop.description,
+      url: path,
+      siteName: "AI with Michal",
       type: "website",
       images: [
         {

@@ -31,9 +31,38 @@ export async function generateMetadata({
     };
   }
 
+  const path = `/training/${slug.join("/")}`;
   return {
     title: `${lesson.title} | Training | AI with Michal`,
     description: lesson.description,
+    alternates: {
+      canonical: path,
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    openGraph: {
+      title: lesson.title,
+      description: lesson.description,
+      url: path,
+      siteName: "AI with Michal",
+      type: "website",
+      images: [
+        {
+          url: "/workshop-og.jpeg",
+          width: 2048,
+          height: 1152,
+          alt: lesson.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: lesson.title,
+      description: lesson.description,
+      images: ["/workshop-og.jpeg"],
+    },
   };
 }
 

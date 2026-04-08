@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import { SignIn } from "@clerk/nextjs";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Log In | AI in Recruiting and Talent Acquisition",
   description: "Sign in to continue to your AI in Recruiting and Talent Acquisition workshop registration.",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function LoginPage() {

@@ -1,10 +1,41 @@
+import type { Metadata } from "next";
 import UpcomingWorkshopCards from "@/components/workshops/UpcomingWorkshopCards";
 import { PUBLIC_WORKSHOPS } from "@/lib/workshops";
 
-export const metadata = {
+export const metadata: Metadata = {
   title: "Upcoming Workshops | AI with Michal",
   description:
     "Live 90-minute online workshops for recruiters and talent teams. Practical AI workflows you can apply immediately.",
+  alternates: {
+    canonical: "/workshops",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    title: "Upcoming Workshops | AI with Michal",
+    description:
+      "Live 90-minute online workshops for recruiters and talent teams. Practical workflows you can apply immediately.",
+    url: "/workshops",
+    siteName: "AI with Michal",
+    type: "website",
+    images: [
+      {
+        url: "/workshop-og.jpeg",
+        width: 2048,
+        height: 1152,
+        alt: "AI with Michal live workshops",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Upcoming Workshops | AI with Michal",
+    description:
+      "Live online workshops for recruiters and talent teams — practical AI workflows without fluff.",
+    images: ["/workshop-og.jpeg"],
+  },
 };
 
 export default function WorkshopsPage() {
