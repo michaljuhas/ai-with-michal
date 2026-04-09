@@ -244,7 +244,7 @@ describe("POST /api/webhooks/clerk", () => {
       toName: "New User",
       workshop: expect.objectContaining({
         slug: "2026-04-23-sourcing-automation",
-        title: "Sourcing Automation for Recruiters (90-min online workshop)",
+        title: "Sourcing Automation with AI (90-min online workshop)",
         displayDate: "April 23, 2026",
         displayTime: "4:00 PM – 5:30 PM CET",
       }),

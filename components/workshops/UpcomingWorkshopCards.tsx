@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Calendar, Clock, ArrowRight } from "lucide-react";
+import { Calendar, Clock, ArrowRight, Users } from "lucide-react";
 import type { Workshop } from "@/lib/workshops";
 import { getDaysUntil, isOpen } from "@/lib/workshops";
 
@@ -9,6 +9,7 @@ const cardAccents = [
     border: "border-blue-100 hover:border-blue-300",
     dateBg: "bg-blue-600",
     badgeBg: "bg-blue-50 border-blue-200 text-blue-700",
+    levelBadge: "bg-blue-50 border-blue-200 text-blue-800",
     arrow: "group-hover:text-blue-500",
   },
   {
@@ -16,6 +17,7 @@ const cardAccents = [
     border: "border-violet-100 hover:border-violet-300",
     dateBg: "bg-violet-600",
     badgeBg: "bg-violet-50 border-violet-200 text-violet-700",
+    levelBadge: "bg-violet-50 border-violet-200 text-violet-800",
     arrow: "group-hover:text-violet-500",
   },
   {
@@ -23,6 +25,7 @@ const cardAccents = [
     border: "border-cyan-100 hover:border-cyan-300",
     dateBg: "bg-cyan-600",
     badgeBg: "bg-cyan-50 border-cyan-200 text-cyan-700",
+    levelBadge: "bg-cyan-50 border-cyan-200 text-cyan-800",
     arrow: "group-hover:text-cyan-500",
   },
 ] as const;
@@ -83,9 +86,29 @@ export default function UpcomingWorkshopCards({
               </span>
             </div>
 
+            <span
+              className={`inline-flex w-fit text-xs font-semibold border px-2.5 py-1 rounded-lg ${accent.levelBadge}`}
+            >
+              {workshop.levelLabel}
+            </span>
+
             <h2 className="font-bold text-slate-900 text-lg leading-snug group-hover:text-slate-700 transition-colors">
               {workshop.title}
             </h2>
+
+            <p className="text-sm text-slate-600 leading-relaxed">{workshop.cardSummary}</p>
+
+            <p className="flex items-start gap-2 text-xs text-slate-500 leading-snug">
+              <Users
+                size={14}
+                className="shrink-0 mt-0.5 text-slate-400"
+                aria-hidden
+              />
+              <span>
+                <span className="font-semibold text-slate-600">For:</span>{" "}
+                {workshop.audienceLabel}
+              </span>
+            </p>
 
             <div className="flex items-center justify-between gap-4">
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-400">

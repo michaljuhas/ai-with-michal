@@ -60,27 +60,27 @@ export const workshops: WorkshopDef[] = [
     displayDate: "April 16, 2026",
     displayTime: "4:00 PM – 5:30 PM CET",
     description:
-      "Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+      "Introductory: four ways to use AI in recruiting — chatting, systemizing, automating, and AI-native — with practical workflows.",
   },
   {
     slug: "2026-04-23-sourcing-automation",
-    title: "Sourcing Automation for Recruiters",
+    title: "Sourcing Automation with AI",
     stream: "recruiting-ta",
     date: new Date("2026-04-23T14:00:00Z"),
     displayDate: "April 23, 2026",
     displayTime: "4:00 PM – 5:30 PM CET",
     description:
-      "Automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
+      "Deep-dive: set up systems that source candidates automatically and rank them with AI — talent pipelines and multi-channel workflows.",
   },
   {
     slug: "2026-05-07-claude-cowork-recruiting",
-    title: "Claude Cowork and Code in Recruiting",
+    title: "Using Claude Chat, Cowork, and Code in Recruiting",
     stream: "recruiting-ta",
     date: new Date("2026-05-07T14:00:00Z"),
     displayDate: "May 7, 2026",
     displayTime: "4:00 PM – 5:30 PM CET",
     description:
-      "Build real recruiting automations with Claude Code — no coding experience needed. Leave with working tools you can use immediately.",
+      "Intermediate: level up from CustomGPTs, Gems, or Skills to Claude Chat, Cowork, and Code for recruiting automations — no prior coding required.",
   },
 ];
 
@@ -88,10 +88,19 @@ export const workshops: WorkshopDef[] = [
 // Public-facing workshop registry (for /workshops/[slug] pages)
 // ---------------------------------------------------------------------------
 
+/** Shown on /workshops cards for public listings (shared across current workshops). */
+export const PUBLIC_WORKSHOP_AUDIENCE_LABEL =
+  "Recruiters, TA, HR, agency managers";
+
 export interface Workshop {
   slug: string;
   title: string;
   description: string;
+  /** One sentence for /workshops cards */
+  cardSummary: string;
+  /** How to read the session, e.g. introductory vs deep-dive */
+  levelLabel: string;
+  audienceLabel: string;
   date: Date;
   displayDate: string;
   displayTime: string;
@@ -108,7 +117,11 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     slug: "2026-04-02-ai-in-recruiting",
     title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
     description:
-      "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+      "Live 90-minute introductory workshop with Michal Juhas for recruiters and talent teams. Covers four ways to use AI in recruiting: chatting, systemizing, automating, and AI-native.",
+    cardSummary:
+      "This is an introductory workshop about AI automation in recruiting where we cover four ways how to use AI in recruiting: chatting, systemizing, automating, and AI-native.",
+    levelLabel: "Introductory · start here",
+    audienceLabel: PUBLIC_WORKSHOP_AUDIENCE_LABEL,
     location: "Online (Video call link will be emailed to you)",
     date: new Date("2026-04-02T14:00:00Z"),
     startDate: "20260402T140000Z",
@@ -126,7 +139,11 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
     slug: "2026-04-16-ai-in-recruiting",
     title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
     description:
-      "Live 90-minute online workshop with Michal Juhas for recruiters and talent teams. Learn how recruiters use AI, Claude Code, and workflow automation to source, screen, report, and operate at a higher level.",
+      "Live 90-minute introductory workshop with Michal Juhas for recruiters and talent teams. Covers four ways to use AI in recruiting: chatting, systemizing, automating, and AI-native.",
+    cardSummary:
+      "This is an introductory workshop about AI automation in recruiting where we cover four ways how to use AI in recruiting: chatting, systemizing, automating, and AI-native.",
+    levelLabel: "Introductory · start here",
+    audienceLabel: PUBLIC_WORKSHOP_AUDIENCE_LABEL,
     location: "Online (Video call link will be emailed to you)",
     date: new Date("2026-04-16T14:00:00Z"),
     startDate: "20260416T140000Z",
@@ -141,9 +158,13 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
   },
   {
     slug: "2026-04-23-sourcing-automation",
-    title: "Sourcing Automation for Recruiters (90-min online workshop)",
+    title: "Sourcing Automation with AI (90-min online workshop)",
     description:
-      "Live 90-minute online workshop with Michal Juhas. Learn how to automate candidate sourcing with AI tools, build talent pipelines outside LinkedIn, and run multi-channel outreach workflows.",
+      "Live 90-minute deep-dive with Michal Juhas. Focus on systems that source candidates automatically and rank them with AI — practical automation for talent pipelines.",
+    cardSummary:
+      "This is a deep-dive workshop where we focus on setting up systems that source candidates automatically and rank them with AI.",
+    levelLabel: "Deep-dive",
+    audienceLabel: PUBLIC_WORKSHOP_AUDIENCE_LABEL,
     location: "Online (Video call link will be emailed to you)",
     date: new Date("2026-04-23T14:00:00Z"),
     startDate: "20260423T140000Z",
@@ -158,9 +179,13 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
   },
   {
     slug: "2026-05-07-claude-cowork-recruiting",
-    title: "Claude Cowork and Code in Recruiting (90-min online workshop)",
+    title: "Using Claude Chat, Cowork, and Code in Recruiting (90-min online workshop)",
     description:
-      "Live 90-minute hands-on session with Michal Juhas. Build real recruiting automations with Claude Code — no coding experience needed. Leave with working tools you can use immediately.",
+      "Live 90-minute intermediate workshop with Michal Juhas. For those familiar with CustomGPTs, Gems, or Skills who want to level up to Claude Chat, Cowork, and Code in recruiting.",
+    cardSummary:
+      "This is an intermediate workshop for those familiar with basic CustomGPTs, Gems, or Skills, and want to level up to Claude.",
+    levelLabel: "Intermediate",
+    audienceLabel: PUBLIC_WORKSHOP_AUDIENCE_LABEL,
     location: "Online (Video call link will be emailed to you)",
     date: new Date("2026-05-07T14:00:00Z"),
     startDate: "20260507T140000Z",
