@@ -32,6 +32,32 @@ export default function Footer() {
               <Mail size={15} className="shrink-0" aria-hidden />
               {PUBLIC_CONTACT_EMAIL}
             </a>
+            <ul className="mt-4 space-y-2">
+              <li>
+                <Link
+                  href="/privacy"
+                  className="text-sm text-slate-500 hover:text-blue-600 transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="text-sm text-slate-500 hover:text-blue-600 transition-colors"
+                >
+                  Terms of Use
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/cookies"
+                  className="text-sm text-slate-500 hover:text-blue-600 transition-colors"
+                >
+                  Cookie Policy
+                </Link>
+              </li>
+            </ul>
           </div>
 
           {/* Workshops nav */}

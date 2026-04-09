@@ -21,6 +21,9 @@ const STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: Met
   { path: "/group-ai-mentoring", priority: 0.8, changeFrequency: "monthly" },
   { path: "/individual-ai-mentoring", priority: 0.8, changeFrequency: "monthly" },
   { path: "/ai-adoption-ladder", priority: 0.65, changeFrequency: "monthly" },
+  { path: "/privacy", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/terms", priority: 0.3, changeFrequency: "yearly" },
+  { path: "/cookies", priority: 0.3, changeFrequency: "yearly" },
 ];
 
 export default function sitemap(): MetadataRoute.Sitemap {
