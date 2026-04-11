@@ -1,5 +1,7 @@
 export const SITE = {
   bookingLink: "https://calendar.app.google/J29ersE4HuZCsobA6",
+  /** Personal site — "Learn more" on Michal profile cards (ref for attribution). */
+  michalPersonalSiteUrl: "https://michaljuhas.com/?ref=AIwithMichal",
 } as const;
 
 /**

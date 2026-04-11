@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Star, GraduationCap, Youtube, BookOpen, Video, Map } from "lucide-react";
 import Image from "next/image";
+import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 
 const stats = [
   { icon: Star, value: "190+", label: "Trustpilot Reviews", iconColor: "text-yellow-500" },
@@ -94,6 +95,8 @@ export default function AboutSection() {
                   );
                 })}
               </div>
+
+              <MichalProfileLearnMoreLink className="mt-6" />
             </div>
           </div>
         </motion.div>

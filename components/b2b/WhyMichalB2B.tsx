@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Star, Globe2, Youtube, GraduationCap, Video, Building2 } from "lucide-react";
 import Image from "next/image";
+import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 
 const stats = [
   { icon: Building2, value: "20+", label: "Companies Trained (US, UK, EU)", iconColor: "text-blue-500" },
@@ -90,6 +91,8 @@ export default function WhyMichalB2B() {
                   );
                 })}
               </div>
+
+              <MichalProfileLearnMoreLink className="mt-6" />
             </div>
           </div>
         </motion.div>

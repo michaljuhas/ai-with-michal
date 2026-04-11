@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 import WorkTogetherSection from "@/components/work-together/WorkTogetherSection";
+import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 
 const stats = [
   { icon: Star, value: "190+", label: "Trustpilot Reviews", iconColor: "text-yellow-500" },
@@ -268,6 +269,8 @@ export default function HomePage() {
                     );
                   })}
                 </div>
+
+                <MichalProfileLearnMoreLink className="mt-6" />
               </div>
             </div>
           </motion.div>

@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Mail,
 } from "lucide-react";
+import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 const offerings = [
   {
     icon: GraduationCap,
@@ -208,6 +209,7 @@ export default function ForTeamsPage() {
                 50,000+ students, 190+ Trustpilot reviews. Leads workshops on AI in
                 recruiting, productivity, and workflow automation.
               </p>
+              <MichalProfileLearnMoreLink className="mt-5 w-full" />
             </motion.div>
 
             <motion.div

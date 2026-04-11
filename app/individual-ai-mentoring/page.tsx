@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Calendar,
 } from "lucide-react";
+import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 
 const benefits_individual = [
   {
@@ -253,6 +254,7 @@ export default function IndividualMentoringPage() {
                 professionals adopt AI and build real workflows — not slide decks. In individual
                 mentoring you get focused time on your challenges.
               </p>
+              <MichalProfileLearnMoreLink className="mt-6" />
             </div>
           </motion.div>
         </div>

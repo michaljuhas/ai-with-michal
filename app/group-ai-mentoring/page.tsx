@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Calendar,
 } from "lucide-react";
+import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 
 const benefits_group = [
   {
@@ -256,6 +257,7 @@ export default function GroupMentoringPage() {
                 mentoring is for teams and founders who want expert guidance plus the momentum of a
                 peer circle.
               </p>
+              <MichalProfileLearnMoreLink className="mt-6" />
             </div>
           </motion.div>
         </div>

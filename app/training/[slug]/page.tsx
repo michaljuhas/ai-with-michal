@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ArrowRight, CheckCircle, BookOpen, Clock, MessageSquare } from "lucide-react";
 import { getCourseBySlug, getPublishedCourses } from "@/lib/courses";
 import { CANONICAL_SITE_ORIGIN } from "@/lib/config";
+import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -545,6 +546,7 @@ export default async function CourseSalesPage({ params }: Props) {
               <span><a href="https://michaljuhas.com/training#past" target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800">100+ sourcing webinars organized</a>{" "}before ChatGPT existed</span>
             </li>
           </ul>
+          <MichalProfileLearnMoreLink className="mt-6" />
         </section>
 
         {/* Honest warning */}
