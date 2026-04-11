@@ -36,22 +36,7 @@ export default function FeedSection({ isAdmin }: FeedSectionProps) {
   }, [fetchPosts]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex min-h-[1.75rem] justify-end">
-        <button
-          type="button"
-          onClick={fetchPosts}
-          disabled={loading}
-          className="text-xs text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-1 disabled:opacity-40 disabled:pointer-events-none"
-          aria-label="Refresh"
-        >
-          <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Refresh
-        </button>
-      </div>
-
+    <div className="space-y-4">
       {isAdmin && (
         <NewPostForm
           uploadTarget={{ kind: "feed" }}

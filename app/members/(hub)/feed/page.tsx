@@ -10,11 +10,11 @@ export default async function MemberFeedPage() {
 
   return (
     <>
-      <div className="mb-8">
+      <div className="mb-4">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
           Feed
         </h1>
-        <p className="mt-2 text-base leading-relaxed text-slate-500">
+        <p className="mt-1.5 text-base leading-relaxed text-slate-500">
           Announcements and threads for the whole member community.
         </p>
       </div>
