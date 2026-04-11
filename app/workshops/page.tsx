@@ -96,6 +96,25 @@ export default function WorkshopsPage() {
                 </div>
               ))}
             </div>
+
+            {/* Did you know */}
+            <div className="mt-6 flex gap-3 rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4">
+              <span className="text-lg leading-none mt-0.5">💡</span>
+              <div>
+                <p className="text-sm font-semibold text-amber-900">Did you know?</p>
+                <p className="mt-1 text-sm text-amber-800 leading-relaxed">
+                  I&apos;ve recorded over 300 webinars with more than 2,500 people since 2018.{" "}
+                  <a
+                    href="https://michaljuhas.com/training#past"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium underline underline-offset-2 hover:text-amber-950 transition-colors"
+                  >
+                    See all replays on my personal website →
+                  </a>
+                </p>
+              </div>
+            </div>
           </div>
         )}
       </div>

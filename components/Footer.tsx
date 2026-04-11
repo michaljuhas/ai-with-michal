@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ExternalLink, Mail } from "lucide-react";
 import { PUBLIC_CONTACT_EMAIL } from "@/lib/config";
 import { PUBLIC_WORKSHOPS } from "@/lib/workshops";
@@ -32,6 +33,15 @@ export default function Footer() {
               <Mail size={15} className="shrink-0" aria-hidden />
               {PUBLIC_CONTACT_EMAIL}
             </a>
+            <div className="mt-4 mb-4 flex justify-start">
+              <Image
+                src="/trustpilot-badge-with-breakdown.jpeg"
+                alt="Trustpilot rating"
+                width={280}
+                height={124}
+                className="rounded-lg w-full max-w-[280px]"
+              />
+            </div>
             <ul className="mt-4 space-y-2">
               <li>
                 <Link
