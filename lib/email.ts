@@ -689,20 +689,27 @@ Reply directly to this email to respond to ${name}.`;
   });
 }
 
-// ─── Workgroup broadcast ──────────────────────────────────────────────────────
+// ─── Discussion broadcast (workgroup + member feed) ───────────────────────────
 
-function buildWorkgroupBroadcastHtml(params: {
-  authorName: string;
-  workshopTitle: string;
+type DiscussionAnnouncementTemplate = {
+  badgeLabel: string;
   headline: string;
+  authorName: string;
+  authorSubtitle: string;
   body: string;
-  workgroupUrl: string;
+  ctaUrl: string;
+  ctaLabel: string;
+  /** Plain-text first line of footer (no HTML). */
+  footerNoteText: string;
+  /** HTML for first footer paragraph (may include <em> etc.; caller must escape). */
+  footerNoteHtml: string;
   authorImageUrl?: string;
   imageUrl?: string;
-}) {
-  const { authorName, workshopTitle, headline, body, workgroupUrl, authorImageUrl, imageUrl } =
-    params;
-  const bodyHtml = escapeHtml(body).replace(/\n/g, "<br/>");
+};
+
+function buildDiscussionAnnouncementHtml(t: DiscussionAnnouncementTemplate) {
+  const bodyHtml = escapeHtml(t.body).replace(/\n/g, "<br/>");
+  const { authorName, authorImageUrl, imageUrl, headline, badgeLabel, authorSubtitle, ctaUrl, ctaLabel, footerNoteHtml } = t;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -726,7 +733,7 @@ function buildWorkgroupBroadcastHtml(params: {
         <!-- Header -->
         <tr>
           <td class="hd" style="background-color:#1e40af;border-radius:12px 12px 0 0;padding:28px 40px;">
-            <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#93c5fd;">Workgroup Announcement</p>
+            <p style="margin:0;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#93c5fd;">${escapeHtml(badgeLabel)}</p>
             <h1 style="margin:8px 0 0;font-size:21px;font-weight:700;color:#ffffff;line-height:1.35;">${escapeHtml(headline)}</h1>
           </td>
         </tr>
@@ -750,7 +757,7 @@ function buildWorkgroupBroadcastHtml(params: {
                       </td>
                       <td style="padding-left:10px;vertical-align:middle;">
                         <p style="margin:0;font-size:13px;font-weight:600;color:#0f172a;">${escapeHtml(authorName)}</p>
-                        <p style="margin:2px 0 0;font-size:12px;color:#64748b;">posted in the workgroup</p>
+                        <p style="margin:2px 0 0;font-size:12px;color:#64748b;">${escapeHtml(authorSubtitle)}</p>
                       </td>
                     </tr>
                   </table>
@@ -777,9 +784,9 @@ function buildWorkgroupBroadcastHtml(params: {
               <!-- CTA -->
               <tr>
                 <td style="padding:0 0 32px;text-align:center;">
-                  <a href="${workgroupUrl}"
+                  <a href="${escapeHtml(ctaUrl)}"
                     style="display:inline-block;background-color:#1d4ed8;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:13px 28px;border-radius:8px;">
-                    Open Workgroup →
+                    ${escapeHtml(ctaLabel)}
                   </a>
                 </td>
               </tr>
@@ -788,8 +795,7 @@ function buildWorkgroupBroadcastHtml(params: {
               <tr>
                 <td style="padding:0;border-top:1px solid #e2e8f0;padding-top:20px;">
                   <p style="margin:0;font-size:12px;color:#94a3b8;line-height:1.6;">
-                    You received this because you have access to the workgroup for
-                    <em>${escapeHtml(workshopTitle)}</em>. Reply to this email if you have questions.
+                    ${footerNoteHtml}
                   </p>
                   <p style="margin:8px 0 0;font-size:12px;color:#cbd5e1;">— Michal Juhas · <a href="https://aiwithmichal.com" style="color:#cbd5e1;">AIwithMichal.com</a></p>
                 </td>
@@ -806,36 +812,58 @@ function buildWorkgroupBroadcastHtml(params: {
 </html>`;
 }
 
-function buildWorkgroupBroadcastText(params: {
-  authorName: string;
-  workshopTitle: string;
-  headline: string;
-  body: string;
-  workgroupUrl: string;
-  authorImageUrl?: string;
-  imageUrl?: string;
-}) {
-  const { authorName, workshopTitle, headline, body, workgroupUrl, imageUrl } = params;
-  const imageLine = imageUrl ? `\nImage: ${imageUrl}\n` : "";
-  return `WORKGROUP ANNOUNCEMENT: ${headline}
+function buildDiscussionAnnouncementText(t: DiscussionAnnouncementTemplate) {
+  const imageLine = t.imageUrl ? `\nImage: ${t.imageUrl}\n` : "";
+  const badgeUpper = t.badgeLabel.toUpperCase();
+  return `${badgeUpper}: ${t.headline}
 
-Posted by: ${authorName}
+Posted by: ${t.authorName}
 
 ---
 
-${body}
+${t.body}
 ${imageLine}
 ---
 
-Open Workgroup: ${workgroupUrl}
+${t.ctaLabel.replace(/\s*→\s*$/, "").trim()}: ${t.ctaUrl}
 
 ---
 
-You received this because you have access to the workgroup for "${workshopTitle}".
+${t.footerNoteText}
 Questions? Reply to this email.
 
 — Michal Juhas · AIwithMichal.com
 `;
+}
+
+async function sendDiscussionBroadcastMessages(params: {
+  subject: string;
+  html: string;
+  text: string;
+  recipients: { email: string; name: string }[];
+}) {
+  const { subject, html, text, recipients } = params;
+  const mail = getSendGrid();
+  const adminEmail = getAdminEmail();
+
+  const toList = [
+    ...recipients.filter((r) => r.email.toLowerCase() !== adminEmail.toLowerCase()),
+    { email: adminEmail, name: "Michal (admin)" },
+  ].filter((r, i, arr) => arr.findIndex((x) => x.email.toLowerCase() === r.email.toLowerCase()) === i);
+
+  const messages = toList.map((recipient) => ({
+    to: { email: recipient.email, name: recipient.name },
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    replyTo: { email: adminEmail, name: FROM_NAME },
+    subject,
+    html,
+    text,
+  }));
+
+  if (messages.length === 0) return { sent: 0 };
+
+  await mail.send(messages as Parameters<typeof mail.send>[0]);
+  return { sent: messages.length };
 }
 
 export async function sendWorkgroupBroadcast(params: {
@@ -851,53 +879,62 @@ export async function sendWorkgroupBroadcast(params: {
   const { authorName, workshopTitle, workshopSlug, headline, body, authorImageUrl, imageUrl, recipients } =
     params;
 
-  const mail = getSendGrid();
-  const adminEmail = getAdminEmail();
-  const workgroupUrl = `https://aiwithmichal.com/members/workshops/${workshopSlug}/workgroup`;
+  const workgroupUrl = `${appBaseUrl()}/members/workshops/${workshopSlug}/workgroup`;
   const subject = `[Workgroup] ${headline}`;
 
-  const html = buildWorkgroupBroadcastHtml({
-    authorName,
-    workshopTitle,
+  const template: DiscussionAnnouncementTemplate = {
+    badgeLabel: "Workgroup Announcement",
     headline,
+    authorName,
+    authorSubtitle: "posted in the workgroup",
     body,
-    workgroupUrl,
+    ctaUrl: workgroupUrl,
+    ctaLabel: "Open Workgroup →",
+    footerNoteText: `You received this because you have access to the workgroup for "${workshopTitle}".`,
+    footerNoteHtml: `You received this because you have access to the workgroup for
+                    <em>${escapeHtml(workshopTitle)}</em>. Reply to this email if you have questions.`,
     authorImageUrl,
     imageUrl,
-  });
-  const text = buildWorkgroupBroadcastText({
-    authorName,
-    workshopTitle,
+  };
+
+  const html = buildDiscussionAnnouncementHtml(template);
+  const text = buildDiscussionAnnouncementText(template);
+
+  return sendDiscussionBroadcastMessages({ subject, html, text, recipients });
+}
+
+export async function sendMemberFeedBroadcast(params: {
+  authorName: string;
+  headline: string;
+  body: string;
+  authorImageUrl?: string;
+  imageUrl?: string;
+  recipients: { email: string; name: string }[];
+}) {
+  const { authorName, headline, body, authorImageUrl, imageUrl, recipients } = params;
+
+  const feedUrl = `${appBaseUrl()}/members/feed`;
+  const subject = `[Members] ${headline}`;
+
+  const template: DiscussionAnnouncementTemplate = {
+    badgeLabel: "Members Feed",
     headline,
+    authorName,
+    authorSubtitle: "posted in the member feed",
     body,
-    workgroupUrl,
+    ctaUrl: feedUrl,
+    ctaLabel: "Open Feed →",
+    footerNoteText:
+      "You received this because you are registered on AI with Michal.",
+    footerNoteHtml: `You received this because you are registered on AI with Michal. Reply to this email if you have questions.`,
     authorImageUrl,
     imageUrl,
-  });
+  };
 
-  // Collect unique recipient emails, always include admin
-  const emailSet = new Set(recipients.map((r) => r.email.toLowerCase()));
-  emailSet.add(adminEmail.toLowerCase());
+  const html = buildDiscussionAnnouncementHtml(template);
+  const text = buildDiscussionAnnouncementText(template);
 
-  const toList = [
-    ...recipients.filter((r) => r.email.toLowerCase() !== adminEmail.toLowerCase()),
-    { email: adminEmail, name: "Michal (admin)" },
-  ].filter((r, i, arr) => arr.findIndex((x) => x.email.toLowerCase() === r.email.toLowerCase()) === i);
-
-  // Send to all recipients — each receives individually (no visible CC/BCC)
-  const messages = toList.map((recipient) => ({
-    to: { email: recipient.email, name: recipient.name },
-    from: { email: FROM_EMAIL, name: FROM_NAME },
-    replyTo: { email: adminEmail, name: FROM_NAME },
-    subject,
-    html,
-    text,
-  }));
-
-  if (messages.length === 0) return { sent: 0 };
-
-  await mail.send(messages as Parameters<typeof mail.send>[0]);
-  return { sent: messages.length };
+  return sendDiscussionBroadcastMessages({ subject, html, text, recipients });
 }
 
 // ─── Course confirmation ──────────────────────────────────────────────────────

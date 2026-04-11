@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import type { WorkgroupPostWithReplies } from "@/lib/supabase";
+import type { MemberFeedPostWithReplies, WorkgroupPostWithReplies } from "@/lib/supabase";
 import LinkifiedPlainText from "./LinkifiedPlainText";
 
 function formatDate(iso: string) {
@@ -16,12 +16,15 @@ function formatDate(iso: string) {
 }
 
 type PostCardProps = {
-  post: WorkgroupPostWithReplies;
-  workshopSlug: string;
+  post: WorkgroupPostWithReplies | MemberFeedPostWithReplies;
   onUpdate: () => void;
+  /** When set, replies POST to `${replyApiBase}/${post.id}/replies`. */
+  replyApiBase?: string;
+  /** Required when `replyApiBase` is not set (workgroup). */
+  workshopSlug?: string;
 };
 
-export default function PostCard({ post, workshopSlug, onUpdate }: PostCardProps) {
+export default function PostCard({ post, workshopSlug, replyApiBase, onUpdate }: PostCardProps) {
   const [replyOpen, setReplyOpen] = useState(false);
   const [replyBody, setReplyBody] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -38,16 +41,23 @@ export default function PostCard({ post, workshopSlug, onUpdate }: PostCardProps
       return;
     }
 
+    const replyUrl = replyApiBase
+      ? `${replyApiBase}/${post.id}/replies`
+      : workshopSlug
+        ? `/api/workgroup/${workshopSlug}/posts/${post.id}/replies`
+        : null;
+    if (!replyUrl) {
+      setError("Reply is not available.");
+      return;
+    }
+
     setSubmitting(true);
     try {
-      const res = await fetch(
-        `/api/workgroup/${workshopSlug}/posts/${post.id}/replies`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ body: replyBody }),
-        }
-      );
+      const res = await fetch(replyUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ body: replyBody }),
+      });
 
       if (!res.ok) {
         const data = await res.json();

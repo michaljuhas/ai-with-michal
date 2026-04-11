@@ -47,6 +47,8 @@ describe("DELETE /api/account/delete", () => {
     expect(from).toHaveBeenCalledWith("registrations");
     expect(from).toHaveBeenCalledWith("workgroup_posts");
     expect(from).toHaveBeenCalledWith("workgroup_replies");
+    expect(from).toHaveBeenCalledWith("member_feed_posts");
+    expect(from).toHaveBeenCalledWith("member_feed_replies");
     expect(deleteUser).toHaveBeenCalledWith("user_to_delete");
   });
 

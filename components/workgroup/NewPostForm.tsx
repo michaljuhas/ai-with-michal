@@ -2,10 +2,22 @@
 
 import { useRef, useState, useEffect } from "react";
 
+export type NewPostUploadTarget =
+  | { kind: "workgroup"; workshopSlug: string }
+  | { kind: "feed" };
+
 type NewPostFormProps = {
-  workshopSlug: string;
+  uploadTarget: NewPostUploadTarget;
+  postsEndpoint: string;
+  /** Defaults to `/api/members/link-preview` (shared with workgroup). */
+  linkPreviewPath?: string;
   onSuccess: () => void;
   isAdmin?: boolean;
+  /** Shown under the broadcast checkbox when `isAdmin`. */
+  broadcastHelpText?: string;
+  openButtonLabel?: string;
+  headlinePlaceholder?: string;
+  bodyPlaceholder?: string;
 };
 
 const URL_RE = /https?:\/\/[^\s"'<>]+/;
@@ -15,7 +27,19 @@ function extractUrl(text: string): string | null {
   return match ? match[0] : null;
 }
 
-export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }: NewPostFormProps) {
+const DEFAULT_LINK_PREVIEW = "/api/members/link-preview";
+
+export default function NewPostForm({
+  uploadTarget,
+  postsEndpoint,
+  linkPreviewPath = DEFAULT_LINK_PREVIEW,
+  onSuccess,
+  isAdmin = false,
+  broadcastHelpText = "Emails all workshop members with the headline, post content, and image (if attached).",
+  openButtonLabel = "Post a question or share something with the group",
+  headlinePlaceholder = "What's your question or topic?",
+  bodyPlaceholder = "Share context, a specific challenge, or what you've already tried…",
+}: NewPostFormProps) {
   const [headline, setHeadline] = useState("");
   const [body, setBody] = useState("");
   const [broadcast, setBroadcast] = useState(false);
@@ -64,7 +88,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
 
       try {
         const res = await fetch(
-          `/api/workgroup/link-preview?url=${encodeURIComponent(url)}`
+          `${linkPreviewPath}?url=${encodeURIComponent(url)}`
         );
         if (res.ok) {
           const data = await res.json();
@@ -84,7 +108,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [body]);
+  }, [body, linkPreviewPath]);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -157,8 +181,14 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
       try {
         const formData = new FormData();
         formData.append("file", imageFile);
-        formData.append("workshop_slug", workshopSlug);
-        const uploadRes = await fetch("/api/workgroup/upload-image", {
+        const uploadUrl =
+          uploadTarget.kind === "workgroup"
+            ? "/api/workgroup/upload-image"
+            : "/api/members/feed/upload-image";
+        if (uploadTarget.kind === "workgroup") {
+          formData.append("workshop_slug", uploadTarget.workshopSlug);
+        }
+        const uploadRes = await fetch(uploadUrl, {
           method: "POST",
           body: formData,
         });
@@ -185,7 +215,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
     }
 
     try {
-      const res = await fetch(`/api/workgroup/${workshopSlug}/posts`, {
+      const res = await fetch(postsEndpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -222,7 +252,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
         </svg>
-        Post a question or share something with the group
+        {openButtonLabel}
       </button>
     );
   }
@@ -230,6 +260,9 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
   const submitLabel = () => {
     if (uploadProgress) return "Uploading image…";
     if (submitting) return broadcast ? "Posting & sending…" : "Posting…";
+    if (uploadTarget.kind === "feed") {
+      return broadcast ? "Post & send email" : "Post to feed";
+    }
     return broadcast ? "Post & send email" : "Post to workgroup";
   };
 
@@ -261,7 +294,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
           type="text"
           value={headline}
           onChange={(e) => setHeadline(e.target.value)}
-          placeholder="What's your question or topic?"
+          placeholder={headlinePlaceholder}
           maxLength={200}
           className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
         />
@@ -275,7 +308,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
           id="post-body"
           value={body}
           onChange={(e) => setBody(e.target.value)}
-          placeholder="Share context, a specific challenge, or what you've already tried…"
+          placeholder={bodyPlaceholder}
           rows={4}
           className="w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-100 resize-none"
         />
@@ -367,7 +400,7 @@ export default function NewPostForm({ workshopSlug, onSuccess, isAdmin = false }
               Send email broadcast
             </span>
             <span className="block text-xs text-slate-400 mt-0.5 leading-relaxed">
-              Emails all workshop members with the headline, post content, and image (if attached).
+              {broadcastHelpText}
             </span>
           </div>
         </label>

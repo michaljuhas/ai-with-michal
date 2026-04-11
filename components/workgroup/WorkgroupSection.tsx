@@ -62,7 +62,12 @@ export default function WorkgroupSection({ workshopSlug, isAdmin = false }: Work
       </div>
 
       {/* New post form */}
-      <NewPostForm workshopSlug={workshopSlug} onSuccess={fetchPosts} isAdmin={isAdmin} />
+      <NewPostForm
+        uploadTarget={{ kind: "workgroup", workshopSlug }}
+        postsEndpoint={`/api/workgroup/${workshopSlug}/posts`}
+        onSuccess={fetchPosts}
+        isAdmin={isAdmin}
+      />
 
       {/* Posts list */}
       {loading ? (

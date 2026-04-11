@@ -39,7 +39,24 @@ export async function DELETE() {
       })
       .eq("clerk_user_id", userId);
 
-    // 4. Delete the Clerk user — this invalidates all sessions and removes auth access.
+    // 4. Anonymise member feed posts and replies authored by this user
+    await supabase
+      .from("member_feed_posts")
+      .update({
+        author_email: "deleted@deleted.invalid",
+        author_name: "Deleted Member",
+      })
+      .eq("clerk_user_id", userId);
+
+    await supabase
+      .from("member_feed_replies")
+      .update({
+        author_email: "deleted@deleted.invalid",
+        author_name: "Deleted Member",
+      })
+      .eq("clerk_user_id", userId);
+
+    // 5. Delete the Clerk user — this invalidates all sessions and removes auth access.
     //    Orders keep the clerk_user_id for historical revenue tracking (no PII stored there).
     const client = await clerkClient();
     await client.users.deleteUser(userId);

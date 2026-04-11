@@ -75,6 +75,8 @@ export type Order = {
   created_at: string;
   // Workshop association (added in migration 007)
   workshop_slug?: string | null;
+  /** Course purchase (migration 015); set instead of workshop_slug for course orders */
+  course_slug?: string | null;
   // Stripe Checkout billing address (migration 011)
   billing_country_code?: string | null;
   // Order origin (migration 014): 'stripe' (default), 'comp', or 'manual'
@@ -108,4 +110,32 @@ export type WorkgroupReply = {
 
 export type WorkgroupPostWithReplies = WorkgroupPost & {
   replies: WorkgroupReply[];
+};
+
+export type MemberFeedPost = {
+  id: string;
+  clerk_user_id: string;
+  author_email: string;
+  author_name: string | null;
+  author_image_url?: string | null;
+  headline: string;
+  body: string;
+  image_url?: string | null;
+  created_at: string;
+};
+
+export type MemberFeedReply = {
+  id: string;
+  post_id: string;
+  clerk_user_id: string;
+  author_email: string;
+  author_name: string | null;
+  author_image_url?: string | null;
+  is_admin: boolean;
+  body: string;
+  created_at: string;
+};
+
+export type MemberFeedPostWithReplies = MemberFeedPost & {
+  replies: MemberFeedReply[];
 };
