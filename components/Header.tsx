@@ -196,9 +196,13 @@ function MobileOverlay({
                 <Link href="/work-together" onClick={onClose} className={linkClass("/work-together")}>
                   Work Together
                 </Link>
-                {isSignedIn && (
-                  <Link href="/members" onClick={onClose} className={linkClass("/members")}>Members</Link>
-                )}
+                <Link
+                  href={isSignedIn ? "/members" : "/login?redirect_url=/members"}
+                  onClick={onClose}
+                  className={linkClass("/members")}
+                >
+                  Members
+                </Link>
               </motion.div>
 
               {/* Account */}
@@ -322,14 +326,12 @@ export default function Header() {
             >
               Work Together
             </Link>
-            {isSignedIn && (
-              <Link
-                href="/members"
-                className={navLinkClass("/members")}
-              >
-                Members
-              </Link>
-            )}
+            <Link
+              href={isSignedIn ? "/members" : "/login?redirect_url=/members"}
+              className={navLinkClass("/members")}
+            >
+              Members
+            </Link>
             <div className="w-px h-5 bg-slate-200 mx-1" />
             {isSignedIn ? (
               <UserMenu />

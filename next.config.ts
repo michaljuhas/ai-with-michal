@@ -45,6 +45,11 @@ const nextConfig: NextConfig = {
         hostname: "dhnppoaejysrmpglqtvk.supabase.co",
         pathname: "/storage/v1/object/public/**",
       },
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/michaljuhas-public/**",
+      },
     ],
   },
 };

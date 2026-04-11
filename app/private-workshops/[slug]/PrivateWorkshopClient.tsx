@@ -1,8 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { MonitorPlay, Sparkles, CheckCircle2 } from "lucide-react";
+import { MonitorPlay, Sparkles, ClipboardList, Search, Map, Users, MessageSquareText } from "lucide-react";
 import PrivateWorkshopCtas from "./PrivateWorkshopCtas";
+import FlexibleDeliverySection from "@/components/private-workshops/FlexibleDeliverySection";
 
 interface WorkshopData {
   title: string;
@@ -14,7 +15,8 @@ interface WorkshopData {
 
 export default function PrivateWorkshopClient({ workshop }: { workshop: WorkshopData }) {
   return (
-    <main className="min-h-screen relative flex flex-col items-center justify-start md:justify-center pt-24 md:pt-32 pb-12 px-4 overflow-hidden bg-slate-50">
+    <main className="min-h-screen bg-slate-50">
+      <div className="relative flex flex-col items-center justify-start md:justify-center pt-24 md:pt-20 pb-12 px-4 overflow-hidden">
       {/* Animated Background Gradients */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -72,7 +74,7 @@ export default function PrivateWorkshopClient({ workshop }: { workshop: Workshop
             <MonitorPlay size={20} />
           </div>
           <p className="text-xs font-bold uppercase tracking-widest text-blue-600">
-            Private Workshop
+            Sprint &amp; Private Workshop
           </p>
         </div>
 
@@ -86,6 +88,32 @@ export default function PrivateWorkshopClient({ workshop }: { workshop: Workshop
               {para}
             </p>
           ))}
+        </div>
+
+        {/* Sprint breakdown */}
+        <div className="mt-8 pt-6 border-t border-slate-200/60">
+          <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-4">
+            What&apos;s included in a sprint
+          </p>
+          <ol className="space-y-3">
+            {[
+              { icon: ClipboardList, label: "Questionnaire & management brief", desc: "You fill in a structured brief so I arrive with full context on your team, challenges, and goals." },
+              { icon: Search,        label: "My preparation",                  desc: "I research your business, map relevant AI tools and workflows, and design the session around your specific situation." },
+              { icon: Map,           label: "Roadmap",                         desc: "A prioritized, written action plan delivered before the workshop so leadership can review and align in advance." },
+              { icon: Users,         label: "Management workshop",             desc: "A focused working session with your leadership team — hands-on, not slides. We walk through the roadmap and build together." },
+              { icon: MessageSquareText, label: "Follow-up",                       desc: "A check-in call a few weeks after to review what moved, unblock questions, and adjust priorities if needed." },
+            ].map(({ icon: Icon, label, desc }, i) => (
+              <li key={i} className="flex gap-3">
+                <div className="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-slate-100 text-slate-500 mt-0.5">
+                  <Icon size={14} />
+                </div>
+                <div>
+                  <p className="text-sm font-semibold text-slate-800">{label}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed mt-0.5">{desc}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
 
         <div className="mt-8 pt-6 border-t border-slate-200/60">
@@ -102,6 +130,9 @@ export default function PrivateWorkshopClient({ workshop }: { workshop: Workshop
           <PrivateWorkshopCtas contactServiceId={workshop.contactServiceId} pageSlug={workshop.slug} />
         </div>
       </motion.div>
+      </div>
+
+      <FlexibleDeliverySection />
     </main>
   );
 }

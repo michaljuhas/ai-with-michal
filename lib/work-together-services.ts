@@ -54,55 +54,55 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
   },
   {
     id: "using-ai-in-your-business",
-    title: "Using AI in your business (private workshop)",
+    title: "Using AI in Your Business",
     description:
-      "Highly customized workshop with your management team. A session includes prep, 2-hour video call, roadmap, and followup.",
-    priceLabel: "€1,500/session",
+      "A senior advisory engagement for your leadership team. I come prepared, assess where AI can create the most leverage in your business, facilitate a focused working session, and hand you a prioritized roadmap with concrete next steps.",
+    priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
     detailSlug: "using-ai-in-your-business",
   },
   {
     id: "improving-your-processes-with-ai",
-    title: "Improving your processes with AI (private workshop)",
+    title: "Improving Your Processes with AI",
     description:
-      "Highly customized workshop with your management team. A session includes my prep, 2-hour video call, roadmap, and followup.\n\nIdeal if you have repetitive processes including manual administrative work, if you are locked with an IT vendor, or if you pay a lot for IT or admin services.",
-    priceLabel: "€1,500/session",
+      "I identify where manual work, IT lock-in, or admin overhead is costing you the most — then map out which processes AI can replace or streamline. You leave with a concrete, prioritized action plan.\n\nParticularly effective if you have repetitive workflows, expensive vendor dependencies, or high admin overhead.",
+    priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
     detailSlug: "improving-your-processes-with-ai",
   },
   {
     id: "personal-productivity-with-ai",
-    title: "Personal Productivity with AI (private workshop)",
+    title: "Personal Productivity with AI",
     description:
-      "Inspire your team to take full advantage of AI in their daily work. A practical session covering the mindset shift, the best tools, and the workflows that actually save time, no matter which department your people sit in.",
-    priceLabel: "€1,500/session",
+      "I work hands-on with your team to identify exactly where time is leaking and replace those habits with AI-native workflows. Role-specific and immediately actionable — not a generic overview your team will forget by next week.",
+    priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
     detailSlug: "personal-productivity-with-ai",
   },
   {
     id: "levelling-ai-recruiting",
-    title: "Levelling AI adoption in Recruiting Teams (private workshop)",
-    description: 
-      "Highly customized workshop with your recruiting team. A session includes Michal's preparation, a 2-hour video call, roadmap, and followup.",
-    priceLabel: "€1,500/session",
+    title: "Recruiting AI Workflow Advisory",
+    description:
+      "A focused sprint to transform how your recruiting team works with AI. I start with a diagnostic to map your current workflows, run a hands-on management workshop to align on priorities, then deliver a concrete implementation roadmap. You leave with clarity on where to act and a plan your team can execute.",
+    priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
     detailSlug: "levelling-ai-adoption-recruiting-teams",
   },
   {
     id: "levelling-ai-gtm",
-    title: "Levelling AI adoption in GTM Teams (private workshop)",
-    description: 
-      "Highly customized workshop with your GTM team. A session includes Michal's preparation, a 2-hour video call, roadmap, and followup.",
-    priceLabel: "€1,500/session",
+    title: "GTM AI Systems Advisory",
+    description:
+      "A focused sprint to embed AI into your GTM motion — from pipeline generation to closing. I audit your current setup, run a management workshop to align leadership on priorities, then deliver a prioritized systems roadmap. You leave knowing exactly where AI can accelerate revenue.",
+    priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
     detailSlug: "levelling-ai-adoption-gtm-teams",
   },
   {
     id: "levelling-ai-operations",
-    title: "Levelling AI adoption in Operations Teams (private workshop)",
-    description: 
-      "Highly customized workshop with your operations team. A session includes Michal's preparation, a 2-hour video call, roadmap, and followup.",
-    priceLabel: "€1,500/session",
+    title: "Operations AI Systems Advisory",
+    description:
+      "A focused sprint to reduce operational overhead through AI. I map your highest-cost processes, run a management workshop to align on priorities, then deliver a concrete implementation roadmap. You leave with a clear picture of what to automate, what to eliminate, and how to get started.",
+    priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
     detailSlug: "levelling-ai-adoption-operations-teams",
   },
