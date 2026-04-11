@@ -30,6 +30,8 @@ jobs:
       STRIPE_PRICE_PRO: price_ci_pro
       STRIPE_PRICE_MENTORING_GROUP: price_ci_mentoring_group
       STRIPE_PRICE_MENTORING_VIP: price_ci_mentoring_vip
+      STRIPE_PRICE_FIRST_PRINCIPLES_BASIC: price_ci_first_principles_basic
+      STRIPE_PRICE_FIRST_PRINCIPLES_PRO: price_ci_first_principles_pro
       WORKSHOP_CAPACITY: "20"
       NEXT_PUBLIC_WORKSHOP_CAPACITY: "20"
     steps:
@@ -127,6 +129,8 @@ jobs:
             --set-env-vars "STRIPE_PRICE_PRO=${{ vars.STRIPE_PRICE_PRO }}" \
             --set-env-vars "STRIPE_PRICE_MENTORING_GROUP=${{ vars.STRIPE_PRICE_MENTORING_GROUP }}" \
             --set-env-vars "STRIPE_PRICE_MENTORING_VIP=${{ vars.STRIPE_PRICE_MENTORING_VIP }}" \
+            --set-env-vars "STRIPE_PRICE_FIRST_PRINCIPLES_BASIC=${{ vars.STRIPE_PRICE_FIRST_PRINCIPLES_BASIC }}" \
+            --set-env-vars "STRIPE_PRICE_FIRST_PRINCIPLES_PRO=${{ vars.STRIPE_PRICE_FIRST_PRINCIPLES_PRO }}" \
             --set-env-vars "SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }}" \
             --set-env-vars "WORKSHOP_MEETING_URL=${{ vars.WORKSHOP_MEETING_URL }}" \
             --set-env-vars "META_ACCESS_TOKEN=${{ secrets.META_ACCESS_TOKEN }}" \

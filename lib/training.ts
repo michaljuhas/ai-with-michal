@@ -47,7 +47,7 @@ function createLesson(
 ): TrainingLesson {
   return {
     ...lesson,
-    path: `/training/${lesson.slug.join("/")}`,
+    path: `/members/training/${lesson.slug.join("/")}`,
     Component,
   };
 }

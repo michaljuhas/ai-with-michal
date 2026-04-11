@@ -14,6 +14,18 @@ const nextConfig: NextConfig = {
         destination: "/ai-implementation",
         permanent: true,
       },
+      // Redirect old /training lesson paths to /members/training
+      // (only the two lesson sections that existed there)
+      {
+        source: "/training/pre-training/:path*",
+        destination: "/members/training/pre-training/:path*",
+        permanent: true,
+      },
+      {
+        source: "/training/live-workshop/:path*",
+        destination: "/members/training/live-workshop/:path*",
+        permanent: true,
+      },
     ];
   },
   // HMR: allow when the page is opened on 127.0.0.1 vs localhost (or Clerk redirects differ).

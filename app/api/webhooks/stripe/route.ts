@@ -7,7 +7,9 @@ import { captureEvent } from "@/lib/posthog-server";
 import {
   notifyAdminPaymentCompleted,
   sendWorkshopConfirmation,
+  sendCourseConfirmation,
 } from "@/lib/email";
+import { getCourseBySlug } from "@/lib/courses";
 import { sendMetaEvent } from "@/lib/meta-capi";
 import { normalizeBillingCountryCode } from "@/lib/billing-country";
 import { orderAmountsFromCheckoutSession } from "@/lib/stripe-order-amounts";
@@ -40,7 +42,9 @@ export async function POST(req: NextRequest) {
     const session = event.data.object as Stripe.Checkout.Session;
     const clerkUserId = session.metadata?.clerk_user_id;
     const tier = session.metadata?.tier as "basic" | "pro" | undefined;
+    const product = session.metadata?.product; // "course" | undefined (workshop = undefined)
     const workshopSlug = session.metadata?.workshop_slug;
+    const courseSlug = session.metadata?.course_slug;
 
     if (!clerkUserId || !tier) {
       console.error("Missing metadata in checkout session", session.id);
@@ -65,6 +69,7 @@ export async function POST(req: NextRequest) {
         amount_net_eur,
         status: "paid",
         ...(workshopSlug ? { workshop_slug: workshopSlug } : {}),
+        ...(courseSlug ? { course_slug: courseSlug } : {}),
         ...(billingCountryCode ? { billing_country_code: billingCountryCode } : {}),
       },
       { onConflict: "stripe_session_id" }
@@ -77,12 +82,15 @@ export async function POST(req: NextRequest) {
 
     const amountEur = amount_eur;
 
-    await captureEvent(clerkUserId, "payment_completed", {
+    const eventName = product === "course" ? "course_purchased" : "payment_completed";
+    await captureEvent(clerkUserId, eventName, {
       $insert_id: `purchase_${session.id}`,
       tier,
       stripe_session_id: session.id,
       amount_eur: amountEur,
       customer_email: session.customer_email,
+      ...(courseSlug ? { course_slug: courseSlug } : {}),
+      ...(workshopSlug ? { workshop_slug: workshopSlug } : {}),
     });
 
     try {
@@ -116,8 +124,15 @@ export async function POST(req: NextRequest) {
         custom_data: {
           value: amountEur,
           currency: (session.currency ?? "eur").toUpperCase(),
-          content_name: tier === "pro" ? "Workshop + Toolkit" : "Workshop Ticket",
-          content_category: "workshop",
+          content_name:
+            product === "course"
+              ? tier === "pro"
+                ? "Course + Interview Prep"
+                : "Course Training"
+              : tier === "pro"
+                ? "Workshop + Toolkit"
+                : "Workshop Ticket",
+          content_category: product === "course" ? "course" : "workshop",
         },
       });
     }
@@ -131,7 +146,20 @@ export async function POST(req: NextRequest) {
 
     if (toEmail) {
       try {
-        await sendWorkshopConfirmation({ toEmail, toName, tier });
+        if (product === "course" && courseSlug) {
+          const course = getCourseBySlug(courseSlug);
+          if (course) {
+            await sendCourseConfirmation({
+              toEmail,
+              toName,
+              courseTitle: course.title,
+              tier,
+              schedulingUrl: course.schedulingUrl ?? "",
+            });
+          }
+        } else {
+          await sendWorkshopConfirmation({ toEmail, toName, tier });
+        }
       } catch (emailErr) {
         console.error("Failed to send confirmation email:", emailErr);
       }

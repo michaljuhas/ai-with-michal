@@ -31,7 +31,7 @@ export async function generateMetadata({
     };
   }
 
-  const path = `/training/${slug.join("/")}`;
+  const path = `/members/training/${slug.join("/")}`;
   return {
     title: `${lesson.title} | Training | AI with Michal`,
     description: lesson.description,
@@ -45,7 +45,7 @@ export async function generateMetadata({
     openGraph: {
       title: lesson.title,
       description: lesson.description,
-      url: path,
+      url: `https://aiwithmichal.com${path}`,
       siteName: "AI with Michal",
       type: "website",
       images: [

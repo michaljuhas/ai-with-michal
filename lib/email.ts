@@ -899,3 +899,187 @@ export async function sendWorkgroupBroadcast(params: {
   await mail.send(messages as Parameters<typeof mail.send>[0]);
   return { sent: messages.length };
 }
+
+// ─── Course confirmation ──────────────────────────────────────────────────────
+
+export type CourseTicketTier = "basic" | "pro";
+
+const COURSE_TIER_EXTRAS: Record<
+  CourseTicketTier,
+  { name: string; extras: string[] }
+> = {
+  basic: {
+    name: "Training",
+    extras: [
+      "Full 3-week structured curriculum",
+      "2× 30-min 1-on-1 calls with Michal",
+    ],
+  },
+  pro: {
+    name: "Training + Interview Prep",
+    extras: [
+      "Everything in Training",
+      "Real-world sourcing assignment from a high-tech company",
+      "Honest 1-on-1 feedback from Michal on your submission",
+    ],
+  },
+};
+
+function buildCourseConfirmationHtml(params: {
+  firstName: string;
+  courseTitle: string;
+  tier: CourseTicketTier;
+  schedulingUrl: string;
+}) {
+  const { firstName, courseTitle, tier, schedulingUrl } = params;
+  const tierInfo = COURSE_TIER_EXTRAS[tier];
+  const includesListHtml = tierInfo.extras
+    .map(
+      (item) =>
+        `<li style="padding: 0 0 8px 0; font-size: 14px; color: #475569; line-height: 1.6;">${escapeHtml(item)}</li>`
+    )
+    .join("\n");
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>You're enrolled — AI with Michal</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8fafc; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; width: 100%;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color: #1e40af; border-radius: 12px 12px 0 0; padding: 32px 40px; text-align: center;">
+              <p style="margin: 0; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #93c5fd;">Payment Confirmed</p>
+              <h1 style="margin: 8px 0 0 0; font-size: 24px; font-weight: 700; color: #ffffff;">You&apos;re enrolled, ${escapeHtml(firstName)}!</h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 40px 40px 32px 40px; border-radius: 0 0 12px 12px; border: 1px solid #e2e8f0; border-top: none;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+
+                <tr>
+                  <td style="padding: 0 0 24px 0;">
+                    <p style="margin: 0; font-size: 15px; color: #334155; line-height: 1.6;">
+                      Thank you for enrolling in <strong>${escapeHtml(courseTitle)}</strong>.
+                    </p>
+                    <p style="margin: 12px 0 0 0; font-size: 15px; color: #334155; line-height: 1.6;">
+                      Here&apos;s what&apos;s included with your <strong>${escapeHtml(tierInfo.name)}</strong> package:
+                    </p>
+                  </td>
+                </tr>
+
+                <!-- What's included box -->
+                <tr>
+                  <td style="padding: 0 0 28px 0;">
+                    <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                      style="background-color: #f1f5f9; border-radius: 10px; padding: 24px;">
+                      <tr>
+                        <td>
+                          <p style="margin: 0 0 12px 0; font-size: 12px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #64748b;">What&apos;s included</p>
+                          <ul style="margin: 0; padding-left: 18px; list-style: none;">
+                            ${includesListHtml}
+                          </ul>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <!-- Book your calls CTA -->
+                <tr>
+                  <td style="padding: 0 0 28px 0;">
+                    <p style="margin: 0 0 12px 0; font-size: 15px; font-weight: 600; color: #0f172a;">Book your 1-on-1 calls</p>
+                    <p style="margin: 0 0 16px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+                      Your package includes two 30-minute sessions with Michal. Use the link below to schedule them at a time that works for you.
+                    </p>
+                    <a href="${escapeHtml(schedulingUrl)}"
+                      style="display: inline-block; background-color: #1d4ed8; color: #ffffff; font-size: 15px; font-weight: 600; text-decoration: none; padding: 14px 32px; border-radius: 8px;">
+                      Book your calls →
+                    </a>
+                  </td>
+                </tr>
+
+                <!-- Divider -->
+                <tr>
+                  <td style="padding: 0 0 20px 0; border-top: 1px solid #e2e8f0;"></td>
+                </tr>
+
+                <!-- Footer -->
+                <tr>
+                  <td>
+                    <p style="margin: 0; font-size: 13px; color: #94a3b8;">
+                      Questions? Reply to this email or reach out at
+                      <a href="mailto:${PUBLIC_CONTACT_EMAIL}" style="color: #1d4ed8;">${PUBLIC_CONTACT_EMAIL}</a>.
+                    </p>
+                    <p style="margin: 8px 0 0 0; font-size: 13px; color: #cbd5e1;">— Michal Juhas</p>
+                  </td>
+                </tr>
+
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildCourseConfirmationText(params: {
+  firstName: string;
+  courseTitle: string;
+  tier: CourseTicketTier;
+  schedulingUrl: string;
+}) {
+  const { firstName, courseTitle, tier, schedulingUrl } = params;
+  const tierInfo = COURSE_TIER_EXTRAS[tier];
+  const includesList = tierInfo.extras.map((item) => `  • ${item}`).join("\n");
+
+  return `Hi ${firstName},
+
+You're enrolled in: ${courseTitle}
+Package: ${tierInfo.name}
+
+WHAT'S INCLUDED
+${includesList}
+
+BOOK YOUR 1-ON-1 CALLS
+Your package includes two 30-minute sessions with Michal. Schedule them here:
+${schedulingUrl}
+
+Questions? Reply to this email or write to ${PUBLIC_CONTACT_EMAIL}.
+
+— Michal Juhas
+`;
+}
+
+export async function sendCourseConfirmation(params: {
+  toEmail: string;
+  toName: string;
+  courseTitle: string;
+  tier: CourseTicketTier;
+  schedulingUrl: string;
+}) {
+  const { toEmail, toName, courseTitle, tier, schedulingUrl } = params;
+  const firstName = toName.split(" ")[0] || toName;
+
+  const mail = getSendGrid();
+  await mail.send({
+    to: { email: toEmail, name: toName },
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    subject: `You're enrolled — ${courseTitle}`,
+    html: buildCourseConfirmationHtml({ firstName, courseTitle, tier, schedulingUrl }),
+    text: buildCourseConfirmationText({ firstName, courseTitle, tier, schedulingUrl }),
+  });
+}

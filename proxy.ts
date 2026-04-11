@@ -4,8 +4,9 @@ import { NextResponse } from "next/server";
 const isProtectedRoute = createRouteMatcher([
   "/tickets(.*)",
   "/thank-you(.*)",
-  "/training(.*)",
+  "/members/training(.*)",
   "/billing(.*)",
+  "/training/:slug/tickets(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -13,7 +14,10 @@ export default clerkMiddleware(async (auth, req) => {
     const { userId } = await auth();
 
     if (!userId) {
-      if (req.nextUrl.pathname.startsWith("/tickets")) {
+      if (
+        req.nextUrl.pathname.startsWith("/tickets") ||
+        req.nextUrl.pathname.includes("/tickets")
+      ) {
         const registerUrl = new URL("/register", req.url);
         registerUrl.searchParams.set(
           "redirect_url",
