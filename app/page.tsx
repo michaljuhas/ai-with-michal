@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
+import MemberFeedShowcase from "@/components/home/MemberFeedShowcase";
 
 const stats = [
   { icon: Star, value: "190+", label: "Trustpilot Reviews", iconColor: "text-yellow-500" },
@@ -419,6 +420,8 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      <MemberFeedShowcase />
 
       {/* CTA */}
       <section className="py-16 px-6 bg-slate-50 border-t border-slate-200">
