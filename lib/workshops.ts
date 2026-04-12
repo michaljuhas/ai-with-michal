@@ -1,5 +1,6 @@
 import type { TrainingSection } from "./training";
 import { trainingLessons, trainingSections } from "./training";
+import type { WorkshopSeriesId } from "./workshop-series";
 import type { WorkshopCalendarEvent } from "./workshop-calendar";
 // ---------------------------------------------------------------------------
 // Streams (members area categorisation)
@@ -94,6 +95,8 @@ export const PUBLIC_WORKSHOP_AUDIENCE_LABEL =
 
 export interface Workshop {
   slug: string;
+  /** Public /workshops hub series (Recruiting / GTM / Agency paths). */
+  series: WorkshopSeriesId;
   title: string;
   description: string;
   /** One sentence for /workshops cards */
@@ -115,6 +118,7 @@ export interface Workshop {
 export const PUBLIC_WORKSHOPS: Workshop[] = [
   {
     slug: "2026-04-02-ai-in-recruiting",
+    series: "recruiting",
     title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
     description:
       "Live 90-minute introductory workshop with Michal Juhas for recruiters and talent teams. Covers four ways to use AI in recruiting: chatting, systemizing, automating, and AI-native.",
@@ -137,6 +141,7 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
   },
   {
     slug: "2026-04-16-ai-in-recruiting",
+    series: "recruiting",
     title: "AI in Recruiting and Talent Acquisition (90-min online workshop)",
     description:
       "Live 90-minute introductory workshop with Michal Juhas for recruiters and talent teams. Covers four ways to use AI in recruiting: chatting, systemizing, automating, and AI-native.",
@@ -158,6 +163,7 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
   },
   {
     slug: "2026-04-23-sourcing-automation",
+    series: "recruiting",
     title: "Sourcing Automation with AI (90-min online workshop)",
     description:
       "Live 90-minute deep-dive with Michal Juhas. Focus on systems that source candidates automatically and rank them with AI — practical automation for talent pipelines.",
@@ -179,6 +185,7 @@ export const PUBLIC_WORKSHOPS: Workshop[] = [
   },
   {
     slug: "2026-05-07-claude-cowork-recruiting",
+    series: "recruiting",
     title: "Using Claude Chat, Cowork, and Code in Recruiting (90-min online workshop)",
     description:
       "Live 90-minute intermediate workshop with Michal Juhas. For those familiar with CustomGPTs, Gems, or Skills who want to level up to Claude Chat, Cowork, and Code in recruiting.",
@@ -337,14 +344,31 @@ export function getUpcomingPublicWorkshops(): Workshop[] {
   );
 }
 
+/** Upcoming public workshops in one hub series (soonest first). */
+export function getUpcomingPublicWorkshopsForSeries(series: WorkshopSeriesId): Workshop[] {
+  const now = new Date();
+  return PUBLIC_WORKSHOPS.filter((w) => w.series === series && w.date > now).sort(
+    (a, b) => a.date.getTime() - b.date.getTime(),
+  );
+}
+
+/**
+ * Workshop start instant — use when `Workshop` may cross the RSC→client boundary
+ * (Next can serialize `Date` to an ISO string in props).
+ */
+export function workshopEventDate(workshop: Workshop): Date {
+  const d = workshop.date as Date | string;
+  return d instanceof Date ? d : new Date(d);
+}
+
 export function getDaysUntil(workshop: Workshop): number {
   const now = new Date();
-  const diff = workshop.date.getTime() - now.getTime();
+  const diff = workshopEventDate(workshop).getTime() - now.getTime();
   return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
 }
 
 export function isOpen(workshop: Workshop): boolean {
-  return new Date() < workshop.date;
+  return new Date() < workshopEventDate(workshop);
 }
 
 // ---------------------------------------------------------------------------

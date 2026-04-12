@@ -6,6 +6,7 @@ import {
   getTimezoneConverterUrl,
   isOpen,
   parseWorkshopIcsUtc,
+  workshopEventDate,
 } from "@/lib/workshops";
 import WorkshopTimezonesPopover from "@/components/workshops/WorkshopTimezonesPopover";
 
@@ -52,6 +53,7 @@ export default function UpcomingWorkshopCards({
   return (
     <div className="space-y-4">
       {workshops.map((workshop, i) => {
+        const eventDate = workshopEventDate(workshop);
         const open = isOpen(workshop);
         const daysLeft = getDaysUntil(workshop);
         const accent = cardAccents[i % cardAccents.length];
@@ -79,10 +81,10 @@ export default function UpcomingWorkshopCards({
                   className={`inline-flex items-center gap-2.5 ${accent.dateBg} text-white rounded-xl px-3 py-2`}
                 >
                   <span className="text-2xl font-extrabold leading-none">
-                    {workshop.date.getDate()}
+                    {eventDate.getDate()}
                   </span>
                   <span className="text-xs font-bold uppercase tracking-widest opacity-80">
-                    {workshop.date.toLocaleString("en-US", { month: "short" })}
+                    {eventDate.toLocaleString("en-US", { month: "short" })}
                   </span>
                 </div>
 
@@ -132,9 +134,9 @@ export default function UpcomingWorkshopCards({
                     {workshop.displayTime}
                     <span className="pointer-events-auto inline-flex items-center">
                       <WorkshopTimezonesPopover
-                        start={workshop.date}
+                        start={eventDate}
                         end={parseWorkshopIcsUtc(workshop.endDate)}
-                        timezoneConverterUrl={getTimezoneConverterUrl(workshop.date)}
+                        timezoneConverterUrl={getTimezoneConverterUrl(eventDate)}
                       />
                     </span>
                   </span>

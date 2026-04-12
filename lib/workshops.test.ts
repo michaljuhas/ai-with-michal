@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getPublicWorkshopBySlug,
+  getUpcomingPublicWorkshopsForSeries,
   getWorkshopBySlug,
   getWorkshopCalendarEvent,
   getWorkshopWelcomeSnapshot,
@@ -64,9 +65,38 @@ describe("getWorkshopWelcomeSnapshot", () => {
   });
 });
 
+describe("getUpcomingPublicWorkshopsForSeries", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  it("returns empty for gtm until workshops exist", () => {
+    vi.setSystemTime(new Date("2026-04-10T12:00:00Z"));
+    expect(getUpcomingPublicWorkshopsForSeries("gtm")).toEqual([]);
+    expect(getUpcomingPublicWorkshopsForSeries("agency")).toEqual([]);
+  });
+
+  it("returns recruiting workshops with start after now, soonest first", () => {
+    vi.setSystemTime(new Date("2026-04-10T12:00:00Z"));
+    const list = getUpcomingPublicWorkshopsForSeries("recruiting");
+    expect(list.length).toBeGreaterThan(0);
+    expect(list.every((w) => w.series === "recruiting")).toBe(true);
+    const t0 = new Date("2026-04-10T12:00:00Z").getTime();
+    expect(list.every((w) => w.date.getTime() > t0)).toBe(true);
+    for (let i = 1; i < list.length; i++) {
+      expect(list[i - 1]!.date.getTime()).toBeLessThanOrEqual(list[i]!.date.getTime());
+    }
+  });
+});
+
 describe("isOpen", () => {
   const fakeWorkshop: Workshop = {
     slug: "test",
+    series: "recruiting",
     title: "Test",
     description: "",
     cardSummary: "",
