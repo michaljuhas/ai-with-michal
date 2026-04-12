@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { createPortal } from "react-dom";
 import { ExternalLink, Globe } from "lucide-react";
@@ -49,6 +50,8 @@ function computePopoverPosition(
   return { top, left };
 }
 
+const noopSubscribe = () => () => {};
+
 type Props = {
   start: Date | string;
   end: Date | string;
@@ -62,7 +65,7 @@ export default function WorkshopTimezonesPopover({
 }: Props) {
   const panelId = `workshop-tz-${useId().replace(/:/g, "")}`;
   const [open, setOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(noopSubscribe, () => true, () => false);
   const [coords, setCoords] = useState({ top: 0, left: 0 });
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -78,10 +81,6 @@ export default function WorkshopTimezonesPopover({
       })),
     [startD, endD],
   );
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const reposition = useCallback(() => {
     const btn = triggerRef.current;
