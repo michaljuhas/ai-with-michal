@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { SignIn } from "@clerk/nextjs";
+import { parseSafeRedirectUrl } from "@/lib/auth-redirect";
+import LoginClerk from "../LoginClerk";
 
 export const metadata: Metadata = {
   title: "Log In | AI in Recruiting and Talent Acquisition",
@@ -10,7 +11,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ redirect_url?: string }>;
+}) {
+  const params = await searchParams;
+  const validatedRedirectPath = parseSafeRedirectUrl(params.redirect_url);
+  const appBaseUrl =
+    process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") ?? "https://aiwithmichal.com";
+
   return (
     <div className="relative min-h-[calc(100dvh-4rem)] flex flex-col items-center justify-start px-6 pt-6 pb-14 md:pt-8 bg-slate-50 overflow-x-hidden">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -31,32 +41,7 @@ export default function LoginPage() {
         </div>
 
         <div className="register-clerk-slot grid w-full min-w-0 [grid-template-columns:minmax(0,1fr)] justify-items-stretch">
-          <SignIn
-            appearance={{
-              elements: {
-                rootBox:
-                  "!w-full !max-w-full min-w-0 shrink-0 flex flex-col items-stretch",
-                card:
-                  "!w-full !max-w-full min-w-0 bg-white border border-slate-200 shadow-md rounded-2xl",
-                headerTitle: "text-slate-900",
-                headerSubtitle: "text-slate-500",
-                formFieldLabel: "text-slate-700",
-                formFieldInput:
-                  "bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500",
-                formButtonPrimary:
-                  "bg-blue-600 hover:bg-blue-700 text-white font-semibold",
-                footerActionLink: "text-blue-600 hover:text-blue-700",
-                identityPreviewText: "text-slate-700",
-                identityPreviewEditButton: "text-blue-600",
-                socialButtonsBlockButton:
-                  "bg-white border-slate-300 text-slate-700 hover:bg-slate-50",
-                socialButtonsBlockButtonText: "text-slate-700 font-medium",
-                dividerLine: "bg-slate-200",
-                dividerText: "text-slate-400",
-              },
-            }}
-            fallbackRedirectUrl="/tickets"
-          />
+          <LoginClerk appBaseUrl={appBaseUrl} validatedRedirectPath={validatedRedirectPath} />
         </div>
       </div>
     </div>

@@ -33,7 +33,7 @@ function AttributionDetail({ reg }: { reg: Registration }) {
     { label: "Term", value: reg.utm_term },
     { label: "Ref", value: reg.ref },
   ];
-  const hasAny = rows.some((r) => r.value);
+  const hasAny = rows.some((r) => r.value) || !!reg.signup_intent;
 
   if (!hasAny) {
     return (
@@ -46,6 +46,12 @@ function AttributionDetail({ reg }: { reg: Registration }) {
   return (
     <td colSpan={6} className="px-6 pb-4 pt-0">
       <div className="bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-2">
+        {reg.signup_intent && (
+          <div className="col-span-full pb-2 mb-1 border-b border-slate-200">
+            <span className="text-xs text-slate-400 uppercase tracking-wider">Signup intent</span>
+            <p className="text-sm text-slate-800 font-mono break-all">{reg.signup_intent}</p>
+          </div>
+        )}
         {rows.map(({ label, value }) => (
           <div key={label}>
             <span className="text-xs text-slate-400 uppercase tracking-wider">{label}</span>
@@ -95,7 +101,7 @@ export default function RegistrationsTable({ registrations, orders }: Props) {
             {registrations.map((r) => {
               const paid = paidSet.has(r.clerk_user_id);
               const isOpen = expanded === r.id;
-              const hasAttribution = !!(r.source_type || r.utm_source || r.ref);
+              const hasAttribution = !!(r.source_type || r.utm_source || r.ref || r.signup_intent);
 
               return (
                 <Fragment key={r.id}>

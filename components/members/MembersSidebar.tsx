@@ -1,34 +1,50 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const NAV = [
+type IconFn = (props: { active: boolean }) => ReactNode;
+
+type NavItem = {
+  href: string;
+  label: string;
+  match: (p: string) => boolean;
+  icon: IconFn;
+};
+
+const NAV: NavItem[] = [
   {
     href: "/members/feed",
     label: "Feed",
-    match: (p: string) => p === "/members/feed" || p.startsWith("/members/feed/"),
+    match: (p) => p === "/members/feed" || p.startsWith("/members/feed/"),
     icon: IconFeed,
   },
   {
     href: "/members",
     label: "Workshops",
-    match: (p: string) => p === "/members",
+    match: (p) => p === "/members",
     icon: IconWorkshops,
   },
   {
     href: "/members/courses",
     label: "Courses",
-    match: (p: string) => p === "/members/courses" || p.startsWith("/members/courses/"),
+    match: (p) => p === "/members/courses" || p.startsWith("/members/courses/"),
     icon: IconCourses,
+  },
+  {
+    href: "/members/resources",
+    label: "My Resources",
+    match: (p) => p === "/members/resources" || p.startsWith("/members/resources/"),
+    icon: IconResources,
   },
   {
     href: "/members/community",
     label: "Members",
-    match: (p: string) => p === "/members/community" || p.startsWith("/members/community/"),
+    match: (p) => p === "/members/community" || p.startsWith("/members/community/"),
     icon: IconMembers,
   },
-] as const;
+];
 
 export default function MembersSidebar() {
   const pathname = usePathname();
@@ -36,42 +52,42 @@ export default function MembersSidebar() {
   return (
     <aside className="shrink-0 lg:w-56">
       <div className="lg:sticky lg:top-24">
-        <p className="hidden lg:block text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 mb-3 px-1">
-          Navigate
-        </p>
         <nav
           className="flex flex-row flex-wrap gap-1.5 border-b border-slate-200 pb-4 mb-2 lg:flex-col lg:gap-0.5 lg:border-b-0 lg:border-r lg:border-slate-200 lg:pr-6 lg:pb-0 lg:mb-0"
           aria-label="Members area"
         >
-          {NAV.map((item) => {
-            const active = item.match(pathname);
-            const Icon = item.icon;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`group inline-flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors lg:w-full ${
-                  active
-                    ? "bg-blue-50 text-blue-800 ring-1 ring-blue-100 shadow-sm"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                }`}
-              >
-                <span
-                  className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
-                    active
-                      ? "bg-white text-blue-600 shadow-sm ring-1 ring-blue-100"
-                      : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-blue-600 group-hover:ring-1 group-hover:ring-slate-200"
-                  }`}
-                >
-                  <Icon active={active} />
-                </span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          {NAV.map((item) => (
+            <NavLink key={item.href} item={item} pathname={pathname} />
+          ))}
         </nav>
       </div>
     </aside>
+  );
+}
+
+function NavLink({ item, pathname }: { item: NavItem; pathname: string }) {
+  const active = item.match(pathname);
+  const Icon = item.icon;
+  return (
+    <Link
+      href={item.href}
+      className={`group inline-flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors lg:w-full ${
+        active
+          ? "bg-blue-50 text-blue-800 ring-1 ring-blue-100 shadow-sm"
+          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+      }`}
+    >
+      <span
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${
+          active
+            ? "bg-white text-blue-600 shadow-sm ring-1 ring-blue-100"
+            : "bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-blue-600 group-hover:ring-1 group-hover:ring-slate-200"
+        }`}
+      >
+        <Icon active={active} />
+      </span>
+      <span>{item.label}</span>
+    </Link>
   );
 }
 
@@ -110,6 +126,19 @@ function IconCourses({ active }: { active: boolean }) {
         strokeLinecap="round"
         strokeLinejoin="round"
         d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c1.052 0 2.062.18 3 .512m0-14.256A8.966 8.966 0 0118 3.75c1.052 0 2.062.18 3 .512v14.25a8.984 8.984 0 01-3 .512m-12-2.25V6.042m12 11.208V6.042"
+      />
+    </svg>
+  );
+}
+
+function IconResources({ active }: { active: boolean }) {
+  const c = active ? "text-blue-600" : "text-slate-500 group-hover:text-blue-600";
+  return (
+    <svg className={`h-5 w-5 ${c}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z"
       />
     </svg>
   );

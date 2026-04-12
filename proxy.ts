@@ -1,33 +1,41 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+const isMembersArea = createRouteMatcher(["/members(.*)"]);
+
 const isProtectedRoute = createRouteMatcher([
   "/tickets(.*)",
   "/thank-you(.*)",
-  "/members/training(.*)",
   "/billing(.*)",
   "/training/:slug/tickets(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    const { userId } = await auth();
+  const { userId } = await auth();
 
+  if (isMembersArea(req)) {
     if (!userId) {
-      if (
-        req.nextUrl.pathname.startsWith("/tickets") ||
-        req.nextUrl.pathname.includes("/tickets")
-      ) {
-        const registerUrl = new URL("/register", req.url);
-        registerUrl.searchParams.set(
-          "redirect_url",
-          `${req.nextUrl.pathname}${req.nextUrl.search}`
-        );
-        return NextResponse.redirect(registerUrl);
-      }
-
-      await auth.protect();
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set(
+        "redirect_url",
+        `${req.nextUrl.pathname}${req.nextUrl.search}`
+      );
+      return NextResponse.redirect(loginUrl);
     }
+  } else if (isProtectedRoute(req) && !userId) {
+    if (
+      req.nextUrl.pathname.startsWith("/tickets") ||
+      req.nextUrl.pathname.includes("/tickets")
+    ) {
+      const registerUrl = new URL("/register", req.url);
+      registerUrl.searchParams.set(
+        "redirect_url",
+        `${req.nextUrl.pathname}${req.nextUrl.search}`
+      );
+      return NextResponse.redirect(registerUrl);
+    }
+
+    await auth.protect();
   }
 
   // Capture UTM params + ref into a server-readable cookie (_attr).
@@ -75,6 +83,8 @@ export default clerkMiddleware(async (auth, req) => {
     }
     return res;
   }
+
+  return NextResponse.next();
 });
 
 export const config = {

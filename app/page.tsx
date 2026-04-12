@@ -5,19 +5,18 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Calendar,
   Users,
-  Sparkles,
-  Building2,
   Star,
   GraduationCap,
   Youtube,
   BookOpen,
   Video,
   Map,
+  Presentation,
+  PlayCircle,
+  Mic2,
 } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
-import WorkTogetherSection from "@/components/work-together/WorkTogetherSection";
 import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
 
 const stats = [
@@ -29,9 +28,11 @@ const stats = [
   { icon: Map, value: "5,000+", label: "Mind Maps Sold", iconColor: "text-orange-500" },
 ];
 
-const pillars = [
+/** "How we help" cards — each uses a photo from `/public` (no icon components). */
+const helpPillars = [
   {
-    icon: Calendar,
+    imageSrc: "/screenshare-workshop-AI-in-Recruiting-Apr2.jpg",
+    imageAlt: "Live online workshop — AI in Recruiting screenshare",
     title: "Online Workshops",
     description:
       "Bi-weekly live workshops where you learn practical AI workflows — not theory. Each session is hands-on with real tools and real use cases. Open to anyone.",
@@ -41,7 +42,8 @@ const pillars = [
     color: "blue",
   },
   {
-    icon: Sparkles,
+    imageSrc: "/individual-mentoring.jpg",
+    imageAlt: "Individual and small-group AI mentoring session",
     title: "Personal Mentoring",
     description:
       "1-on-1 and group mentoring for solopreneurs and founders who want to accelerate their AI adoption. Join our inner circle with dedicated sessions and direct access to Michal and the team.",
@@ -51,7 +53,8 @@ const pillars = [
     color: "violet",
   },
   {
-    icon: Building2,
+    imageSrc: "/team-workshop-ai.jpg",
+    imageAlt: "In-person AI workshop for a recruiting and TA team",
     title: "Consulting",
     description:
       "Custom AI training and implementation services for companies. From half-day workshops to full integration projects — delivered by Michal and his colleagues.",
@@ -137,6 +140,139 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Hero → lead magnet: floating bridge (ornament + soft rails) */}
+      <div
+        className="relative z-20 -mt-6 flex justify-center px-6 pb-1 md:-mt-8 md:pb-2"
+        aria-hidden
+      >
+        <div className="flex w-full max-w-lg items-center gap-5 md:max-w-xl md:gap-6">
+          <div className="h-px min-w-0 flex-1 bg-gradient-to-r from-transparent via-slate-300/70 to-slate-200/50" />
+          <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/80 bg-white/90 shadow-[0_8px_30px_-8px_rgba(15,23,42,0.18)] ring-4 ring-blue-500/[0.07] backdrop-blur-sm md:h-[3.25rem] md:w-[3.25rem]">
+            <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-blue-50/90 via-white to-amber-50/40" />
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              className="relative h-[22px] w-[22px] text-blue-600/85 md:h-6 md:w-6"
+              aria-hidden
+            >
+              <path
+                d="M5 18V14M9 18V9M13 18V11M17 18V6"
+                stroke="currentColor"
+                strokeWidth="1.75"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+          <div className="h-px min-w-0 flex-1 bg-gradient-to-l from-transparent via-slate-300/70 to-slate-200/50" />
+        </div>
+      </div>
+
+      {/* Lead magnet: seminar presentation (premium framing) */}
+      <section className="relative bg-gradient-to-b from-slate-50 via-white to-slate-50/80 px-6 pb-16 pt-10 md:pb-24 md:pt-12">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(37,99,235,0.07),transparent)]" />
+        <div className="relative z-10 max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="rounded-[2rem] border border-slate-200/70 bg-white/90 p-8 shadow-[0_24px_80px_-20px_rgba(15,23,42,0.12)] backdrop-blur-sm md:p-12 md:shadow-[0_32px_90px_-24px_rgba(15,23,42,0.14)]"
+          >
+            <div className="grid gap-12 md:grid-cols-2 md:gap-14 md:items-center">
+              <div className="order-2 md:order-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/80 bg-amber-50/90 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-amber-900/90">
+                    <Presentation size={13} className="text-amber-700 shrink-0" aria-hidden />
+                    Talk recording
+                  </span>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-600">
+                    <Mic2 size={13} className="text-slate-500 shrink-0" aria-hidden />
+                    Live recruiter audience
+                  </span>
+                </div>
+                <p className="mt-5 text-xs font-semibold uppercase tracking-[0.2em] text-blue-600/90">
+                  Member-exclusive
+                </p>
+                <h2 className="mt-2 text-balance text-3xl font-bold tracking-tight text-slate-900 md:text-4xl md:leading-[1.12]">
+                  The right way to adopt AI in Recruiting
+                </h2>
+                <p className="mt-3 text-sm font-medium text-slate-500 md:text-base">
+                  The same narrative, visuals, and structure from a recent closed-room session — not a generic slide deck.
+                </p>
+                <p className="mt-5 text-base leading-relaxed text-slate-600 md:text-lg">
+                  Get free immediate access to the same presentation I delivered recently to a group of
+                  ambitious recruiters. I spoke about the AI ladder (how to go from chatting, through
+                  systemizing, to automating), and how to set the right foundation to build on.
+                </p>
+                <ul className="mt-6 flex flex-col gap-3 border-l-2 border-blue-100 pl-4 text-sm text-slate-700 md:text-[0.9375rem]">
+                  <li className="flex gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" aria-hidden />
+                    <span>How to move from ad-hoc chatting to repeatable workflows and real automation.</span>
+                  </li>
+                  <li className="flex gap-2">
+                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-blue-500" aria-hidden />
+                    <span>What to put in place first so every later AI investment actually compounds.</span>
+                  </li>
+                </ul>
+                <div className="mt-9">
+                  <Link
+                    href="/members/resources/test0104?ref=homepage-seminar"
+                    className="inline-flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 px-7 py-4 text-base font-semibold text-white shadow-lg shadow-blue-600/25 ring-1 ring-blue-500/30 transition-[transform,box-shadow] hover:from-blue-600 hover:to-blue-800 hover:shadow-xl hover:shadow-blue-600/30 group"
+                  >
+                    <PlayCircle size={22} className="opacity-95 group-hover:scale-105 transition-transform" aria-hidden />
+                    Watch the presentation
+                    <ArrowRight size={18} className="group-hover:translate-x-0.5 transition-transform" aria-hidden />
+                  </Link>
+                  <p className="mt-3 text-xs text-slate-500">
+                    Free with a member account · one click after sign-in
+                  </p>
+                </div>
+              </div>
+              <motion.div
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: 0.08 }}
+                className="order-1 md:order-2"
+              >
+                <div className="relative mx-auto w-full max-w-lg md:max-w-none">
+                  <div
+                    className="pointer-events-none absolute -inset-1 rounded-[1.35rem] bg-gradient-to-br from-blue-500/20 via-slate-200/40 to-amber-200/30 opacity-90 blur-sm"
+                    aria-hidden
+                  />
+                  {/*
+                    aspect + overflow must live on the same box as next/image fill,
+                    or the inner height collapses (fill positions the img out of flow).
+                  */}
+                  <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl ring-1 ring-slate-900/10 shadow-2xl shadow-slate-900/20">
+                    <Image
+                      src="/seminar-belgrade-v2.jpg"
+                      alt="Michal presenting on AI in recruiting to an audience in Belgrade"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                    />
+                    <div
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-slate-950/75 via-slate-950/15 to-transparent"
+                      aria-hidden
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 md:p-6">
+                      <p className="text-xs font-semibold uppercase tracking-widest text-white/80">
+                        From the room
+                      </p>
+                      <p className="mt-1 text-lg font-semibold tracking-tight text-white md:text-xl">
+                        Real session · same flow you will unlock
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Three Pillars */}
       <section className="py-20 px-6 bg-slate-50">
         <div className="max-w-6xl mx-auto">
@@ -156,8 +292,7 @@ export default function HomePage() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {pillars.map((pillar, i) => {
-              const Icon = pillar.icon;
+            {helpPillars.map((pillar, i) => {
               const colors = colorMap[pillar.color];
               return (
                 <motion.div
@@ -171,8 +306,16 @@ export default function HomePage() {
                     href={pillar.href}
                     className={`group block h-full bg-white border ${colors.border} ${colors.bg} rounded-2xl p-8 shadow-sm transition-all hover:shadow-md`}
                   >
-                    <div className={`w-12 h-12 rounded-xl ${colors.iconBg} flex items-center justify-center mb-5`}>
-                      <Icon size={22} className={colors.iconText} />
+                    <div
+                      className={`relative mb-5 aspect-[16/10] w-full overflow-hidden rounded-xl bg-slate-100 ring-1 ring-slate-200/80 ${colors.iconBg}`}
+                    >
+                      <Image
+                        src={pillar.imageSrc}
+                        alt={pillar.imageAlt}
+                        fill
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
                     </div>
                     <h3 className="text-xl font-bold text-slate-900 mb-3">
                       {pillar.title}

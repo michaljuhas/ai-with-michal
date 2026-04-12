@@ -193,6 +193,8 @@ describe("POST /api/webhooks/clerk", () => {
       expect.objectContaining({
         clerk_user_id: "user_clerk_new",
         email: "new@example.com",
+        source_type: "Organic",
+        signup_intent: null,
       }),
       { onConflict: "clerk_user_id" }
     );
@@ -249,6 +251,49 @@ describe("POST /api/webhooks/clerk", () => {
         displayTime: "4:00 PM – 5:30 PM CET",
       }),
     });
+  });
+
+  it("persists signup_intent, UTM, ref, and derived source from unsafe_metadata", async () => {
+    const payload = userCreatedPayload();
+    (payload.data as { unsafe_metadata?: Record<string, string> }).unsafe_metadata = {
+      signup_intent: "member_resource:/members/resources/test0104",
+      utm_source: "linkedin",
+      utm_campaign: "spring",
+      ref: "partner-x",
+    };
+    verifyMock.mockReturnValue(payload);
+
+    const upsert = vi.fn(async () => ({ error: null }));
+    vi.mocked(createServiceClient).mockReturnValue({
+      from: vi.fn(() => ({ upsert })),
+    } as never);
+
+    vi.mocked(clerkClient).mockResolvedValue({
+      users: { updateUser: vi.fn(async () => {}) },
+    } as never);
+
+    const req = new NextRequest("http://localhost/api/webhooks/clerk", {
+      method: "POST",
+      headers: {
+        "svix-id": "id",
+        "svix-timestamp": "1",
+        "svix-signature": "v1,x",
+      },
+      body: "{}",
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    expect(upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        signup_intent: "member_resource:/members/resources/test0104",
+        utm_source: "linkedin",
+        utm_campaign: "spring",
+        ref: "partner-x",
+        source_type: "Referral",
+        source_detail: "partner-x",
+      }),
+      { onConflict: "clerk_user_id" }
+    );
   });
 
   it("does not send welcome email for mentoring signups", async () => {

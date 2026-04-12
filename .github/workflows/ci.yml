@@ -140,7 +140,8 @@ jobs:
             --set-env-vars "META_SYSTEM_USER_ACCESS_TOKEN=${{ secrets.META_SYSTEM_USER_ACCESS_TOKEN }}" \
             --set-env-vars "META_AD_ACCOUNT_ID=${{ vars.META_AD_ACCOUNT_ID }}" \
             --set-env-vars "WORKSHOP_CAPACITY=${{ vars.WORKSHOP_CAPACITY || '20' }}" \
-            --set-env-vars "NEXT_PUBLIC_WORKSHOP_CAPACITY=${{ vars.NEXT_PUBLIC_WORKSHOP_CAPACITY || '20' }}"
+            --set-env-vars "NEXT_PUBLIC_WORKSHOP_CAPACITY=${{ vars.NEXT_PUBLIC_WORKSHOP_CAPACITY || '20' }}" \
+            --set-env-vars "MEMBER_RESOURCES_BUCKET=${{ secrets.MEMBER_RESOURCES_BUCKET || vars.MEMBER_RESOURCES_BUCKET || 'member-resources-private' }}"
 
       - name: Show service URL
         run: |

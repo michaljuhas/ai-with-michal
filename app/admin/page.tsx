@@ -132,11 +132,16 @@ export default async function AdminPage({
   return (
     <div className="min-h-screen bg-slate-50 px-6 py-12">
       <div className="max-w-5xl mx-auto">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
           <h1 className="text-2xl font-bold text-slate-900">Admin Dashboard</h1>
-          <Link href="/admin/report" className="text-sm font-medium text-blue-600 hover:text-blue-800 underline underline-offset-2">
-            Daily Report →
-          </Link>
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium">
+            <Link href="/admin/report" className="text-blue-600 hover:text-blue-800 underline underline-offset-2">
+              Daily Report →
+            </Link>
+            <Link href="/admin/resources" className="text-blue-600 hover:text-blue-800 underline underline-offset-2">
+              Member resources →
+            </Link>
+          </div>
         </div>
 
         {/* Workshop selector */}

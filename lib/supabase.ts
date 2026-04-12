@@ -60,6 +60,8 @@ export type Registration = {
   linkedin_url?: string | null;
   // Product interest (added in migration 008)
   interested_in_product?: string | null;
+  /** e.g. member_resource:/members/resources/slug (migration 018) */
+  signup_intent?: string | null;
 };
 
 export type Order = {
@@ -138,4 +140,30 @@ export type MemberFeedReply = {
 
 export type MemberFeedPostWithReplies = MemberFeedPost & {
   replies: MemberFeedReply[];
+};
+
+export type MemberResourceVisibility = "public" | "unlisted";
+export type MemberResourceContentKind = "file" | "loom";
+
+export type MemberResource = {
+  id: string;
+  slug: string;
+  title: string;
+  tagline: string;
+  description: string | null;
+  visibility: MemberResourceVisibility;
+  content_kind: MemberResourceContentKind;
+  storage_path: string | null;
+  loom_url: string | null;
+  sort_order: number;
+  is_archived: boolean;
+  created_at: string;
+  updated_at: string;
+};
+
+export type MemberResourceGrant = {
+  id: string;
+  resource_id: string;
+  clerk_user_id: string;
+  created_at: string;
 };

@@ -11,6 +11,7 @@ import {
   parseWorkshopSlugFromInterestedProduct,
 } from "@/lib/meta-event-source-url";
 import { getWorkshopWelcomeSnapshot } from "@/lib/workshops";
+import { deriveAttribution, type TrackingParams } from "@/lib/tracking-params";
 
 type EmailAddress = {
   email_address: string;
@@ -30,6 +31,26 @@ type UserCreatedEvent = {
 };
 
 type ClerkWebhookEvent = UserCreatedEvent | { type: string };
+
+function trackingFromUnsafeMetadata(
+  meta: Record<string, unknown> | undefined
+): TrackingParams {
+  if (!meta) return {};
+  const out: TrackingParams = {};
+  const keys = [
+    "utm_source",
+    "utm_medium",
+    "utm_campaign",
+    "utm_content",
+    "utm_term",
+    "ref",
+  ] as const;
+  for (const k of keys) {
+    const v = meta[k];
+    if (typeof v === "string" && v.trim()) out[k] = v.trim();
+  }
+  return out;
+}
 
 export async function POST(req: NextRequest) {
   const secret = process.env.CLERK_WEBHOOK_SECRET;
@@ -94,9 +115,30 @@ export async function POST(req: NextRequest) {
         ? unsafe_metadata.interested_in_product
         : null;
 
+    const signupIntentRaw = unsafe_metadata?.signup_intent;
+    const signup_intent =
+      typeof signupIntentRaw === "string" && signupIntentRaw.trim()
+        ? signupIntentRaw.trim().slice(0, 500)
+        : null;
+
+    const tracking = trackingFromUnsafeMetadata(unsafe_metadata);
+    const { source_type, source_detail } = deriveAttribution(tracking);
+
     const supabase = createServiceClient();
 
-    const registrationRow: Record<string, unknown> = { clerk_user_id: clerkUserId, email };
+    const registrationRow: Record<string, unknown> = {
+      clerk_user_id: clerkUserId,
+      email,
+      utm_source: tracking.utm_source ?? null,
+      utm_medium: tracking.utm_medium ?? null,
+      utm_campaign: tracking.utm_campaign ?? null,
+      utm_content: tracking.utm_content ?? null,
+      utm_term: tracking.utm_term ?? null,
+      ref: tracking.ref ?? null,
+      source_type,
+      source_detail,
+      signup_intent,
+    };
     if (interestedInProduct) registrationRow.interested_in_product = interestedInProduct;
 
     const { error } = await supabase.from("registrations").upsert(
