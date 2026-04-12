@@ -21,7 +21,7 @@ export default function ContactInner() {
           className="text-center mb-10"
         >
           <span className="text-blue-600 text-sm font-semibold tracking-widest uppercase">
-            Work together
+            Consulting
           </span>
           <h1 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">Get in touch</h1>
           <p className="mt-3 text-slate-600 max-w-xl mx-auto">
@@ -36,7 +36,7 @@ export default function ContactInner() {
           preselectedService={preselectedTitle}
           thankYouPath="/contact/thank-you"
           heading="Tell us what you need"
-          subheading="Select the services you care about (you can pick several). I’ll follow up within one business day."
+          subheading="Select the services you care about (you can pick several). I&apos;ll follow up within one business day."
           submitButtonLabel="Submit"
         />
       </div>

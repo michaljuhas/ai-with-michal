@@ -53,6 +53,11 @@ describe("POST /api/membership/checkout", () => {
     const { POST } = await import("./route");
     const res = await POST(makeReq({}));
     expect(res.status).toBe(503);
+    expect(captureEvent).toHaveBeenCalledWith(
+      "u1",
+      "membership_checkout_not_configured",
+      expect.objectContaining({ reason: "missing_stripe_price_annual_membership" })
+    );
   });
 
   it("creates Stripe checkout session for annual membership", async () => {

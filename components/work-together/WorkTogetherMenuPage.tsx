@@ -4,9 +4,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight, Mail } from "lucide-react";
 import WorkTogetherServiceAccordions from "@/components/work-together/WorkTogetherServiceAccordions";
-import { getWorkTogetherNavMenuServices } from "@/lib/work-together-services";
+import { getConsultingNavMenuServices } from "@/lib/work-together-services";
 
-const services = getWorkTogetherNavMenuServices();
+const services = getConsultingNavMenuServices();
 
 export default function WorkTogetherMenuPage() {
   return (
@@ -65,7 +65,7 @@ export default function WorkTogetherMenuPage() {
               transition={{ duration: 0.45 }}
               className="text-blue-600 text-sm font-semibold tracking-widest uppercase"
             >
-              Work together
+              Consulting
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 16 }}
@@ -73,7 +73,7 @@ export default function WorkTogetherMenuPage() {
               transition={{ duration: 0.5, delay: 0.05 }}
               className="mt-4 text-3xl md:text-4xl font-bold text-slate-900"
             >
-              Ways we can work together
+              Executive AI consulting
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 16 }}
@@ -81,8 +81,9 @@ export default function WorkTogetherMenuPage() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mt-4 text-slate-600 text-sm md:text-base leading-relaxed"
             >
-              Mentoring, private workshops, advisory, and implementation packages. Open any row for
-              details — pricing stays visible. Prefer a single form?{" "}
+              Structured sprints for leadership teams, domain-specific deep-dives, advisory retainers,
+              and hands-on implementation. Open any row for details — pricing stays visible. Prefer a
+              single form?{" "}
               <Link href="/contact" className="text-blue-600 font-medium hover:underline">
                 Contact
               </Link>

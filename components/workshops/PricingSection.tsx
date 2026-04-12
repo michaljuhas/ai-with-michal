@@ -4,6 +4,8 @@ import { motion } from "framer-motion";
 import { CheckCircle, Star, Calendar, Users, ExternalLink } from "lucide-react";
 import { WORKSHOP } from "@/lib/workshop";
 import RegisterButton from "@/components/RegisterButton";
+import WorkshopTimezonesPopover from "@/components/workshops/WorkshopTimezonesPopover";
+import { parseWorkshopIcsUtc } from "@/lib/workshops";
 
 const plans = [
   {
@@ -39,6 +41,8 @@ export default function PricingSection({
   workshopSlug,
   timezoneConverterUrl,
   initialSoldCount,
+  workshopStartAt,
+  workshopEndAt,
 }: {
   open?: boolean;
   displayDate?: string;
@@ -47,9 +51,17 @@ export default function PricingSection({
   timezoneConverterUrl?: string;
   /** Server-provided paid order count (same-origin SSR; /api/count is admin-only). */
   initialSoldCount?: number;
+  /** UTC instants for the live session (start / end); drives the multi-timezone popover. */
+  workshopStartAt?: Date | string;
+  workshopEndAt?: Date | string;
 } = {}) {
   const soldCount =
     typeof initialSoldCount === "number" ? initialSoldCount : null;
+
+  const sessionStart = workshopStartAt ?? WORKSHOP.date;
+  const sessionEnd = workshopEndAt ?? parseWorkshopIcsUtc(WORKSHOP.endDate);
+  const converterHref =
+    timezoneConverterUrl ?? `https://www.worldtimebuddy.com/?qm=1&lid=5391959,5128581,100,2643743,3060972,3067696,703448,1880252&h=3060972&date=2026-4-16&sln=16-17.5&hf=1`;
 
   return (
     <section id="pricing" className="scroll-mt-32 pt-12 pb-24 px-6 bg-white">
@@ -98,9 +110,16 @@ export default function PricingSection({
           <Calendar size={20} className="text-blue-600 shrink-0" />
           <div className="text-center">
             <p className="text-slate-900 font-bold">{displayDate ?? WORKSHOP.displayDate}</p>
-            <p className="text-slate-500 text-sm">{displayTime ?? WORKSHOP.displayTime}</p>
+            <div className="mt-0.5 flex items-center justify-center gap-1.5">
+              <p className="text-slate-500 text-sm">{displayTime ?? WORKSHOP.displayTime}</p>
+              <WorkshopTimezonesPopover
+                start={sessionStart}
+                end={sessionEnd}
+                timezoneConverterUrl={converterHref}
+              />
+            </div>
             <a
-              href={timezoneConverterUrl ?? `https://www.worldtimebuddy.com/?qm=1&lid=5391959,5128581,100,2643743,3060972,3067696,703448,1880252&h=3060972&date=2026-4-16&sln=16-17.5&hf=1`}
+              href={converterHref}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-1 inline-flex items-center gap-1 text-xs text-blue-600 hover:text-blue-800 hover:underline transition-colors"

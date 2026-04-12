@@ -8,33 +8,33 @@ export type PrivateWorkshopRecord = {
 };
 
 const BODY_USING_AI = [
-  "A senior advisory engagement for your leadership team. I come prepared with a pre-session audit of your business, facilitate a focused 2-hour working session, and hand you a prioritized roadmap with concrete next steps and follow-up guidance.",
-  "Best suited for leadership teams that want a clear-eyed assessment of where AI can move the needle — and a credible plan to act on it.",
+  "A discreet, senior-led sprint for founders and executive teams. I arrive with a concise pre-read on your business, facilitate a focused working session with leadership, and leave you with a prioritized roadmap, explicit next steps, and a follow-up touchpoint so decisions turn into execution.",
+  "Ideal when you want an independent view on where AI genuinely moves revenue, risk, or operating leverage — without vendor noise or slide-deck theater.",
 ];
 
 const BODY_PROCESSES = [
-  "I identify where manual work, IT lock-in, or admin overhead is costing you the most — then map out which processes AI can replace or streamline. You leave with a concrete, prioritized action plan and direct access to me during the follow-up phase.",
-  "Particularly effective if you have repetitive workflows, expensive vendor dependencies, or high admin overhead draining your team's capacity.",
+  "We surface where manual work, brittle tooling, or vendor lock-in quietly tax your organization — then translate that into a sequenced plan: what AI can absorb, what to simplify first, and what to leave untouched. You get clarity, ownership, and a defensible rationale for the board or your CFO.",
+  "Especially valuable when repetitive workflows, integration debt, or admin load are constraining growth and margin.",
 ];
 
 const BODY_RECRUITING_ADVISORY = [
-  "A focused sprint to transform how your recruiting team works with AI. The engagement starts with a diagnostic to map your current workflows and identify where AI can create the most leverage — then moves into a hands-on management workshop where your leadership team aligns on priorities.",
-  "You leave the sprint with a concrete implementation roadmap, clear ownership, and a follow-up session to review progress. Not a one-off training — a structured engagement designed to produce real change.",
+  "A structured sprint for heads of talent and CHROs who need recruiting to run faster without lowering the bar. I begin with a tight diagnostic of your workflows and data posture, then convene a private working session with your leadership team to lock priorities and trade-offs.",
+  "You leave with an implementation roadmap, named owners, and a follow-up checkpoint — engineered for adoption, not a one-off training day.",
 ];
 
 const BODY_GTM_ADVISORY = [
-  "A focused sprint to embed AI into your GTM motion — from pipeline generation through to closing. I audit your current setup, identify where manual work or tool gaps are costing you pipeline, then run a management workshop to align leadership on the highest-leverage priorities.",
-  "You leave with a prioritized systems roadmap and clear next steps. The workshop is one part of the sprint — the deliverable is a plan your team can act on immediately.",
+  "For CEOs, CROs, and GTM leaders who want pipeline and velocity from systems — not heroics. I review your current motion, isolate friction from lead to close, and align the executive team on the highest-leverage AI bets before capital or headcount follows.",
+  "Deliverable-first: a prioritized systems roadmap your team can brief internally on Monday morning.",
 ];
 
 const BODY_OPERATIONS_ADVISORY = [
-  "A focused sprint to reduce operational overhead through AI. I map your highest-cost processes, identify where automation or AI-assisted workflows can reclaim the most capacity, then run a management workshop to align on priorities and sequencing.",
-  "You leave with a concrete implementation roadmap — what to automate, what to eliminate, and how to get started — plus a follow-up session to keep momentum.",
+  "For COOs and operational leaders under pressure to do more with the same footprint. I map where capacity leaks today, where AI-assisted workflows reclaim the most hours, and how sequencing reduces risk — then facilitate a leadership working session so priorities stick.",
+  "You receive a concrete roadmap: automate, redesign, or stop — plus a follow-up to keep momentum against quarterly goals.",
 ];
 
 const BODY_PRODUCTIVITY = [
-  "I work hands-on with your team to identify exactly where time is leaking and replace those habits with AI-native workflows. Every role gets something immediately actionable — not a generic overview that fades by next week.",
-  "This engagement is designed for teams that are ready to move past awareness and into real, day-to-day change.",
+  "Executive teams and senior IC cohorts who need AI embedded in how work actually gets done — not another awareness session. Role-aware, immediately usable workflows replace default habits; every participant leaves with something they will use this week.",
+  "Built for organizations that have outgrown pilots and want disciplined, measurable change at the edge of the business.",
 ];
 
 /** Detail-page copy; slugs and titles stay in sync with work-together-services `detailSlug` / private workshop `title`. */
@@ -44,42 +44,42 @@ export const PRIVATE_WORKSHOP_RECORDS: PrivateWorkshopRecord[] = [
     contactServiceId: "using-ai-in-your-business",
     title: "Using AI in Your Business",
     body: BODY_USING_AI,
-    priceLabel: "€1,500/sprint excl VAT",
+    priceLabel: "€1,500/sprint",
   },
   {
     slug: "improving-your-processes-with-ai",
     contactServiceId: "improving-your-processes-with-ai",
     title: "Improving Your Processes with AI",
     body: BODY_PROCESSES,
-    priceLabel: "€1,500/sprint excl VAT",
+    priceLabel: "€1,500/sprint",
   },
   {
     slug: "personal-productivity-with-ai",
     contactServiceId: "personal-productivity-with-ai",
     title: "Personal Productivity with AI",
     body: BODY_PRODUCTIVITY,
-    priceLabel: "€1,500/sprint excl VAT",
+    priceLabel: "€1,500/sprint",
   },
   {
-    slug: "levelling-ai-adoption-recruiting-teams",
+    slug: "recruiting-ai-workflow-advisory",
     contactServiceId: "levelling-ai-recruiting",
     title: "Recruiting AI Workflow Advisory",
     body: BODY_RECRUITING_ADVISORY,
-    priceLabel: "€1,500/sprint excl VAT",
+    priceLabel: "€1,500/sprint",
   },
   {
-    slug: "levelling-ai-adoption-gtm-teams",
+    slug: "gtm-ai-systems-advisory",
     contactServiceId: "levelling-ai-gtm",
     title: "GTM AI Systems Advisory",
     body: BODY_GTM_ADVISORY,
-    priceLabel: "€1,500/sprint excl VAT",
+    priceLabel: "€1,500/sprint",
   },
   {
-    slug: "levelling-ai-adoption-operations-teams",
+    slug: "operations-ai-systems-advisory",
     contactServiceId: "levelling-ai-operations",
     title: "Operations AI Systems Advisory",
     body: BODY_OPERATIONS_ADVISORY,
-    priceLabel: "€1,500/sprint excl VAT",
+    priceLabel: "€1,500/sprint",
   },
 ];
 

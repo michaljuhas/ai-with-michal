@@ -21,6 +21,7 @@ interface WorkshopPageProps {
   displayDate: string;
   displayTime: string;
   workshopDate: Date;
+  workshopEndDate: Date;
   workshopSlug: string;
   timezoneConverterUrl: string;
   initialSoldCount: number;
@@ -31,6 +32,7 @@ export default function WorkshopPage({
   displayDate,
   displayTime,
   workshopDate,
+  workshopEndDate,
   workshopSlug,
   timezoneConverterUrl,
   initialSoldCount,
@@ -50,7 +52,16 @@ export default function WorkshopPage({
       <WhatYouGetSection />
       <HowItWorksSection />
       <VideoTestimonialSection />
-      <PricingSection open={open} displayDate={displayDate} displayTime={displayTime} workshopSlug={workshopSlug} timezoneConverterUrl={timezoneConverterUrl} initialSoldCount={initialSoldCount} />
+      <PricingSection
+        open={open}
+        displayDate={displayDate}
+        displayTime={displayTime}
+        workshopSlug={workshopSlug}
+        timezoneConverterUrl={timezoneConverterUrl}
+        initialSoldCount={initialSoldCount}
+        workshopStartAt={workshopDate}
+        workshopEndAt={workshopEndDate}
+      />
       <GuaranteeSection />
       <AboutSection />
       <FinalCTA open={open} workshopSlug={workshopSlug} />

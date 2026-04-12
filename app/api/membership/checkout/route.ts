@@ -15,6 +15,9 @@ export async function POST(req: NextRequest) {
   }
 
   if (!priceId) {
+    await captureEvent(userId, "membership_checkout_not_configured", {
+      reason: "missing_stripe_price_annual_membership",
+    });
     return NextResponse.json(
       { error: "Annual membership is not configured (missing STRIPE_PRICE_ANNUAL_MEMBERSHIP)." },
       { status: 503 }
@@ -106,6 +109,9 @@ export async function POST(req: NextRequest) {
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Stripe checkout failed";
     console.error("membership checkout error:", err);
+    await captureEvent(userId, "membership_checkout_session_failed", {
+      error_message: message.slice(0, 240),
+    });
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

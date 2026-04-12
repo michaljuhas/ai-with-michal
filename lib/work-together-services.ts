@@ -1,5 +1,5 @@
 /**
- * Single source for the homepage “Work Together” menu, /contact checkboxes,
+ * Single source for the homepage menu, /consulting hub, /contact checkboxes,
  * and stable ?service= keys (id is used in URLs).
  */
 
@@ -16,11 +16,11 @@ export type WorkTogetherService = {
   description: string;
   priceLabel: string;
   ctaKind: CtaKind;
-  /** For private_workshop — URL segment under /private-workshops/ */
+  /** For private_workshop — URL segment under /consulting/ */
   detailSlug?: string;
 };
 
-/** Ordered list for the dedicated /work-together menu (excludes custom-scope contact-only rows). */
+/** Ordered list for the homepage “What we offer” accordion (includes mentoring). */
 export const WORK_TOGETHER_NAV_MENU_SERVICE_IDS: readonly string[] = [
   "bi-weekly-individual-mentoring",
   "group-mentoring",
@@ -35,12 +35,25 @@ export const WORK_TOGETHER_NAV_MENU_SERVICE_IDS: readonly string[] = [
   "implementation-full-time",
 ];
 
+/** /consulting hub + sprint sidebars — no mentoring rows. */
+export const CONSULTING_NAV_MENU_SERVICE_IDS: readonly string[] = [
+  "using-ai-in-your-business",
+  "improving-your-processes-with-ai",
+  "personal-productivity-with-ai",
+  "levelling-ai-recruiting",
+  "levelling-ai-gtm",
+  "levelling-ai-operations",
+  "advisory-board-member",
+  "implementation-part-time",
+  "implementation-full-time",
+];
+
 export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
   {
     id: "bi-weekly-individual-mentoring",
-    title: "Bi-weekly Individual mentoring",
+    title: "Individual AI Implementation Mentoring",
     description:
-      "We’ll meet 1-on-1 for a video call every other week. Tell me what problems you have, what you work on, and I tell you how to do it better with AI.\n\nIdeal if you’re looking for best practices and ideas on what you can do better in your business.",
+      "We’ll meet 1-on-1 for a video call every other week to discuss how you could get more done with AI in your business.\n\nPlus async communication in our dedicated private workgroup to help you get unstuck.",
     priceLabel: "€697/month",
     ctaKind: "mentoring_individual",
   },
@@ -86,7 +99,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
       "A focused sprint to transform how your recruiting team works with AI. I start with a diagnostic to map your current workflows, run a hands-on management workshop to align on priorities, then deliver a concrete implementation roadmap. You leave with clarity on where to act and a plan your team can execute.",
     priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
-    detailSlug: "levelling-ai-adoption-recruiting-teams",
+    detailSlug: "recruiting-ai-workflow-advisory",
   },
   {
     id: "levelling-ai-gtm",
@@ -95,7 +108,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
       "A focused sprint to embed AI into your GTM motion — from pipeline generation to closing. I audit your current setup, run a management workshop to align leadership on priorities, then deliver a prioritized systems roadmap. You leave knowing exactly where AI can accelerate revenue.",
     priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
-    detailSlug: "levelling-ai-adoption-gtm-teams",
+    detailSlug: "gtm-ai-systems-advisory",
   },
   {
     id: "levelling-ai-operations",
@@ -104,7 +117,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
       "A focused sprint to reduce operational overhead through AI. I map your highest-cost processes, run a management workshop to align on priorities, then deliver a concrete implementation roadmap. You leave with a clear picture of what to automate, what to eliminate, and how to get started.",
     priceLabel: "€1,500/sprint",
     ctaKind: "private_workshop",
-    detailSlug: "levelling-ai-adoption-operations-teams",
+    detailSlug: "operations-ai-systems-advisory",
   },
   {
     id: "advisory-board-member",
@@ -113,6 +126,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
       "I join your select management meetings and dedicate one day per month to helping your business become AI-native.\n\nWe'll work on mid-term projects to help your organization not only to increase AI adoption, but also to implement innovative projects.",
     priceLabel: "€2,500/month",
     ctaKind: "contact",
+    detailSlug: "advisory-board-member",
   },
   {
     id: "implementation-part-time",
@@ -121,6 +135,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
       "Tell me what needs to get done and my colleague and I will take care of it. I am paired with an AI-native agentic engineer who gets stuff done for you.\n\nWe'll work on projects with immediate ROI approx 80 hours per month.",
     priceLabel: "€5,000/month",
     ctaKind: "implementation_landing",
+    detailSlug: "hands-on-implementation-part-time",
   },
   {
     id: "implementation-full-time",
@@ -129,6 +144,7 @@ export const WORK_TOGETHER_SERVICES: WorkTogetherService[] = [
       "Tell me what needs to get done and my colleague and I will take care of it. I am paired with an AI-native agentic engineer who gets stuff done for you.\n\nWe'll work on projects with immediate ROI approx 160 hours per month.",
     priceLabel: "€10,000/month",
     ctaKind: "implementation_landing",
+    detailSlug: "hands-on-implementation-full-time",
   },
   {
     id: "ai-for-inbound-marketing",
@@ -177,6 +193,51 @@ export function getWorkTogetherNavMenuServices(): WorkTogetherService[] {
     if (!s) throw new Error(`Missing work-together service: ${id}`);
     return s;
   });
+}
+
+export function getConsultingNavMenuServices(): WorkTogetherService[] {
+  return CONSULTING_NAV_MENU_SERVICE_IDS.map((id) => {
+    const s = getWorkTogetherServiceById(id);
+    if (!s) throw new Error(`Missing consulting nav service: ${id}`);
+    return s;
+  });
+}
+
+export function getWorkTogetherServiceHref(s: WorkTogetherService): string {
+  if (s.detailSlug) {
+    return `/consulting/${s.detailSlug}`;
+  }
+  switch (s.ctaKind) {
+    case "mentoring_individual":
+      return "/individual-ai-mentoring";
+    case "mentoring_group":
+      return "/group-ai-mentoring";
+    case "implementation_landing":
+      return "/ai-implementation";
+    case "contact":
+    default:
+      return `/contact?service=${encodeURIComponent(s.id)}`;
+  }
+}
+
+export function getWorkTogetherCtaLabel(s: WorkTogetherService): string {
+  if (s.detailSlug && s.ctaKind === "implementation_landing") {
+    return "Learn more";
+  }
+  if (s.detailSlug && s.id === "advisory-board-member") {
+    return "Learn more";
+  }
+  switch (s.ctaKind) {
+    case "mentoring_individual":
+    case "mentoring_group":
+    case "private_workshop":
+      return "Learn more";
+    case "implementation_landing":
+      return "How we implement";
+    case "contact":
+    default:
+      return "Get in touch";
+  }
 }
 
 export function getWorkTogetherServiceByDetailSlug(

@@ -124,18 +124,18 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* For Teams nav */}
+          {/* Consulting */}
           <div>
             <p className="text-xs font-semibold tracking-widest uppercase text-slate-400 mb-3">
-              For Teams
+              Consulting
             </p>
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/work-together"
+                  href="/consulting"
                   className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
                 >
-                  Work Together
+                  Consulting &amp; sprints
                 </Link>
               </li>
             </ul>

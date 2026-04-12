@@ -2,7 +2,10 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
+import { useUser } from "@clerk/nextjs";
+import posthog from "posthog-js";
 import {
   ArrowDown,
   ArrowRight,
@@ -15,6 +18,7 @@ import {
 } from "lucide-react";
 import MembershipCheckoutButton from "@/components/membership/MembershipCheckoutButton";
 import MichalProfileLearnMoreLink from "@/components/MichalProfileLearnMoreLink";
+import { getStoredTrackingParams } from "@/lib/tracking-params";
 
 const ADOPTION_LADDER_SRC = "/news/2026-04-08-ai-adoption-maturity.jpg";
 
@@ -81,7 +85,40 @@ const fadeUp = {
   transition: { duration: 0.5 },
 };
 
+function trackMembershipNav(target: string) {
+  posthog.capture("membership_in_page_nav", { target, pathname: "/membership" });
+}
+
 export default function MembershipSalesContent() {
+  const pageViewSent = useRef(false);
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (pageViewSent.current) return;
+    pageViewSent.current = true;
+    const urlRef =
+      typeof window !== "undefined"
+        ? new URLSearchParams(window.location.search).get("ref")
+        : null;
+    const stored = getStoredTrackingParams();
+    const ref = urlRef ?? stored?.ref;
+    posthog.capture("membership_page_viewed", {
+      pathname: "/membership",
+      ...(ref ? { ref } : {}),
+      ...(stored?.utm_source ? { utm_source: stored.utm_source } : {}),
+      ...(stored?.utm_medium ? { utm_medium: stored.utm_medium } : {}),
+      ...(stored?.utm_campaign ? { utm_campaign: stored.utm_campaign } : {}),
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    posthog.identify(user.id, {
+      email: user.primaryEmailAddress?.emailAddress,
+      name: user.fullName ?? undefined,
+    });
+  }, [user]);
+
   return (
     <main className="bg-white text-slate-900">
       {/* Hero */}
@@ -126,6 +163,7 @@ export default function MembershipSalesContent() {
                 <MembershipCheckoutButton className="!bg-blue-600 hover:!bg-blue-700 !text-white !shadow-lg !shadow-blue-600/20" />
                 <Link
                   href="#ladder"
+                  onClick={() => trackMembershipNav("ladder")}
                   className="group inline-flex items-center gap-2 text-sm font-semibold text-slate-600 transition hover:text-blue-600"
                 >
                   See the adoption ladder
@@ -208,6 +246,7 @@ export default function MembershipSalesContent() {
             </div>
             <Link
               href="#workshops"
+              onClick={() => trackMembershipNav("workshops")}
               className="group inline-flex items-center gap-2 self-start text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors md:self-auto"
             >
               Skip to workshop curriculum

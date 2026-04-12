@@ -1,5 +1,10 @@
 import { notFound } from "next/navigation";
-import { getPublicWorkshopBySlug, isOpen, getTimezoneConverterUrl } from "@/lib/workshops";
+import {
+  getPublicWorkshopBySlug,
+  isOpen,
+  getTimezoneConverterUrl,
+  parseWorkshopIcsUtc,
+} from "@/lib/workshops";
 import { getPaidOrderCount } from "@/lib/order-count";
 import AiInRecruitingPage from "@/components/workshops/2026-04-16-ai-in-recruiting/WorkshopPage";
 import SourcingAutomationPage from "@/components/workshops/2026-04-23-sourcing-automation/WorkshopPage";
@@ -10,6 +15,7 @@ const workshopPages: Record<string, React.ComponentType<{
   displayDate: string;
   displayTime: string;
   workshopDate: Date;
+  workshopEndDate: Date;
   workshopSlug: string;
   timezoneConverterUrl: string;
   initialSoldCount: number;
@@ -39,6 +45,7 @@ export default async function WorkshopPage({ params }: Props) {
       displayDate={workshop.displayDate}
       displayTime={workshop.displayTime}
       workshopDate={workshop.date}
+      workshopEndDate={parseWorkshopIcsUtc(workshop.endDate)}
       workshopSlug={workshop.slug}
       timezoneConverterUrl={getTimezoneConverterUrl(workshop.date)}
       initialSoldCount={initialSoldCount}

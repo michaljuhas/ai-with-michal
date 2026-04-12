@@ -7,7 +7,7 @@ import WorkTogetherServiceAccordions from "@/components/work-together/WorkTogeth
 
 export default function WorkTogetherSection() {
   return (
-    <section id="work-together" className="py-20 px-6 bg-white border-t border-slate-100">
+    <section id="consulting" className="py-20 px-6 bg-white border-t border-slate-100">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -17,15 +17,15 @@ export default function WorkTogetherSection() {
           className="text-center mb-12"
         >
           <span className="text-blue-600 text-sm font-semibold tracking-widest uppercase">
-            Work together
+            Consulting
           </span>
           <h2 className="mt-4 text-3xl md:text-4xl font-bold text-slate-900">
             What we offer
           </h2>
           <p className="mt-3 text-slate-600 max-w-2xl mx-auto text-sm md:text-base">
             A concise menu for teams and leaders. Expand a row for detail — pricing stays visible.{" "}
-            <Link href="/work-together" className="text-blue-600 font-medium hover:underline">
-              Open full Work Together page
+            <Link href="/consulting" className="text-blue-600 font-medium hover:underline">
+              Open full consulting page
             </Link>
             .
           </p>

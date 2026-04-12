@@ -23,13 +23,19 @@ export default function MembershipCheckoutButton({
   async function handleClick() {
     setError(null);
     if (!user) {
+      posthog.capture("membership_checkout_attempted_unauthenticated", {
+        pathname: cancelUrl,
+      });
       const redirect = encodeURIComponent(cancelUrl || "/membership");
       window.location.assign(`/register?redirect_url=${redirect}&ref=membership-page`);
       return;
     }
 
     setLoading(true);
-    posthog.capture("membership_checkout_initiated", { pathname: cancelUrl });
+    posthog.capture("membership_checkout_initiated", {
+      pathname: cancelUrl,
+      product: "annual_membership",
+    });
     try {
       const res = await fetch("/api/membership/checkout", {
         method: "POST",
@@ -38,15 +44,38 @@ export default function MembershipCheckoutButton({
       });
       const data = (await res.json()) as { url?: string; error?: string };
       if (!res.ok) {
+        const reason =
+          res.status === 401
+            ? "unauthorized"
+            : res.status === 503
+              ? "not_configured"
+              : res.status >= 500
+                ? "server_error"
+                : "api_error";
+        posthog.capture("membership_checkout_error", {
+          pathname: cancelUrl,
+          reason,
+          status: res.status,
+        });
         setError(data.error ?? "Checkout failed");
         return;
       }
       if (data.url) {
+        posthog.capture("membership_checkout_redirecting", { pathname: cancelUrl });
         window.location.assign(data.url);
         return;
       }
+      posthog.capture("membership_checkout_error", {
+        pathname: cancelUrl,
+        reason: "no_url",
+      });
       setError("No checkout URL returned");
-    } catch {
+    } catch (err) {
+      posthog.captureException(err);
+      posthog.capture("membership_checkout_error", {
+        pathname: cancelUrl,
+        reason: "network_error",
+      });
       setError("Network error");
     } finally {
       setLoading(false);

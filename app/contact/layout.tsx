@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Contact — Work with Michal | AI with Michal",
   description:
-    "Tell us what you need: mentoring, private workshops, advisory, or hands-on AI implementation. We’ll follow up and help you book a call.",
+    "Tell us what you need: mentoring, consulting sprints, advisory, or hands-on AI implementation. We'll follow up and help you book a call.",
   alternates: {
     canonical: "/contact",
   },

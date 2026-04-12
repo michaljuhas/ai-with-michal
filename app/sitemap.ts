@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 import { NEWS_ARTICLES } from "@/lib/news";
-import { PRIVATE_WORKSHOP_SLUGS } from "@/lib/private-workshops";
+import { ALL_CONSULTING_DETAIL_SLUGS } from "@/lib/consulting-pages";
 import { trainingLessons } from "@/lib/training";
 import { PUBLIC_WORKSHOPS } from "@/lib/workshops";
 
@@ -13,7 +13,7 @@ const STATIC_PATHS: Array<{ path: string; priority: number; changeFrequency: Met
   { path: "/news", priority: 0.8, changeFrequency: "weekly" },
   { path: "/resources", priority: 0.8, changeFrequency: "monthly" },
   { path: "/contact", priority: 0.7, changeFrequency: "monthly" },
-  { path: "/work-together", priority: 0.85, changeFrequency: "monthly" },
+  { path: "/consulting", priority: 0.85, changeFrequency: "monthly" },
   { path: "/ai-implementation", priority: 0.85, changeFrequency: "monthly" },
   { path: "/ai-workshops-for-teams", priority: 0.85, changeFrequency: "monthly" },
   { path: "/for-teams", priority: 0.85, changeFrequency: "monthly" },
@@ -69,9 +69,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     });
   }
 
-  for (const slug of PRIVATE_WORKSHOP_SLUGS) {
+  for (const slug of ALL_CONSULTING_DETAIL_SLUGS) {
     entries.push({
-      url: `${base}/private-workshops/${slug}`,
+      url: `${base}/consulting/${slug}`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.6,

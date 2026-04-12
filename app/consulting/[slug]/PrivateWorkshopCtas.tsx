@@ -16,7 +16,7 @@ export default function PrivateWorkshopCtas({
 }) {
   const [showForm, setShowForm] = useState(false);
   const service = getWorkTogetherServiceById(contactServiceId);
-  const title = service?.title || "Private Workshop";
+  const title = service?.title || "Consulting sprint";
 
   return (
     <div className="mt-6">
@@ -60,7 +60,7 @@ export default function PrivateWorkshopCtas({
               availableServices={CONTACT_FORM_SERVICE_LABELS}
               preselectedService={title}
               heading="Request more info & pricing"
-              subheading={`Tell me a bit about your team and I'll get back to you with a tailored proposal for ${title}.`}
+              subheading={`Tell me a bit about your team and I&apos;ll get back to you with a tailored proposal for ${title}.`}
             />
           </motion.div>
         )}

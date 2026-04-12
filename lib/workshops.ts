@@ -213,6 +213,66 @@ export function getTimezoneConverterUrl(date: Date): string {
   return `https://www.worldtimebuddy.com/?qm=1&lid=5391959,5128581,100,2643743,3060972,3067696,703448,1880252&h=3060972&date=${y}-${m}-${d}&sln=16-17.5&hf=1`;
 }
 
+/** Parses `PUBLIC_WORKSHOPS` / `WORKSHOP` calendar strings (`YYYYMMDDTHHmmssZ`) to a UTC `Date`. */
+export function parseWorkshopIcsUtc(ics: string): Date {
+  const m = /^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})Z$/.exec(ics);
+  if (!m) {
+    throw new Error(`Invalid workshop ICS instant: ${ics}`);
+  }
+  const [, y, mo, d, h, mi, s] = m;
+  return new Date(
+    Date.UTC(Number(y), Number(mo) - 1, Number(d), Number(h), Number(mi), Number(s)),
+  );
+}
+
+/** Rows for the public workshop detail timezone popover (IANA zones; abbreviations come from `Intl`). */
+export const WORKSHOP_TIMEZONE_POPOVER_ZONES: readonly { label: string; timeZone: string }[] = [
+  { label: "US Pacific (PT)", timeZone: "America/Los_Angeles" },
+  { label: "US Eastern (ET)", timeZone: "America/New_York" },
+  { label: "UK", timeZone: "Europe/London" },
+  { label: "Central Europe", timeZone: "Europe/Bratislava" },
+  { label: "India (IST)", timeZone: "Asia/Kolkata" },
+  { label: "Hong Kong / Singapore", timeZone: "Asia/Singapore" },
+] as const;
+
+/**
+ * One-line local interval for a workshop slot, e.g. `Apr 16, 2026 · 10:00 AM – 11:30 AM EDT`.
+ * Handles a different local calendar day between start and end (rare for 90-minute slots).
+ */
+export function formatWorkshopIntervalInTimeZone(
+  start: Date,
+  end: Date,
+  timeZone: string,
+): string {
+  const dateFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  const timeFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hour: "numeric",
+    minute: "2-digit",
+  });
+  const tzFmt = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "short",
+  });
+  const tz =
+    tzFmt.formatToParts(end).find((p) => p.type === "timeZoneName")?.value?.trim() ?? "";
+
+  const startDate = dateFmt.format(start);
+  const endDate = dateFmt.format(end);
+  const t0 = timeFmt.format(start);
+  const t1 = timeFmt.format(end);
+
+  if (startDate === endDate) {
+    return `${startDate} · ${t0} – ${t1} ${tz}`.trim();
+  }
+  return `${startDate} ${t0} – ${endDate} ${t1} ${tz}`.trim();
+}
+
 export function getPublicWorkshopBySlug(slug: string): Workshop | undefined {
   return PUBLIC_WORKSHOPS.find((w) => w.slug === slug);
 }

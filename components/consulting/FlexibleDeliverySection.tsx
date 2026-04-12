@@ -19,15 +19,14 @@ export default function FlexibleDeliverySection() {
           className="mb-12 text-center"
         >
           <span className="text-blue-600 text-xs font-bold tracking-widest uppercase">
-            Flexible Delivery
+            How we work
           </span>
           <h2 className="mt-3 text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
-            Available Online and In-Person
+            Remote or on-site with your team
           </h2>
         </motion.div>
 
         <div className="relative">
-          {/* Centre overlay card — desktop only */}
           <div className="hidden md:block absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 w-full md:w-auto text-center">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
@@ -37,14 +36,13 @@ export default function FlexibleDeliverySection() {
             >
               <div className="bg-[#18181b] text-white px-14 py-10 rounded-[2.5rem] shadow-[0_40px_80px_-20px_rgba(0,0,0,0.8)] border border-white/10 inline-block max-w-[600px] transform hover:scale-105 transition-transform duration-500 cursor-default">
                 <h3 className="font-bold text-5xl leading-[1.2] tracking-tight text-center">
-                  Delivering workshops <br /> online and in-person
+                  Consulting sessions <br /> online and in person
                 </h3>
               </div>
             </motion.div>
           </div>
 
           <div className="grid md:grid-cols-2 gap-6 md:gap-10">
-            {/* Online card */}
             <motion.div
               initial={{ opacity: 0, x: -32 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -54,7 +52,7 @@ export default function FlexibleDeliverySection() {
             >
               <Image
                 src={`${BASE_ASSET_URL}/img/Training-online.jpg`}
-                alt="Online private workshop session"
+                alt="Remote consulting session with a leadership team"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover transition-transform duration-[2.5s] ease-out group-hover:scale-110"
@@ -65,13 +63,12 @@ export default function FlexibleDeliverySection() {
                     REMOTE
                   </span>
                   <h3 className="text-white font-extrabold text-3xl md:text-7xl tracking-tight leading-tight">
-                    Online <br /> Workshop
+                    Online <br /> sessions
                   </h3>
                 </div>
               </div>
             </motion.div>
 
-            {/* In-person card */}
             <motion.div
               initial={{ opacity: 0, x: 32 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -81,7 +78,7 @@ export default function FlexibleDeliverySection() {
             >
               <Image
                 src={`${BASE_ASSET_URL}/img/Training-in-person.jpg`}
-                alt="In-person private workshop session"
+                alt="On-site consulting with executives"
                 fill
                 sizes="(max-width: 768px) 100vw, 50vw"
                 className="object-cover transition-transform duration-[2.5s] ease-out group-hover:scale-110"
@@ -92,7 +89,7 @@ export default function FlexibleDeliverySection() {
                     IN-PERSON
                   </span>
                   <h3 className="text-white font-extrabold text-3xl md:text-7xl tracking-tight leading-tight">
-                    On-Site <br /> Workshop
+                    On-site <br /> working sessions
                   </h3>
                 </div>
               </div>

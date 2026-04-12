@@ -10,6 +10,46 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        source: "/work-together",
+        destination: "/consulting",
+        permanent: true,
+      },
+      {
+        source: "/consulting/levelling-ai-adoption-recruiting-teams",
+        destination: "/consulting/recruiting-ai-workflow-advisory",
+        permanent: true,
+      },
+      {
+        source: "/consulting/levelling-ai-adoption-gtm-teams",
+        destination: "/consulting/gtm-ai-systems-advisory",
+        permanent: true,
+      },
+      {
+        source: "/consulting/levelling-ai-adoption-operations-teams",
+        destination: "/consulting/operations-ai-systems-advisory",
+        permanent: true,
+      },
+      {
+        source: "/private-workshops/levelling-ai-adoption-recruiting-teams",
+        destination: "/consulting/recruiting-ai-workflow-advisory",
+        permanent: true,
+      },
+      {
+        source: "/private-workshops/levelling-ai-adoption-gtm-teams",
+        destination: "/consulting/gtm-ai-systems-advisory",
+        permanent: true,
+      },
+      {
+        source: "/private-workshops/levelling-ai-adoption-operations-teams",
+        destination: "/consulting/operations-ai-systems-advisory",
+        permanent: true,
+      },
+      {
+        source: "/private-workshops/:slug",
+        destination: "/consulting/:slug",
+        permanent: true,
+      },
+      {
         source: "/ai-integrations",
         destination: "/ai-implementation",
         permanent: true,

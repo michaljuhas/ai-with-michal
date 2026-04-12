@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -10,6 +10,15 @@ import posthog from "posthog-js";
 function MembershipThankYouInner() {
   const searchParams = useSearchParams();
   const sessionId = searchParams.get("session_id") ?? "";
+  const thankYouViewed = useRef(false);
+
+  useEffect(() => {
+    if (thankYouViewed.current) return;
+    thankYouViewed.current = true;
+    posthog.capture("membership_thank_you_viewed", {
+      has_session_id: sessionId.length > 0,
+    });
+  }, [sessionId]);
 
   useEffect(() => {
     if (!sessionId) return;
@@ -54,6 +63,9 @@ function MembershipThankYouInner() {
         >
           <Link
             href="/members"
+            onClick={() =>
+              posthog.capture("membership_thank_you_cta_clicked", { destination: "member_hub" })
+            }
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-3.5 text-sm font-semibold text-white hover:bg-slate-800 transition-colors"
           >
             Go to member hub
@@ -61,6 +73,9 @@ function MembershipThankYouInner() {
           </Link>
           <Link
             href="/billing"
+            onClick={() =>
+              posthog.capture("membership_thank_you_cta_clicked", { destination: "billing" })
+            }
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-800 hover:bg-slate-50 transition-colors"
           >
             Billing

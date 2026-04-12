@@ -193,8 +193,8 @@ function MobileOverlay({
                 </p>
                 <Link href="/" onClick={onClose} className={linkClass("/", true)}>Home</Link>
                 <Link href="/workshops" onClick={onClose} className={linkClass("/workshops")}>Workshops</Link>
-                <Link href="/work-together" onClick={onClose} className={linkClass("/work-together")}>
-                  Work Together
+                <Link href="/consulting" onClick={onClose} className={linkClass("/consulting")}>
+                  Consulting
                 </Link>
                 <Link
                   href={isSignedIn ? "/members" : "/login?redirect_url=/members"}
@@ -321,10 +321,10 @@ export default function Header() {
               Workshops
             </Link>
             <Link
-              href="/work-together"
-              className={navLinkClass("/work-together")}
+              href="/consulting"
+              className={navLinkClass("/consulting")}
             >
-              Work Together
+              Consulting
             </Link>
             <Link
               href={isSignedIn ? "/members" : "/login?redirect_url=/members"}

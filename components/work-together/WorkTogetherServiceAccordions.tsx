@@ -4,37 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, User, Users, MonitorPlay, Zap, Mail, ArrowRight } from "lucide-react";
-import type { WorkTogetherService } from "@/lib/work-together-services";
-
-function ctaHref(s: WorkTogetherService): string {
-  switch (s.ctaKind) {
-    case "mentoring_individual":
-      return "/individual-ai-mentoring";
-    case "mentoring_group":
-      return "/group-ai-mentoring";
-    case "implementation_landing":
-      return "/ai-implementation";
-    case "private_workshop":
-      return `/private-workshops/${s.detailSlug!}`;
-    case "contact":
-    default:
-      return `/contact?service=${encodeURIComponent(s.id)}`;
-  }
-}
-
-function ctaLabel(s: WorkTogetherService): string {
-  switch (s.ctaKind) {
-    case "mentoring_individual":
-    case "mentoring_group":
-    case "private_workshop":
-      return "Learn more";
-    case "implementation_landing":
-      return "How we implement";
-    case "contact":
-    default:
-      return "Get in touch";
-  }
-}
+import {
+  getWorkTogetherCtaLabel,
+  getWorkTogetherServiceHref,
+  type WorkTogetherService,
+} from "@/lib/work-together-services";
 
 function getServiceIconBg(kind: WorkTogetherService["ctaKind"]) {
   switch (kind) {
@@ -129,11 +103,11 @@ function AccordionItem({ service, isOpen, onToggle }: { service: WorkTogetherSer
                   {service.description}
                 </p>
                 <Link
-                  href={ctaHref(service)}
+                  href={getWorkTogetherServiceHref(service)}
                   className="inline-flex items-center justify-center gap-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-xl transition-all hover:shadow-md hover:shadow-blue-600/20 flex-shrink-0"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  {ctaLabel(service)}
+                  {getWorkTogetherCtaLabel(service)}
                   <ArrowRight size={16} />
                 </Link>
               </div>
@@ -151,6 +125,9 @@ export default function WorkTogetherServiceAccordions({
   services: WorkTogetherService[];
 }) {
   const [openId, setOpenId] = useState<string | null>(null);
+  const firstServiceId = services[0]?.id;
+  const gettingStartedDividerPt =
+    firstServiceId === "using-ai-in-your-business" ? "pt-0" : "pt-8";
 
   return (
     <div className="space-y-3">
@@ -166,7 +143,7 @@ export default function WorkTogetherServiceAccordions({
             </div>
           )}
           {s.id === "using-ai-in-your-business" && (
-            <div className="flex items-center gap-4 pt-8 pb-3">
+            <div className={`flex items-center gap-4 ${gettingStartedDividerPt} pb-3`}>
               <div className="h-px flex-1 bg-slate-200"></div>
               <span className="text-xs font-bold uppercase tracking-widest text-slate-400">
                 Getting Started

@@ -60,7 +60,7 @@ const helpPillars = [
     description:
       "Custom AI training and implementation services for companies. From half-day workshops to full integration projects — delivered by Michal and his colleagues.",
     highlight: "Training & implementation",
-    href: "/work-together",
+    href: "/consulting",
     cta: "Explore options",
     color: "emerald",
   },
