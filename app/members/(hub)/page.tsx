@@ -9,6 +9,7 @@ import {
 import type { WorkshopDef } from "@/lib/workshops";
 import WorkshopCard from "@/components/members/WorkshopCard";
 import { isAdminUser } from "@/lib/config";
+import { userHasActiveAnnualMembership } from "@/lib/membership-access";
 
 export default async function MembersWorkshopsPage() {
   const { userId } = await auth();
@@ -16,8 +17,8 @@ export default async function MembersWorkshopsPage() {
 
   let myWorkshops: WorkshopDef[] = [];
 
-  if (isAdminUser(userId)) {
-    myWorkshops = [...workshops].sort((a, b) => {
+  const sortWorkshops = (defs: WorkshopDef[]) =>
+    [...defs].sort((a, b) => {
       const aUpcoming = a.date >= now;
       const bUpcoming = b.date >= now;
       if (aUpcoming && !bUpcoming) return -1;
@@ -25,31 +26,33 @@ export default async function MembersWorkshopsPage() {
       if (aUpcoming) return a.date.getTime() - b.date.getTime();
       return b.date.getTime() - a.date.getTime();
     });
+
+  if (isAdminUser(userId)) {
+    myWorkshops = sortWorkshops(workshops);
   } else if (userId) {
     const supabase = createServiceClient();
-    const { data } = await supabase
-      .from("orders")
-      .select("workshop_slug")
-      .eq("clerk_user_id", userId)
-      .eq("status", "paid")
-      .not("workshop_slug", "is", null);
+    const hasMembership = await userHasActiveAnnualMembership(supabase, userId);
 
-    const purchasedSlugs = [...new Set(
-      (data ?? []).map((o: { workshop_slug: string }) => o.workshop_slug).filter(Boolean)
-    )];
+    if (hasMembership) {
+      myWorkshops = sortWorkshops(workshops);
+    } else {
+      const { data } = await supabase
+        .from("orders")
+        .select("workshop_slug")
+        .eq("clerk_user_id", userId)
+        .eq("status", "paid")
+        .not("workshop_slug", "is", null);
 
-    const defs = purchasedSlugs
-      .map((slug) => getWorkshopDefByPublicSlug(slug))
-      .filter((w): w is WorkshopDef => w !== null);
+      const purchasedSlugs = [...new Set(
+        (data ?? []).map((o: { workshop_slug: string }) => o.workshop_slug).filter(Boolean)
+      )];
 
-    myWorkshops = defs.sort((a, b) => {
-      const aUpcoming = a.date >= now;
-      const bUpcoming = b.date >= now;
-      if (aUpcoming && !bUpcoming) return -1;
-      if (!aUpcoming && bUpcoming) return 1;
-      if (aUpcoming) return a.date.getTime() - b.date.getTime();
-      return b.date.getTime() - a.date.getTime();
-    });
+      const defs = purchasedSlugs
+        .map((slug) => getWorkshopDefByPublicSlug(slug))
+        .filter((w): w is WorkshopDef => w !== null);
+
+      myWorkshops = sortWorkshops(defs);
+    }
   }
 
   const hasWorkshops = myWorkshops.length > 0;

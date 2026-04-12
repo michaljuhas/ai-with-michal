@@ -8,12 +8,19 @@ import {
   notifyAdminPaymentCompleted,
   sendWorkshopConfirmation,
   sendCourseConfirmation,
+  sendMembershipConfirmation,
 } from "@/lib/email";
 import { getCourseBySlug } from "@/lib/courses";
 import { sendMetaEvent } from "@/lib/meta-capi";
 import { normalizeBillingCountryCode } from "@/lib/billing-country";
 import { orderAmountsFromCheckoutSession } from "@/lib/stripe-order-amounts";
 import { metaPurchaseEventSourceUrl } from "@/lib/meta-event-source-url";
+import { upsertAnnualMembershipFromCheckoutSession } from "@/lib/annual-membership-checkout";
+
+function membershipPurchaseSourceUrl(appUrl: string | undefined | null): string {
+  const base = (appUrl ?? "").trim().replace(/\/$/, "") || "https://aiwithmichal.com";
+  return `${base}/membership`;
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.text();
@@ -41,10 +48,83 @@ export async function POST(req: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const clerkUserId = session.metadata?.clerk_user_id;
+    const product = session.metadata?.product;
     const tier = session.metadata?.tier as "basic" | "pro" | undefined;
-    const product = session.metadata?.product; // "course" | undefined (workshop = undefined)
     const workshopSlug = session.metadata?.workshop_slug;
     const courseSlug = session.metadata?.course_slug;
+
+    if (product === "annual_membership") {
+      if (!clerkUserId) {
+        console.error("Missing clerk_user_id in membership checkout session", session.id);
+        return NextResponse.json({ error: "Missing metadata" }, { status: 400 });
+      }
+
+      const supabase = createServiceClient();
+      const result = await upsertAnnualMembershipFromCheckoutSession(supabase, session);
+      if (!result.ok) {
+        return NextResponse.json({ error: result.error }, { status: 500 });
+      }
+
+      const { amount_eur: amountEur } = orderAmountsFromCheckoutSession(session);
+
+      await captureEvent(clerkUserId, "membership_purchased", {
+        $insert_id: `membership_${session.id}`,
+        stripe_session_id: session.id,
+        amount_eur: amountEur,
+        customer_email: session.customer_email,
+      });
+
+      try {
+        await notifyAdminPaymentCompleted({
+          clerkUserId,
+          productSummary: "Annual membership",
+          amountEur,
+          stripeSessionId: session.id,
+          customerEmail:
+            session.customer_details?.email ?? session.customer_email ?? undefined,
+        });
+      } catch (notifyErr) {
+        console.error("Failed to send admin payment notification:", notifyErr);
+      }
+
+      const customerEmail =
+        session.customer_details?.email ?? session.customer_email ?? "";
+      if (customerEmail) {
+        const hashedEmail = createHash("sha256")
+          .update(customerEmail.toLowerCase().trim())
+          .digest("hex");
+
+        await sendMetaEvent({
+          event_name: "Purchase",
+          event_source_url: membershipPurchaseSourceUrl(process.env.NEXT_PUBLIC_APP_URL),
+          event_id: `purchase_${session.id}`,
+          user_data: { em: hashedEmail },
+          custom_data: {
+            value: amountEur,
+            currency: (session.currency ?? "eur").toUpperCase(),
+            content_name: "Annual membership",
+            content_category: "membership",
+          },
+        });
+      }
+
+      const toEmail =
+        session.customer_details?.email ?? session.customer_email ?? "";
+      const toName =
+        session.customer_details?.name ??
+        session.metadata?.customer_name ??
+        "";
+
+      if (toEmail) {
+        try {
+          await sendMembershipConfirmation({ toEmail, toName });
+        } catch (emailErr) {
+          console.error("Failed to send membership confirmation email:", emailErr);
+        }
+      }
+
+      return NextResponse.json({ received: true });
+    }
 
     if (!clerkUserId || !tier) {
       console.error("Missing metadata in checkout session", session.id);
@@ -164,7 +244,6 @@ export async function POST(req: NextRequest) {
         console.error("Failed to send confirmation email:", emailErr);
       }
     }
-
   }
 
   return NextResponse.json({ received: true });

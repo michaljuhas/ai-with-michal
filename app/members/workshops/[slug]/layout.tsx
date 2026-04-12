@@ -6,6 +6,7 @@ import { createServiceClient } from "@/lib/supabase";
 import TrainingSidebar from "@/components/training/TrainingSidebar";
 import { getWorkshopBySlug, getWorkshopTrainingSections, STREAMS } from "@/lib/workshops";
 import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
 
 type WorkshopLayoutProps = {
   children: ReactNode;
@@ -31,15 +32,7 @@ export default async function WorkshopLayout({ children, params }: WorkshopLayou
       hasProAccess = true;
     } else {
       const supabase = createServiceClient();
-      const { data } = await supabase
-        .from("orders")
-        .select("id")
-        .eq("clerk_user_id", userId)
-        .eq("workshop_slug", workshop.slug)
-        .eq("tier", "pro")
-        .eq("status", "paid")
-        .maybeSingle();
-      hasProAccess = !!data;
+      hasProAccess = await userHasProWorkshopOrder(supabase, userId, workshop.slug);
     }
   }
 

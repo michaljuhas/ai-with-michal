@@ -259,6 +259,15 @@ describe("POST /api/workgroup/[workshopSlug]/posts", () => {
         if (table === "orders") {
           return { select: ordersSelect };
         }
+        if (table === "annual_memberships") {
+          return {
+            select: vi.fn(() => ({
+              lte: vi.fn(() => ({
+                gte: vi.fn(async () => ({ data: [], error: null })),
+              })),
+            })),
+          };
+        }
         if (table === "registrations") {
           return { select: regSelect };
         }

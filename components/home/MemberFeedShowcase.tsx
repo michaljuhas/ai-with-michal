@@ -208,11 +208,11 @@ export default function MemberFeedShowcase() {
           className="text-center mt-12"
         >
           <Link
-            href="/register?ref=homepage-member-feed"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-colors shadow-sm shadow-blue-600/20"
+            href="/membership"
+            className="group inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-7 py-3.5 rounded-xl transition-colors shadow-sm shadow-blue-600/20"
           >
             Become a member
-            <ArrowRight size={18} aria-hidden />
+            <ArrowRight size={18} className="transition-transform group-hover:translate-x-1" aria-hidden />
           </Link>
         </motion.div>
       </div>

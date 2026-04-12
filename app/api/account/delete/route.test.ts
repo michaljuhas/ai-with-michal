@@ -12,9 +12,12 @@ vi.mock("@/lib/supabase", () => ({
   createServiceClient: vi.fn(),
 }));
 
-function updateEqChain() {
+function fromChain() {
   return {
     update: vi.fn(() => ({
+      eq: vi.fn(async () => ({ error: null })),
+    })),
+    delete: vi.fn(() => ({
       eq: vi.fn(async () => ({ error: null })),
     })),
   };
@@ -32,7 +35,7 @@ describe("DELETE /api/account/delete", () => {
   it("returns 200 and anonymises rows then deletes Clerk user", async () => {
     vi.mocked(auth).mockResolvedValue({ userId: "user_to_delete" } as never);
 
-    const from = vi.fn(() => updateEqChain());
+    const from = vi.fn(() => fromChain());
     vi.mocked(createServiceClient).mockReturnValue({ from } as never);
 
     const deleteUser = vi.fn(async () => {});
@@ -50,13 +53,14 @@ describe("DELETE /api/account/delete", () => {
     expect(from).toHaveBeenCalledWith("member_feed_posts");
     expect(from).toHaveBeenCalledWith("member_feed_replies");
     expect(from).toHaveBeenCalledWith("member_resource_grants");
+    expect(from).toHaveBeenCalledWith("annual_memberships");
     expect(deleteUser).toHaveBeenCalledWith("user_to_delete");
   });
 
   it("returns 500 when Clerk delete throws", async () => {
     vi.mocked(auth).mockResolvedValue({ userId: "user_x" } as never);
     vi.mocked(createServiceClient).mockReturnValue({
-      from: vi.fn(() => updateEqChain()),
+      from: vi.fn(() => fromChain()),
     } as never);
 
     vi.mocked(clerkClient).mockResolvedValue({

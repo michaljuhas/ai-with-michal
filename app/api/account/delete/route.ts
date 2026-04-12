@@ -58,8 +58,10 @@ export async function DELETE() {
 
     await supabase.from("member_resource_grants").delete().eq("clerk_user_id", userId);
 
-    // 6. Delete the Clerk user — this invalidates all sessions and removes auth access.
-    //    Orders keep the clerk_user_id for historical revenue tracking (no PII stored there).
+    await supabase.from("annual_memberships").delete().eq("clerk_user_id", userId);
+
+    // Delete the Clerk user — this invalidates all sessions and removes auth access.
+    // Orders keep the clerk_user_id for historical revenue tracking (no PII stored there).
     const client = await clerkClient();
     await client.users.deleteUser(userId);
 

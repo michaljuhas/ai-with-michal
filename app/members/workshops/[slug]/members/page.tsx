@@ -6,6 +6,7 @@ import type { Registration } from "@/lib/supabase";
 import CommunityDirectory from "@/components/members/CommunityDirectory";
 import type { CommunityMember } from "@/components/members/CommunityDirectory";
 import { ADMIN_USER_IDS, isAdminUser } from "@/lib/config";
+import { listClerkUserIdsWithActiveAnnualMembership } from "@/lib/membership-access";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,11 @@ export default async function WorkshopMembersPage({ params }: Props) {
     .eq("workshop_slug", slug)
     .eq("status", "paid");
 
-  const attendeeIds = [...new Set((orders ?? []).map((o: { clerk_user_id: string }) => o.clerk_user_id).filter(Boolean))];
+  const orderAttendeeIds = [
+    ...new Set((orders ?? []).map((o: { clerk_user_id: string }) => o.clerk_user_id).filter(Boolean)),
+  ];
+  const annualMemberIds = await listClerkUserIdsWithActiveAnnualMembership(supabase);
+  const attendeeIds = [...new Set([...orderAttendeeIds, ...annualMemberIds])];
 
   // Always include all admin IDs (host) — fetch their Clerk profile separately
   const allClerkIds = [...new Set([...ADMIN_USER_IDS, ...attendeeIds])];

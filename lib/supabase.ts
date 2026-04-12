@@ -85,6 +85,17 @@ export type Order = {
   order_type?: "stripe" | "comp" | "manual";
 };
 
+/** Prepaid annual membership (Stripe one-time checkout); see migration 019. */
+export type AnnualMembership = {
+  clerk_user_id: string;
+  stripe_session_id: string;
+  period_starts_at: string;
+  period_ends_at: string;
+  amount_eur: number;
+  created_at: string;
+  updated_at: string;
+};
+
 export type WorkgroupPost = {
   id: string;
   workshop_slug: string;

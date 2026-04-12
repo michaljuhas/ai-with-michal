@@ -125,17 +125,11 @@ export default function HomePage() {
             className="mt-10 flex flex-wrap gap-4"
           >
             <Link
-              href="/workshops"
+              href="/membership"
               className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3.5 rounded-xl transition-colors group shadow-lg shadow-blue-600/20"
             >
-              Join upcoming workshops
+              Become a member
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link
-              href="/work-together"
-              className="inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-700 font-semibold px-6 py-3.5 rounded-xl transition-colors"
-            >
-              Start working together
             </Link>
           </motion.div>
         </div>

@@ -4,6 +4,7 @@ import { createServiceClient } from "@/lib/supabase";
 import { getWorkshopBySlug } from "@/lib/workshops";
 import WorkgroupSection from "@/components/workgroup/WorkgroupSection";
 import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
 
 type WorkgroupPageProps = {
   params: Promise<{ slug: string }>;
@@ -25,15 +26,7 @@ export default async function WorkgroupPage({ params }: WorkgroupPageProps) {
     hasAccess = true;
   } else if (userId) {
     const supabase = createServiceClient();
-    const { data } = await supabase
-      .from("orders")
-      .select("id")
-      .eq("clerk_user_id", userId)
-      .eq("workshop_slug", workshop.slug)
-      .eq("tier", "pro")
-      .eq("status", "paid")
-      .maybeSingle();
-    hasAccess = !!data;
+    hasAccess = await userHasProWorkshopOrder(supabase, userId, workshop.slug);
   }
 
   if (!hasAccess) {

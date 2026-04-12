@@ -5,6 +5,7 @@ import { getWorkshopBySlug } from "@/lib/workshops";
 import { sendWorkgroupBroadcast } from "@/lib/email";
 import { isAdminUser } from "@/lib/config";
 import { userHasProWorkshopOrder } from "@/lib/workshop-access";
+import { listClerkUserIdsWithActiveAnnualMembership } from "@/lib/membership-access";
 import { fetchClerkUserImageMap } from "@/lib/discussion-posts";
 import type { NextRequest } from "next/server";
 
@@ -158,14 +159,16 @@ export async function POST(
   let broadcastResult: { sent?: number; error?: string } = {};
   if (broadcast === true && isAdminUser(userId)) {
     try {
-      // Fetch all paid orders for this workshop
+      // Paid orders for this workshop + active annual members (same access as directory)
       const { data: orders } = await supabase
         .from("orders")
         .select("clerk_user_id")
         .eq("workshop_slug", workshopSlug)
         .eq("status", "paid");
 
-      const attendeeIds = [...new Set((orders ?? []).map((o: { clerk_user_id: string }) => o.clerk_user_id))];
+      const orderIds = [...new Set((orders ?? []).map((o: { clerk_user_id: string }) => o.clerk_user_id))];
+      const annualIds = await listClerkUserIdsWithActiveAnnualMembership(supabase);
+      const attendeeIds = [...new Set([...orderIds, ...annualIds])];
 
       // Get email addresses from registrations
       const { data: registrations } = await supabase

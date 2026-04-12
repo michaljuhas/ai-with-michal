@@ -530,23 +530,27 @@ Clerk user ID: ${clerkUserId}`;
 
 export async function notifyAdminPaymentCompleted(params: {
   clerkUserId: string;
-  tier: TicketTier;
   amountEur: number;
   stripeSessionId: string;
   customerEmail?: string;
+  /** Workshop / course checkout — label from tier map. */
+  tier?: TicketTier;
+  /** When set (e.g. annual membership), used instead of `tier` for admin email subject/body. */
+  productSummary?: string;
 }) {
-  const { clerkUserId, tier, amountEur, stripeSessionId, customerEmail } =
+  const { clerkUserId, tier, amountEur, stripeSessionId, customerEmail, productSummary } =
     params;
   const admin = getAdminEmail();
   const mail = getSendGrid();
-  const tierLabel = TIER_LABEL[tier];
+  const tierLabel =
+    productSummary ?? (tier != null ? TIER_LABEL[tier] : "Payment");
   const subject = `[AI with Michal] Payment completed — ${tierLabel} (€${amountEur})`;
   const emailLine = customerEmail
     ? `Customer email: ${customerEmail}\n`
     : "";
-  const text = `A workshop payment was completed.
+  const text = `A payment was completed.
 
-${emailLine}Tier: ${tierLabel}
+${emailLine}Product: ${tierLabel}
 Amount: €${amountEur}
 Stripe session: ${stripeSessionId}
 Clerk user ID: ${clerkUserId}`;
@@ -557,7 +561,7 @@ Clerk user ID: ${clerkUserId}`;
   <strong>Payment completed</strong></p>
   <table style="font-family: sans-serif; font-size: 14px; color: #475569;" cellpadding="0" cellspacing="0">
   ${emailRow}
-  <tr><td style="padding: 4px 16px 4px 0;"><strong>Tier</strong></td><td>${escapeHtml(tierLabel)}</td></tr>
+  <tr><td style="padding: 4px 16px 4px 0;"><strong>Product</strong></td><td>${escapeHtml(tierLabel)}</td></tr>
   <tr><td style="padding: 4px 16px 4px 0;"><strong>Amount</strong></td><td>€${amountEur}</td></tr>
   <tr><td style="padding: 4px 16px 4px 0;"><strong>Stripe session</strong></td><td><code>${escapeHtml(stripeSessionId)}</code></td></tr>
   <tr><td style="padding: 4px 16px 4px 0;"><strong>Clerk user ID</strong></td><td><code>${escapeHtml(clerkUserId)}</code></td></tr>
@@ -935,6 +939,58 @@ export async function sendMemberFeedBroadcast(params: {
   const text = buildDiscussionAnnouncementText(template);
 
   return sendDiscussionBroadcastMessages({ subject, html, text, recipients });
+}
+
+export async function sendMembershipConfirmation(params: {
+  toEmail: string;
+  toName: string;
+  membersUrl?: string;
+}) {
+  const { toEmail, toName, membersUrl } = params;
+  const base = appBaseUrl();
+  const hub = (membersUrl ?? `${base}/members`).replace(/\/$/, "");
+  const firstName = toName.split(" ")[0] || toName;
+
+  const text = `Hi ${firstName},
+
+Thank you for joining the AI Recruiting Systems annual membership.
+
+Your member hub (workshops, recordings, and community) is here:
+${hub}
+
+You have full access for the next year — dive into any workshop track and the First Principles in Talent Sourcing course from your account.
+
+Questions? Reply to this email or write to ${PUBLIC_CONTACT_EMAIL}.
+
+— Michal Juhas`;
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /></head>
+<body style="margin:0;padding:24px;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;border:1px solid #e2e8f0;">
+    <tr><td style="padding:28px 32px;background:#1e40af;border-radius:12px 12px 0 0;">
+      <p style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#93c5fd;">AI with Michal</p>
+      <h1 style="margin:8px 0 0;font-size:22px;font-weight:700;color:#fff;">You&apos;re in — annual membership</h1>
+    </td></tr>
+    <tr><td style="padding:28px 32px 32px;">
+      <p style="margin:0 0 12px;font-size:15px;color:#334155;line-height:1.6;">Hi ${escapeHtml(firstName)},</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#334155;line-height:1.6;">Thank you for joining the <strong>AI Recruiting Systems</strong> annual membership. Your hub for live workshops, recordings, workgroups, and the First Principles course is ready.</p>
+      <p style="margin:0 0 20px;"><a href="${escapeHtml(hub)}" style="display:inline-block;background:#2563eb;color:#fff;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px;">Open member hub</a></p>
+      <p style="margin:0;font-size:14px;color:#64748b;">Questions? Reply to this email or ${escapeHtml(PUBLIC_CONTACT_EMAIL)}</p>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const mail = getSendGrid();
+  await mail.send({
+    to: { email: toEmail, name: toName },
+    from: { email: FROM_EMAIL, name: FROM_NAME },
+    subject: "You are in — AI Recruiting Systems membership",
+    text,
+    html,
+  });
 }
 
 // ─── Course confirmation ──────────────────────────────────────────────────────

@@ -3,7 +3,12 @@ import { NextRequest } from "next/server";
 import { createServiceClient } from "@/lib/supabase";
 import { getStripe } from "@/lib/stripe";
 import { captureEvent } from "@/lib/posthog-server";
-import { notifyAdminPaymentCompleted, sendWorkshopConfirmation } from "@/lib/email";
+import {
+  notifyAdminPaymentCompleted,
+  sendWorkshopConfirmation,
+  sendMembershipConfirmation,
+  sendCourseConfirmation,
+} from "@/lib/email";
 import { sendMetaEvent } from "@/lib/meta-capi";
 import { POST } from "./route";
 
@@ -22,6 +27,8 @@ vi.mock("@/lib/posthog-server", () => ({
 vi.mock("@/lib/email", () => ({
   notifyAdminPaymentCompleted: vi.fn(),
   sendWorkshopConfirmation: vi.fn(),
+  sendMembershipConfirmation: vi.fn(),
+  sendCourseConfirmation: vi.fn(),
 }));
 
 vi.mock("@/lib/meta-capi", () => ({
@@ -124,7 +131,17 @@ describe("POST /api/webhooks/stripe", () => {
 
     const upsert = vi.fn(async () => ({ error: null }));
     vi.mocked(createServiceClient).mockReturnValue({
-      from: vi.fn(() => ({ upsert })),
+      from: vi.fn((table: string) => {
+        if (table === "annual_memberships") {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({ maybeSingle: vi.fn(async () => ({ data: null, error: null })) })),
+            })),
+            upsert,
+          };
+        }
+        return { upsert };
+      }),
     } as never);
 
     vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://aiwithmichal.com");
@@ -156,6 +173,92 @@ describe("POST /api/webhooks/stripe", () => {
     expect(notifyAdminPaymentCompleted).toHaveBeenCalled();
     expect(sendMetaEvent).toHaveBeenCalled();
     expect(sendWorkshopConfirmation).toHaveBeenCalled();
+  });
+
+  it("annual_membership upserts annual_memberships and skips orders", async () => {
+    const upsertOrders = vi.fn(async () => ({ error: null }));
+    const upsertMembership = vi.fn(async () => ({ error: null }));
+    const maybeSingleMembership = vi.fn(async () => ({ data: null, error: null }));
+
+    const event = {
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_mem",
+          metadata: {
+            product: "annual_membership",
+            clerk_user_id: "user_mem",
+            price_id: "price_mem",
+            customer_name: "Member",
+          },
+          amount_total: 89000,
+          total_details: { amount_tax: 0 },
+          currency: "eur",
+          customer_email: "mem@x.com",
+          customer_details: {
+            email: "mem@x.com",
+            name: "Member",
+            address: { country: "sk" },
+          },
+        },
+      },
+    };
+    const constructEvent = vi.fn(() => event);
+    vi.mocked(getStripe).mockReturnValue({
+      webhooks: { constructEvent },
+    } as never);
+
+    vi.mocked(createServiceClient).mockReturnValue({
+      from: vi.fn((table: string) => {
+        if (table === "annual_memberships") {
+          return {
+            select: vi.fn(() => ({
+              eq: vi.fn(() => ({ maybeSingle: maybeSingleMembership })),
+            })),
+            upsert: upsertMembership,
+          };
+        }
+        if (table === "orders") {
+          return { upsert: upsertOrders };
+        }
+        return {};
+      }),
+    } as never);
+
+    vi.stubEnv("NEXT_PUBLIC_APP_URL", "https://aiwithmichal.com");
+
+    const req = new NextRequest("http://localhost/api/webhooks/stripe", {
+      method: "POST",
+      headers: { "stripe-signature": "sig" },
+      body: "payload",
+    });
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+
+    expect(upsertMembership).toHaveBeenCalledWith(
+      expect.objectContaining({
+        clerk_user_id: "user_mem",
+        stripe_session_id: "cs_mem",
+        amount_eur: 890,
+      }),
+      { onConflict: "clerk_user_id" }
+    );
+    expect(upsertOrders).not.toHaveBeenCalled();
+    expect(sendMembershipConfirmation).toHaveBeenCalledWith(
+      expect.objectContaining({ toEmail: "mem@x.com" })
+    );
+    expect(sendWorkshopConfirmation).not.toHaveBeenCalled();
+    expect(notifyAdminPaymentCompleted).toHaveBeenCalledWith(
+      expect.objectContaining({
+        productSummary: "Annual membership",
+        clerkUserId: "user_mem",
+      })
+    );
+    expect(captureEvent).toHaveBeenCalledWith(
+      "user_mem",
+      "membership_purchased",
+      expect.objectContaining({ stripe_session_id: "cs_mem" })
+    );
   });
 
   it("returns received true for unhandled event types", async () => {

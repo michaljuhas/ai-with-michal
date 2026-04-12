@@ -11,6 +11,7 @@ import {
 } from "@/lib/workshops";
 import WorkshopAddToCalendar from "@/components/WorkshopAddToCalendar";
 import { isAdminUser } from "@/lib/config";
+import { userHasProWorkshopOrder } from "@/lib/workshop-access";
 
 type WorkshopPageProps = {
   params: Promise<{ slug: string }>;
@@ -35,15 +36,7 @@ export default async function WorkshopPage({ params }: WorkshopPageProps) {
       hasProAccess = true;
     } else {
       const supabase = createServiceClient();
-      const { data } = await supabase
-        .from("orders")
-        .select("id")
-        .eq("clerk_user_id", userId)
-        .eq("workshop_slug", workshop.slug)
-        .eq("tier", "pro")
-        .eq("status", "paid")
-        .maybeSingle();
-      hasProAccess = !!data;
+      hasProAccess = await userHasProWorkshopOrder(supabase, userId, workshop.slug);
     }
   }
 
